@@ -13,9 +13,18 @@
 
 #define	PWM_STEPS		  100
 #define PULSE_1MS   	  180000  // 1ms pulse width
-#define ESC_PULSE_PERIOD  5000  // pulse period (400Hz)
+#define ESC_PULSE_PERIOD  5000    // pulse period (400Hz)
 
 namespace Periph{
+
+namespace Timers{
+enum Enum : uint8_t{
+	Timer1 = 0,
+	Timer2,
+
+	Size
+};
+} /* namespace TImers */
 
 namespace Pwms{
 enum Enum : uint8_t{
@@ -35,21 +44,21 @@ enum Enum : uint8_t{
 
 
 class Pwm {
-	const Pwms::Enum id;
+	//const Pwms::Enum id;
 
-	void initRCC()
+	void initRCC();
 	void initGpio();
 	void initTimOC();
-	void initTimTB();
-	void initPwm(uint32_t frequency);
+	void initTimTB(uint32_t frequency);
+	void initPwm();
 	void deinitPwm();
 
 
 public:
-	Pwm(Pwms::Enum id, uint32_t frequency);
+	Pwm(uint32_t frequency);
 	~Pwm();
 
-	void write();
+	void write(Pwms::Enum id, uint8_t value);
 
 
 };
