@@ -8,24 +8,14 @@
 #include "Application.h"
 #include "stm32f4xx.h"
 
-Application::Application() {
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+Application::Application() :
+	appRunningLed(Periph::Leds::Blue),
+	usart2(Periph::Usarts::Usart2, 9600)
+{}
 
-	GPIO_InitTypeDef init = {
-		GPIO_Pin: GPIO_Pin_7,
-		GPIO_Mode: GPIO_Mode_OUT,
-		GPIO_Speed: GPIO_Medium_Speed,
-		GPIO_OType: GPIO_OType_PP,
-		GPIO_PuPd: GPIO_PuPd_NOPULL
-	};
-	GPIO_Init(GPIOB, &init);
-
-	GPIO_SetBits(GPIOB, GPIO_Pin_7);
+void Application::run()
+{
+	appRunningLed.turnOn();
 
 	for(;;);
 }
-
-Application::~Application() {
-	GPIO_ResetBits(GPIOB, GPIO_Pin_7);
-}
-

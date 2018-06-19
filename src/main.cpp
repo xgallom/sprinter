@@ -12,7 +12,7 @@
 
 int main(void)
 {
-	{ Application app; }
+	Application app;
 
-	for(;;);
+	app.run();
 }
