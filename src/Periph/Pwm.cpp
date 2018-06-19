@@ -8,17 +8,20 @@
 
 #include "Pwm.h"
 
-namespace Periph{
+static constexpr uint8_t  pwm_steps = 100;
+static constexpr uint32_t pulse_1ms = 180000;
+static constexpr uint16_t pulse_period = 500;
 
-																			           //PWM output pin
-volatile uint32_t *OutChnl[Periph::Pwms::Size] = { &(config[Timers::Timer1].tim->CCR4),			//	PC9
-												&(config[Timers::Timer1].tim->CCR3),			//	PC8
-												&(config[Timers::Timer1].tim->CCR2),			//	PC7
-												&(config[Timers::Timer1].tim->CCR1),			//	PC6
-												&(config[Timers::Timer2].tim->CCR1),			//	PA0
-												&(config[Timers::Timer2].tim->CCR2),			//	PA1
-												&(config[Timers::Timer2].tim->CCR3),			//	PA2
-												&(config[Timers::Timer2].tim->CCR4), };		    //	PA3
+
+namespace Periph {
+namespace Timers{
+enum Enum : uint8_t{
+	Timer1 = 0,
+	Timer2,
+
+	Size
+};
+} /* namespace Timers */
 
 struct {
 		GPIO_TypeDef 	*gpio;
@@ -26,7 +29,7 @@ struct {
 		uint32_t        p1, p2, p3, p4;
 		uint8_t p1Source, p2Source, p3Source, p4Source, gpioAf;
 
-	} constexpr config[Timers::Size] = {
+	}  constexpr config[Timers::Size] = {
 		/*Timer1*/	{
 			gpio: GPIOC,
 			tim: TIM8,
@@ -55,6 +58,18 @@ struct {
 		}
 
 };
+															//PWM output pin
+static volatile uint32_t *OutChnl[Periph::Pwms::Size] =
+				  {
+				    &(config[Timers::Timer1].tim->CCR4),			//	PC9
+					&(config[Timers::Timer1].tim->CCR3),			//	PC8
+					&(config[Timers::Timer1].tim->CCR2),			//	PC7
+					&(config[Timers::Timer1].tim->CCR1),			//	PC6
+					&(config[Timers::Timer2].tim->CCR1),			//	PA0
+					&(config[Timers::Timer2].tim->CCR2),			//	PA1
+					&(config[Timers::Timer2].tim->CCR3),			//	PA2
+					&(config[Timers::Timer2].tim->CCR4), };		    //	PA3
+
 
 void Pwm::initRCC()
 {
@@ -68,7 +83,7 @@ void Pwm::initRCC()
 
 void Pwm::initGpio()
 {
-	 GPIO_InitTypeDef    GPIO_InitStructure;
+	 GPIO_InitTypeDef GPIO_InitStructure;
 	 GPIO_StructInit(&GPIO_InitStructure);
 
 
@@ -114,7 +129,7 @@ void Pwm::initTimOC()
 
 	TIM_OCInitStructure.TIM_OCMode       = TIM_OCMode_PWM2;
 	TIM_OCInitStructure.TIM_OutputState  = TIM_OutputState_Enable;
-	TIM_OCInitStructure.TIM_Pulse        = PULSE_1MS;
+	TIM_OCInitStructure.TIM_Pulse        = pulse_1ms;
 	TIM_OCInitStructure.TIM_OCPolarity   = TIM_OCPolarity_Low;
 	TIM_OCInitStructure.TIM_OCIdleState  = TIM_OCIdleState_Set;
 
@@ -138,15 +153,15 @@ void Pwm::initTimTB(uint32_t frequency)
 	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
 
 
-	uint32_t timer_frequency 	= SystemCoreClock;
-	uint32_t counter_frequency 	= PWM_STEPS * frequency;
-	uint32_t PSC_Value 			= (timer_frequency / counter_frequency) - 1;
-	uint16_t ARR_Value 			= PWM_STEPS - 1;
+    uint32_t timer_frequency				= SystemCoreClock;
+	uint32_t counter_frequency				= pwm_steps * frequency;
+	uint32_t PSC_Value						= (timer_frequency / counter_frequency) - 1;
+	uint16_t ARR_Value						= pwm_steps - 1;
 
-	TIM_TimeBaseStructure.TIM_Period 		= ARR_Value;
-	TIM_TimeBaseStructure.TIM_Prescaler 	= PSC_Value;
+	TIM_TimeBaseStructure.TIM_Period		= ARR_Value;
+	TIM_TimeBaseStructure.TIM_Prescaler		= PSC_Value;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode 	= TIM_CounterMode_Up;
+	TIM_TimeBaseStructure.TIM_CounterMode	= TIM_CounterMode_Up;
 
 	TIM_TimeBaseInit(config[Timers::Timer1].tim, &TIM_TimeBaseStructure);
 	TIM_TimeBaseInit(config[Timers::Timer2].tim, &TIM_TimeBaseStructure);
