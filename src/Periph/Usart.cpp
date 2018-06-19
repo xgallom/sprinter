@@ -6,13 +6,14 @@
  */
 
 #include "Usart.h"
-
-static volatile uint8_t inputBuffers[Periph::Usarts::Size][512];
+#include "../Container/Stack.h"
 
 namespace Periph {
+static Container::Stack<volatile uint8_t, 512> s_usartStacks[Usarts::Size];
 
 struct {
 	GPIO_TypeDef *gpio;
+	uint32_t ahb1Gpio;
 	uint32_t rx, tx;
 	uint8_t rxSource, txSource, gpioAf;
 	USART_TypeDef *usart;
@@ -20,6 +21,7 @@ struct {
 } constexpr config[Usarts::Size] = {
 		/* Usart1 */ {
 				gpio: GPIOA,
+				ahb1Gpio: RCC_AHB1Periph_GPIOA,
 				rx: GPIO_Pin_9,
 				tx: GPIO_Pin_10,
 				rxSource: GPIO_PinSource9,
@@ -29,11 +31,12 @@ struct {
 				irqn: USART1_IRQn
 		},
 		/* Usart2 */ {
-				gpio: GPIOA,
-				rx: GPIO_Pin_3,
-				tx: GPIO_Pin_2,
-				rxSource: GPIO_PinSource3,
-				txSource: GPIO_PinSource2,
+				gpio: GPIOD,
+				ahb1Gpio: RCC_AHB1Periph_GPIOD,
+				rx: GPIO_Pin_6,
+				tx: GPIO_Pin_5,
+				rxSource: GPIO_PinSource6,
+				txSource: GPIO_PinSource5,
 				gpioAf: GPIO_AF_USART2,
 				usart: USART2,
 				irqn: USART2_IRQn
@@ -45,13 +48,13 @@ void Usart::initRcc()
 	switch(id) {
 	case Usarts::Usart1:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		break;
 	case Usarts::Usart2:
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		break;
 	}
+
+	RCC_AHB1PeriphClockCmd(config[id].ahb1Gpio, ENABLE);
 }
 
 void Usart::initGpio()
@@ -115,19 +118,38 @@ Usart::~Usart()
 	NVIC_DisableIRQ(config[id].irqn);
 }
 
+void Usart::write(const uint8_t c)
+{
+	USART_SendData(config[id].usart, static_cast<uint16_t>(c));
+}
+
+uint8_t Usart::read()
+{
+	Container::WrapperStack<volatile uint8_t>::OperationResult stackReadResult;
+
+	while(!(stackReadResult = s_usartStacks[id].pop()).isValid) {}
+
+	return stackReadResult.value;
+}
+
+bool Usart::bytesAvailable() const
+{
+	return s_usartStacks[id].isEmpty();
+}
+
 } /* namespace Periph */
 
 void USART1_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
-		USART_SendData(USART1, USART_ReceiveData(USART1));
+		Periph::s_usartStacks[0].push(static_cast<uint8_t>(USART_ReceiveData(USART1)));
 	}
 }
 
 void USART2_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
-		USART_SendData(USART2, USART_ReceiveData(USART2));
+		Periph::s_usartStacks[1].push(static_cast<uint8_t>(USART_ReceiveData(USART2)));
 	}
 }
 
