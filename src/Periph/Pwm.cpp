@@ -25,7 +25,7 @@ enum Enum : uint8_t{
 
 struct {
 		GPIO_TypeDef 	*gpio;
-		TIM_TypeDef		*tim;
+		TIM_TypeDef     *tim;
 		uint32_t        p1, p2, p3, p4;
 		uint8_t p1Source, p2Source, p3Source, p4Source, gpioAf;
 
@@ -60,8 +60,7 @@ struct {
 };
 															//PWM output pin
 static volatile uint32_t *OutChnl[Periph::Pwms::Size] =
-				  {
-				    &(config[Timers::Timer1].tim->CCR4),			//	PC9
+				  { &(config[Timers::Timer1].tim->CCR4),			//	PC9
 					&(config[Timers::Timer1].tim->CCR3),			//	PC8
 					&(config[Timers::Timer1].tim->CCR2),			//	PC7
 					&(config[Timers::Timer1].tim->CCR1),			//	PC6
@@ -88,7 +87,7 @@ void Pwm::initGpio()
 
 
 	 GPIO_InitStructure.GPIO_Pin   = config[Timers::Timer2].p1 | config[Timers::Timer2].p2 |
-	 	 	   	   	   	   	   	   	 config[Timers::Timer2].p3 | config[Timers::Timer2].p4;
+	 config[Timers::Timer2].p3 | config[Timers::Timer2].p4;
 	 GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
 	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	 GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -98,7 +97,7 @@ void Pwm::initGpio()
 
 
 	 GPIO_InitStructure.GPIO_Pin   = config[Timers::Timer1].p1 | config[Timers::Timer1].p2 |
-	 	 	   	   	   	   	   	   	 config[Timers::Timer1].p3 | config[Timers::Timer1].p4;
+	 config[Timers::Timer1].p3 | config[Timers::Timer1].p4;
 	 GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
 	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	 GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -153,15 +152,15 @@ void Pwm::initTimTB(uint32_t frequency)
 	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
 
 
-    uint32_t timer_frequency				= SystemCoreClock;
-	uint32_t counter_frequency				= pwm_steps * frequency;
-	uint32_t PSC_Value						= (timer_frequency / counter_frequency) - 1;
-	uint16_t ARR_Value						= pwm_steps - 1;
+    uint32_t timer_frequency = SystemCoreClock;
+	uint32_t counter_frequency = pwm_steps * frequency;
+	uint32_t PSC_Value = (timer_frequency / counter_frequency) - 1;
+	uint16_t ARR_Value = pwm_steps - 1;
 
-	TIM_TimeBaseStructure.TIM_Period		= ARR_Value;
-	TIM_TimeBaseStructure.TIM_Prescaler		= PSC_Value;
+	TIM_TimeBaseStructure.TIM_Period = ARR_Value;
+	TIM_TimeBaseStructure.TIM_Prescaler = PSC_Value;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode	= TIM_CounterMode_Up;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 
 	TIM_TimeBaseInit(config[Timers::Timer1].tim, &TIM_TimeBaseStructure);
 	TIM_TimeBaseInit(config[Timers::Timer2].tim, &TIM_TimeBaseStructure);
