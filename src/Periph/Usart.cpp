@@ -15,11 +15,10 @@ static Container::Queue<volatile uint8_t, 512> s_writeQueues[Usarts::Size];
 
 namespace States {
 enum Flags : uint8_t {
-	Reading = 0x01,
-	Writing = 0x02
+	Writing = 0x01
 };
 }
-static Util::State<uint8_t> s_states[Usarts::Size];
+static Util::State<uint8_t> s_states;
 
 struct {
 	GPIO_TypeDef *gpio;
@@ -134,8 +133,8 @@ bool Usart::write(const uint8_t c)
 	if(!s_writeQueues[id].enqueue(c))
 		return false;
 
-	if(!s_states[id].flag(States::Writing)) {
-		s_states[id].setFlag(States::Writing);
+	if(!s_states.flag(States::Writing << 1)) {
+		s_states.setFlag(States::Writing << 1);
 
 		USART_SendData(config[id].usart, static_cast<uint16_t>(c));
 	}
@@ -179,7 +178,7 @@ void USART2_IRQHandler(void)
 			USART_SendData(USART2, writeData.value);
 		}
 		else {
-			Periph::s_states[1].resetFlag(Periph::States::Writing);
+			Periph::s_states.resetFlag(Periph::States::Writing << 1);
 		}
 	}
 }
