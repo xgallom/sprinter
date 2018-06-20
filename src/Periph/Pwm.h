@@ -14,7 +14,6 @@
 
 namespace Periph {
 
-
 namespace Pwms {
 enum Enum : uint8_t{
 	Pwm1 = 0,
@@ -29,7 +28,6 @@ enum Enum : uint8_t{
 	Size
 };
 } /* namespace Pwm */
-
 
 class Pwm {
 	void initRCC();
@@ -46,9 +44,6 @@ public:
 	void write(Pwms::Enum id, uint8_t value);
 };
 
-
 } /* namespace Periph */
-
-
 
 #endif /* PERIPH_PWM_H_ */
