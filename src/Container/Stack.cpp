@@ -10,9 +10,9 @@
 namespace Container {
 
 template<typename T>
-WrapperStack<T>::WrapperStack(T *data, uint32_t dataSize) :
-	m_bufferBegin(data),
-	m_bufferSize(dataSize),
+WrapperStack<T>::WrapperStack(T *buffer, uint32_t bufferSize) :
+	m_bufferBegin(buffer),
+	m_bufferSize(bufferSize),
 	m_stackSize(0)
 {}
 
@@ -28,21 +28,21 @@ bool WrapperStack<T>::push(T entry)
 }
 
 template<typename T>
-typename WrapperStack<T>::OperationResult WrapperStack<T>::pop()
+OperationResult<T> WrapperStack<T>::pop()
 {
 	if(m_stackSize == 0)
-		return OperationResult();
+		return OperationResult<T>();
 
-	return OperationResult(m_bufferBegin[--m_stackSize]);
+	return OperationResult<T>(m_bufferBegin[--m_stackSize]);
 }
 
 template<typename T>
-typename WrapperStack<T>::OperationResult WrapperStack<T>::peek(uint32_t howFar) const
+OperationResult<T> WrapperStack<T>::peek(uint32_t howFar) const
 {
 	if(howFar < m_stackSize)
-		return OperationResult();
+		return OperationResult<T>();
 
-	return OperationResult(m_bufferBegin[m_stackSize - howFar]);
+	return OperationResult<T>(m_bufferBegin[m_stackSize - howFar]);
 }
 
 template class WrapperStack<volatile uint8_t>;

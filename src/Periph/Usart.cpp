@@ -125,7 +125,7 @@ void Usart::write(const uint8_t c)
 
 uint8_t Usart::read()
 {
-	Container::WrapperStack<volatile uint8_t>::OperationResult stackReadResult;
+	Container::OperationResult<volatile uint8_t> stackReadResult;
 
 	while(!(stackReadResult = s_usartStacks[id].pop()).isValid) {}
 

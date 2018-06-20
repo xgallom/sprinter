@@ -9,6 +9,7 @@
 #define CONTAINER_STACK_H_
 
 #include "stm32f4xx.h"
+#include "OperationResult.h"
 
 namespace Container {
 
@@ -19,23 +20,15 @@ class WrapperStack {
 	volatile uint32_t m_stackSize;
 
 public:
-	struct OperationResult {
-		explicit OperationResult(bool isValid = false) : isValid(isValid) {}
-		explicit OperationResult(T value) : isValid(true), value(value) {}
-
-		bool isValid;
-		T value;
-	};
-
 	explicit WrapperStack(T *buffer, uint32_t bufferSize);
 
 	bool push(T entry);
 
-	OperationResult pop();
-	OperationResult peek(uint32_t howFar = 1) const;
+	OperationResult<T> pop();
+	OperationResult<T> peek(uint32_t howFar = 1) const;
 
 	inline uint32_t size() const { return m_stackSize; }
-	inline bool isEmpty() const { return m_stackSize; }
+	inline bool isEmpty() const { return m_stackSize == 0; }
 };
 
 template<typename T, uint32_t Size>
