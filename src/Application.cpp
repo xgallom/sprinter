@@ -8,11 +8,14 @@
 #include "Application.h"
 #include "stm32f4xx.h"
 
+Application *Application::m_instance = nullptr;
+
 Application::Application() :
-	m_insance(this),
 	appRunningLed(Periph::Leds::Blue),
 	usart2(Periph::Usarts::Usart2, 9600)
-{}
+{
+	m_instance = this;
+}
 
 void Application::run()
 {
@@ -25,8 +28,8 @@ void Application::run()
 	}
 }
 
-static Application *Application::instance()
+Application *Application::instance()
 {
-	return m_insance;
+	return m_instance;
 }
 

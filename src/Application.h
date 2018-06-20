@@ -12,7 +12,7 @@
 #include "Periph/Usart.h"
 
 class Application {
-	static Application *m_insance;
+	static Application *m_instance;
 
 	Periph::Led appRunningLed;
 	Periph::Usart usart2;
@@ -25,6 +25,6 @@ public:
 	static Application *instance();
 };
 
-#define app ::Application::instance()
+#define App ::Application::instance()
 
 #endif /* APPLICATION_H_ */
