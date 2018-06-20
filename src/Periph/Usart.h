@@ -39,7 +39,7 @@ public:
 	Usart(Usarts::Enum id, uint32_t baudRate);
 	~Usart();
 
-	void write(const uint8_t c);
+	bool write(const uint8_t c);
 	uint8_t read();
 
 	bool bytesAvailable() const;

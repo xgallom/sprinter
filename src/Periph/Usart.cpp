@@ -6,11 +6,20 @@
  */
 
 #include "Usart.h"
-#include "../Container/Stack.h"
+#include "../Container/Queue.h"
+#include "../Util/State.h"
 
 namespace Periph {
 static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
 static Container::Queue<volatile uint8_t, 512> s_writeQueues[Usarts::Size];
+
+namespace States {
+enum Flags : uint8_t {
+	Reading = 0x01,
+	Writing = 0x02
+};
+}
+static Util::State<uint8_t> s_states[Usarts::Size];
 
 struct {
 	GPIO_TypeDef *gpio;
@@ -89,6 +98,7 @@ void Usart::initUsart(uint32_t baudRate)
 	USART_Init(config[id].usart, &usartInitStruct);
 	USART_Cmd(config[id].usart, ENABLE);
 
+	USART_ITConfig(config[id].usart, USART_IT_TXE, ENABLE);
 	USART_ITConfig(config[id].usart, USART_IT_RXNE, ENABLE);
 }
 
@@ -119,9 +129,18 @@ Usart::~Usart()
 	NVIC_DisableIRQ(config[id].irqn);
 }
 
-void Usart::write(const uint8_t c)
+bool Usart::write(const uint8_t c)
 {
-	USART_SendData(config[id].usart, static_cast<uint16_t>(c));
+	if(!s_writeQueues[id].enqueue(c))
+		return false;
+
+	if(!s_states[id].flag(States::Writing)) {
+		s_states[id].setFlag(States::Writing);
+
+		USART_SendData(config[id].usart, static_cast<uint16_t>(c));
+	}
+
+	return true;
 }
 
 uint8_t Usart::read()
@@ -151,6 +170,17 @@ void USART2_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
 		Periph::s_readQueues[1].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART2)));
+	}
+
+	if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET) {
+		Container::OperationResult<volatile uint8_t> writeData = Periph::s_writeQueues[1].dequeue();
+
+		if(writeData.isValid) { // We have more data in the buffer
+			USART_SendData(USART2, writeData.value);
+		}
+		else {
+			Periph::s_states[1].resetFlag(Periph::States::Writing);
+		}
 	}
 }
 
