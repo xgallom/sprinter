@@ -35,7 +35,7 @@ bool WrapperQueue<T>::enqueue(T entry)
 template<typename T>
 OperationResult<T> WrapperQueue<T>::dequeue()
 {
-	if(size() == 0)
+	if(isEmpty())
 		return OperationResult<T>();
 
 	OperationResult<T> rv(m_bufferBegin[m_queueStart++]);

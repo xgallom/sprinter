@@ -9,7 +9,8 @@
 #include "../Container/Stack.h"
 
 namespace Periph {
-static Container::Stack<volatile uint8_t, 512> s_usartStacks[Usarts::Size];
+static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
+static Container::Queue<volatile uint8_t, 512> s_writeQueues[Usarts::Size];
 
 struct {
 	GPIO_TypeDef *gpio;
@@ -125,16 +126,16 @@ void Usart::write(const uint8_t c)
 
 uint8_t Usart::read()
 {
-	Container::OperationResult<volatile uint8_t> stackReadResult;
+	Container::OperationResult<volatile uint8_t> readResult;
 
-	while(!(stackReadResult = s_usartStacks[id].pop()).isValid) {}
+	while(!(readResult = s_readQueues[id].dequeue()).isValid) {}
 
-	return stackReadResult.value;
+	return readResult.value;
 }
 
 bool Usart::bytesAvailable() const
 {
-	return s_usartStacks[id].isEmpty();
+	return s_readQueues[id].isEmpty();
 }
 
 } /* namespace Periph */
@@ -142,14 +143,14 @@ bool Usart::bytesAvailable() const
 void USART1_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
-		Periph::s_usartStacks[0].push(static_cast<uint8_t>(USART_ReceiveData(USART1)));
+		Periph::s_readQueues[0].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART1)));
 	}
 }
 
 void USART2_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
-		Periph::s_usartStacks[1].push(static_cast<uint8_t>(USART_ReceiveData(USART2)));
+		Periph::s_readQueues[1].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART2)));
 	}
 }
 
