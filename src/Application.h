@@ -10,10 +10,12 @@
 
 #include "Periph/Led.h"
 #include "Periph/Usart.h"
+#include "Periph/Engine.h"
 
 class Application {
 	Periph::Led appRunningLed;
 	Periph::Usart usart2;
+	Periph::Engine engine1;
 
 public:
 	Application();

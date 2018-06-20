@@ -10,12 +10,15 @@
 
 Application::Application() :
 	appRunningLed(Periph::Leds::Blue),
-	usart2(Periph::Usarts::Usart2, 9600)
+	usart2(Periph::Usarts::Usart2, 9600),
+	engine1(Periph::Engines::M3)
+
 {}
 
 void Application::run()
 {
 	appRunningLed.turnOn();
+	engine1.run(50);
 
 	for(;;);
 }
