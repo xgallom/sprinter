@@ -26,14 +26,12 @@ enum Enum : uint8_t{
 	Pwm7,
 	Pwm8,
 
-
 	Size
 };
 } /* namespace Pwm */
 
 
 class Pwm {
-
 	void initRCC();
 	void initGpio();
 	void initTimOC();
@@ -41,14 +39,11 @@ class Pwm {
 	void initPwm();
 	void deinitPwm();
 
-
 public:
 	Pwm(uint32_t frequency);
 	~Pwm();
 
 	void write(Pwms::Enum id, uint8_t value);
-
-
 };
 
 
