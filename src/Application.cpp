@@ -21,6 +21,8 @@ void Application::run()
 {
 	appRunningLed.turnOn();
 
+	usart2.write("Application started running.\n");
+
 	for(;;) {
 		while(usart2.bytesAvailable()) {
 			usart2.write(usart2.read());

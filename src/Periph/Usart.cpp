@@ -142,6 +142,27 @@ bool Usart::write(const uint8_t c)
 	return true;
 }
 
+bool Usart::write(const char c[])
+{
+	while(*c) {
+		if(!write(*c++))
+			return false;
+	}
+
+	return true;
+}
+
+bool Usart::write(const uint8_t *c, uint32_t size)
+{
+	for(uint32_t n = 0; n < size; n++) {
+		if(!write(c[n]))
+			return false;
+	}
+
+	return true;
+}
+
+
 uint8_t Usart::read()
 {
 	Container::OperationResult<volatile uint8_t> readResult;

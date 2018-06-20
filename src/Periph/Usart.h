@@ -40,6 +40,8 @@ public:
 	~Usart();
 
 	bool write(const uint8_t c);
+	bool write(const char c[]);
+	bool write(const uint8_t *c, uint32_t size);
 	uint8_t read();
 
 	bool bytesAvailable() const;
