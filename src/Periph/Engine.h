@@ -14,26 +14,24 @@
 namespace Periph {
 
 namespace Engines {
-enum Enum : uint8_t{
-		M1=0,
-		M2,
-		M3,
-		M4,
-		M5,
-		M6,
+enum Enum : uint8_t {
+	M1 = 0,
+	M2,
+	M3,
+	M4,
+	M5,
+	M6,
 
-		Size
-
+	Size
 };
 }
 
 namespace Dir {
-	enum Enum : bool{
-		forward=0,
-		backward
+enum Enum : bool {
+	Forward = false,
+	Backward = true
 };
 }
-
 
 class Engine {
 	Pwm pwm;
@@ -41,10 +39,8 @@ class Engine {
 	const Engines::Enum id;
 	volatile uint8_t speed;
 
-
 public:
 	Engine(Engines::Enum id);
-	~Engine();
 
 	void setSpeed(uint8_t value);
 	uint8_t getSpeed();
@@ -56,15 +52,8 @@ public:
 	void run(uint8_t value, Dir::Enum direction);
 
 	void stop();
-
 };
 
-
 } /* namespace Periph */
-
-
-
-
-
 
 #endif /* PERIPH_ENGINE_H_ */

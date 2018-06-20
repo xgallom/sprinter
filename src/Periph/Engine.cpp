@@ -5,21 +5,14 @@
  *      Author: Zahorack
  */
 
-
 #include "Engine.h"
-
-
 
 namespace Periph {
 
-
-Engine::Engine(Engines::Enum id):
+Engine::Engine(Engines::Enum id) :
 	pwm(1000),
 	id(id)
-	//Pwms::Enum(id)
 {}
-
-Engine::~Engine(){}
 
 void Engine::setSpeed(uint8_t value)
 {
@@ -33,8 +26,6 @@ uint8_t Engine::getSpeed()
 
 void setDirection(Dir::Enum direction)
 {
-
-
 }
 
 void Engine::run()
@@ -54,12 +45,5 @@ void Engine::run(uint8_t value, Dir::Enum direction)
 	speed = value;
 	pwm.write(Pwms::Enum(id), speed);
 }
-
-
-
-
-
-
-
 
 } /* namespace Periph */
