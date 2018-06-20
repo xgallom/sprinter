@@ -10,7 +10,7 @@
 #define PERIPH_PWM_H_
 
 #include "stm32f4xx.h"
-
+#include "../Util/RefCounter.h"
 
 namespace Periph {
 
@@ -30,6 +30,8 @@ enum Enum : uint8_t{
 } /* namespace Pwm */
 
 class Pwm {
+	static Util::RefCounter s_refCounter;
+
 	void initRCC();
 	void initGpio();
 	void initTimOC();

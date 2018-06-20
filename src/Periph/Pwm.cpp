@@ -14,6 +14,8 @@ static constexpr uint16_t pulse_period = 500;
 
 namespace Periph {
 
+Util::RefCounter Pwm::s_refCounter;
+
 namespace Timers{
 enum Enum : uint8_t{
 	Timer1 = 0,
@@ -185,16 +187,23 @@ void Pwm::deinitPwm()
 
 Pwm::Pwm(uint32_t frequency)
 {
-	initRCC();
-	initGpio();
-	initTimTB(frequency);
-	initTimOC();
-	initPwm();
+	if(!s_refCounter.referenceExists()) {
+		initRCC();
+		initGpio();
+		initTimTB(frequency);
+		initTimOC();
+		initPwm();
+	}
+
+	++s_refCounter;
 }
 
 Pwm::~Pwm()
 {
-	deinitPwm();
+	--s_refCounter;
+
+	if(s_refCounter.destroyReference())
+		deinitPwm();
 }
 
 void Pwm::write(Pwms::Enum id, uint8_t value)
