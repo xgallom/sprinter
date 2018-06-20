@@ -6,8 +6,8 @@
  */
 
 
-#ifndef PWM_H_
-#define PWM_H_
+#ifndef PERIPH_PWM_H_
+#define PERIPH_PWM_H_
 
 #include "stm32f4xx.h"
 
@@ -33,7 +33,6 @@ enum Enum : uint8_t{
 
 
 class Pwm {
-	//const Pwms::Enum id;
 
 	void initRCC();
 	void initGpio();
@@ -57,4 +56,4 @@ public:
 
 
 
-#endif /* PWM_H_ */
+#endif /* PERIPH_PWM_H_ */
