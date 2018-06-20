@@ -22,9 +22,12 @@ void Application::run()
 	appRunningLed.turnOn();
 
 	for(;;) {
-		if(usart2.bytesAvailable()) {
+		while(usart2.bytesAvailable()) {
 			usart2.write(usart2.read());
 		}
+
+		for(int n = 0; n < 1000000; n++)
+		{}
 	}
 }
 
