@@ -61,6 +61,8 @@ void Usart::initRcc()
 	case Usarts::Usart2:
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 		break;
+
+	default: break;
 	}
 
 	RCC_AHB1PeriphClockCmd(config[id].ahb1Gpio, ENABLE);
