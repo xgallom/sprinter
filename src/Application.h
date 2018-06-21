@@ -12,7 +12,14 @@
 #include "Periph/Usart.h"
 
 class Application {
+	class ApplicationInitializator {
+	public:
+		ApplicationInitializator(Application *parent);
+	};
+
 	static Application *m_instance;
+
+	ApplicationInitializator applicationInitializator;
 
 	Periph::Led appRunningLed;
 	Periph::Usart usart2;
