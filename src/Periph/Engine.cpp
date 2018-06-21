@@ -11,17 +11,18 @@ namespace Periph {
 
 Engine::Engine(Engines::Enum id) :
 	pwm(1000),
-	id(id)
+	id(id),
+	m_speed(0)
 {}
 
 void Engine::setSpeed(uint8_t value)
 {
-	speed = value;
+	m_speed = value;
 }
 
 uint8_t Engine::getSpeed()
 {
-	return speed;
+	return m_speed;
 }
 
 void setDirection(Dir::Enum direction)
@@ -30,19 +31,19 @@ void setDirection(Dir::Enum direction)
 
 void Engine::run()
 {
-	pwm.write(Pwms::Enum(id), speed);
+	pwm.write(Pwms::Enum(id), m_speed);
 }
 
-void Engine::run(uint8_t value)
+void Engine::run(uint8_t speed)
 {
-	speed = value;
+	m_speed = speed;
 	pwm.write(Pwms::Enum(id), speed);
 }
 
-void Engine::run(uint8_t value, Dir::Enum direction)
+void Engine::run(uint8_t speed, Dir::Enum direction)
 {
 	setDirection(direction);
-	speed = value;
+	m_speed = speed;
 	pwm.write(Pwms::Enum(id), speed);
 }
 

@@ -37,19 +37,19 @@ class Engine {
 	Pwm pwm;
 
 	const Engines::Enum id;
-	volatile uint8_t speed;
+	uint8_t m_speed;
 
 public:
 	Engine(Engines::Enum id);
 
-	void setSpeed(uint8_t value);
+	void setSpeed(uint8_t speed);
 	uint8_t getSpeed();
 
 	void setDirection(Dir::Enum direction);
 
 	void run();
-	void run(uint8_t value);
-	void run(uint8_t value, Dir::Enum direction);
+	void run(uint8_t speed);
+	void run(uint8_t speed, Dir::Enum direction);
 
 	void stop();
 };
