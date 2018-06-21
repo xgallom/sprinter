@@ -99,7 +99,6 @@ void Usart::initUsart(uint32_t baudRate)
 	USART_Init(config[id].usart, &usartInitStruct);
 	USART_Cmd(config[id].usart, ENABLE);
 
-	USART_ITConfig(config[id].usart, USART_IT_TXE, ENABLE);
 	USART_ITConfig(config[id].usart, USART_IT_RXNE, ENABLE);
 }
 
@@ -132,14 +131,14 @@ Usart::~Usart()
 
 bool Usart::write(const uint8_t c)
 {
-	if(!s_writeQueues[id].enqueue(c))
-		return false;
-
-	if(!s_states.flag(States::Writing << 1)) {
-		s_states.setFlag(States::Writing << 1);
+	if(!s_states.flag(States::Writing << id)) {
+		s_states.setFlag(States::Writing << id);
 
 		USART_SendData(config[id].usart, static_cast<uint16_t>(c));
+		USART_ITConfig(config[id].usart, USART_IT_TXE, ENABLE);
 	}
+	else if(!s_writeQueues[id].enqueue(c))
+		return false;
 
 	return true;
 }
@@ -201,7 +200,8 @@ void USART2_IRQHandler(void)
 			USART_SendData(USART2, writeData.value);
 		}
 		else {
-			Periph::s_states.resetFlag(Periph::States::Writing << 1);
+			Periph::s_states.resetFlag(Periph::States::Writing << Periph::Usarts::Usart2);
+			USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
 		}
 	}
 }
