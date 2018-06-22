@@ -25,7 +25,7 @@ uint8_t Engine::getSpeed()
 	return m_speed;
 }
 
-void setDirection(Dir::Enum direction)
+void setDirection(Directions::Enum direction)
 {
 }
 
@@ -40,7 +40,7 @@ void Engine::run(uint8_t speed)
 	pwm.write(Pwms::Enum(id), speed);
 }
 
-void Engine::run(uint8_t speed, Dir::Enum direction)
+void Engine::run(uint8_t speed, Directions::Enum direction)
 {
 	setDirection(direction);
 	m_speed = speed;

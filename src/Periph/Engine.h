@@ -26,7 +26,7 @@ enum Enum : uint8_t {
 };
 }
 
-namespace Dir {
+namespace Directions {
 enum Enum : bool {
 	Forward = false,
 	Backward = true
@@ -45,11 +45,11 @@ public:
 	void setSpeed(uint8_t speed);
 	uint8_t getSpeed();
 
-	void setDirection(Dir::Enum direction);
+	void setDirection(Directions::Enum direction);
 
 	void run();
 	void run(uint8_t speed);
-	void run(uint8_t speed, Dir::Enum direction);
+	void run(uint8_t speed, Directions::Enum direction);
 
 	void stop();
 };
