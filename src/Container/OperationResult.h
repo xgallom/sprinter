@@ -12,7 +12,7 @@ namespace Container {
 
 template<typename T>
 struct OperationResult {
-	explicit OperationResult(bool isValid = false) : isValid(isValid) {}
+	explicit OperationResult() : isValid(false) {}
 	explicit OperationResult(T value) : isValid(true), value(value) {}
 
 	bool isValid;
