@@ -10,7 +10,6 @@
 
 static constexpr uint8_t  pwm_steps = 100;
 static constexpr uint32_t pulse_1ms = 180000;
-static constexpr uint16_t pulse_period = 500;
 
 namespace Periph {
 
