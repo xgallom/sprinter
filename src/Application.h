@@ -9,20 +9,24 @@
 #define APPLICATION_H_
 
 #include "Periph/Led.h"
-#include "Periph/Usart.h"
+#include "Util/Logger.h"
 
 class Application {
+	static Application *m_instance;
+
 	class ApplicationInitializator {
 	public:
 		ApplicationInitializator(Application *parent);
-	};
+	} m_applicationInitializator;
 
-	static Application *m_instance;
 
-	ApplicationInitializator applicationInitializator;
+public:
+	Util::Logger logger;
+	Periph::Usart usartLog;
 
-	Periph::Led appRunningLed;
-	Periph::Usart usart2;
+private:
+	Periph::Led m_appRunningLed;
+
 
 public:
 	Application();
@@ -30,6 +34,7 @@ public:
 	void run();
 
 	static Application *instance();
+
 };
 
 #define App ::Application::instance()

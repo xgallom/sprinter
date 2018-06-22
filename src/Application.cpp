@@ -8,6 +8,8 @@
 #include "Application.h"
 #include "stm32f4xx.h"
 
+LOGGER_MODULE(Application)
+
 Application *Application::m_instance = nullptr;
 
 Application::ApplicationInitializator::ApplicationInitializator(Application *parent)
@@ -18,25 +20,28 @@ Application::ApplicationInitializator::ApplicationInitializator(Application *par
 }
 
 Application::Application() :
-	applicationInitializator(this),
-	appRunningLed(Periph::Leds::Blue),
-	usart2(Periph::Usarts::Usart2, 9600)
+	m_applicationInitializator(this),
+	logger(&usartLog),
+	usartLog(Periph::Usarts::Usart2, 9600),
+	m_appRunningLed(Periph::Leds::Blue)
 {}
 
 void Application::run()
 {
-	appRunningLed.turnOn();
+	INF_LOG("Application started running.");
 
-	usart2.write("Application::run()\n");
+	m_appRunningLed.turnOn();
 
 	for(;;) {
-		while(usart2.bytesAvailable()) {
-			usart2.write(usart2.read());
+		while(usartLog.bytesAvailable()) {
+			usartLog.write(usartLog.read());
 		}
 
 		for(int n = 0; n < 1000000; n++)
 		{}
 	}
+
+	INF_LOG("Application ended.");
 }
 
 Application *Application::instance()
