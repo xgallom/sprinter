@@ -30,12 +30,14 @@ void Application::run()
 	usart2.write("Application::run()\n");
 
 	for(;;) {
-		while(usart2.bytesAvailable()) {
-			usart2.write(usart2.read());
-		}
+		uint8_t input[256];
 
-		for(int n = 0; n < 1000000; n++)
+		uint32_t inputSize = usart2.readLine(input, 256);
+
+		for(int n = 0; n < 10000000; n++)
 		{}
+
+		usart2.write(input, inputSize);
 	}
 }
 
