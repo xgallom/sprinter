@@ -10,6 +10,7 @@
 
 #include "stm32f4xx.h"
 #include "Pwm.h"
+#include "Dir.h"
 
 namespace Periph {
 
@@ -26,30 +27,28 @@ enum Enum : uint8_t {
 };
 }
 
-namespace Directions {
-enum Enum : bool {
-	Forward = false,
-	Backward = true
-};
-}
+
 
 class Engine {
+
 	Pwm pwm;
+	Dir dir;
 
 	const Engines::Enum id;
 	uint8_t m_speed;
 
+	void setSpeed(uint8_t speed);
+	void setDirection(Dirs::Enum direction);
+
 public:
 	Engine(Engines::Enum id);
 
-	void setSpeed(uint8_t speed);
+
 	uint8_t getSpeed();
 
-	void setDirection(Directions::Enum direction);
-
-	void run();
-	void run(uint8_t speed);
-	void run(uint8_t speed, Directions::Enum direction);
+	void update();
+	void update(uint8_t speed);
+	void update(uint8_t speed, Dirs::Enum direction);
 
 	void stop();
 };

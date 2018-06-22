@@ -9,8 +9,21 @@
 
 namespace Periph {
 
+
+static Pwms::Enum enginesToPwms(Engines::Enum id)
+{
+	return static_cast<Pwms::Enum>(id);
+}
+
+static DirPins::Enum enginesToDirPins(Engines::Enum id)
+{
+	return static_cast<DirPins::Enum>(id);
+}
+
+
 Engine::Engine(Engines::Enum id) :
 	pwm(1000),
+	dir(enginesToDirPins(id)),
 	id(id),
 	m_speed(0)
 {}
@@ -25,26 +38,33 @@ uint8_t Engine::getSpeed()
 	return m_speed;
 }
 
-void setDirection(Directions::Enum direction)
+void Engine::setDirection(Dirs::Enum direction)
 {
+	dir.update(direction);
 }
 
-void Engine::run()
+void Engine::update()
 {
-	pwm.write(Pwms::Enum(id), m_speed);
+	pwm.write(enginesToPwms(id), m_speed);
 }
 
-void Engine::run(uint8_t speed)
+void Engine::update(uint8_t speed)
 {
 	setSpeed(speed);
-	run();
+	update();
 }
 
-void Engine::run(uint8_t speed, Directions::Enum direction)
+void Engine::update(uint8_t speed, Dirs::Enum direction)
 {
 	setDirection(direction);
 	setSpeed(speed);
-	run();
+	update();
+}
+
+void Engine::stop()
+{
+	m_speed = 0;
+	update();
 }
 
 } /* namespace Periph */
