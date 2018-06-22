@@ -36,15 +36,15 @@ void Engine::run()
 
 void Engine::run(uint8_t speed)
 {
-	m_speed = speed;
-	pwm.write(Pwms::Enum(id), speed);
+	setSpeed(speed);
+	run();
 }
 
 void Engine::run(uint8_t speed, Directions::Enum direction)
 {
 	setDirection(direction);
-	m_speed = speed;
-	pwm.write(Pwms::Enum(id), speed);
+	setSpeed(speed);
+	run();
 }
 
 } /* namespace Periph */
