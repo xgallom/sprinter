@@ -28,7 +28,7 @@ Application::Application() :
 void Application::run()
 {
 	appRunningLed.turnOn();
-	engine1.run(50);
+	engine1.update(100, Periph::Dirs::Forward);
 
 	usart2.write("Application::run()\n");
 
@@ -40,6 +40,8 @@ void Application::run()
 		for(int n = 0; n < 1000000; n++)
 		{}
 	}
+
+
 }
 
 Application *Application::instance()
