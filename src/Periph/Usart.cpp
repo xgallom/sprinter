@@ -173,6 +173,18 @@ uint8_t Usart::read()
 	return readResult.value;
 }
 
+uint32_t Usart::readLine(uint8_t *buffer, uint32_t maxSize)
+{
+	for(uint32_t n = 0; n < maxSize; n++) {
+		buffer[n] = read();
+
+		if(buffer[n] == '\n')
+			return n +1;
+	}
+
+	return maxSize;
+}
+
 bool Usart::bytesAvailable() const
 {
 	return s_readQueues[id].isEmpty();
