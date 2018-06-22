@@ -6,13 +6,23 @@
  */
 
 #include "Usart.h"
-
-static volatile uint8_t inputBuffers[Periph::Usarts::Size][512];
+#include "../Container/Queue.h"
+#include "../Util/State.h"
 
 namespace Periph {
+static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
+static Container::Queue<volatile uint8_t, 512> s_writeQueues[Usarts::Size];
+
+namespace States {
+enum Flags : uint8_t {
+	Writing = 0x01
+};
+}
+static Util::State<uint8_t> s_states;
 
 struct {
 	GPIO_TypeDef *gpio;
+	uint32_t ahb1Gpio;
 	uint32_t rx, tx;
 	uint8_t rxSource, txSource, gpioAf;
 	USART_TypeDef *usart;
@@ -20,6 +30,7 @@ struct {
 } constexpr config[Usarts::Size] = {
 		/* Usart1 */ {
 				gpio: GPIOA,
+				ahb1Gpio: RCC_AHB1Periph_GPIOA,
 				rx: GPIO_Pin_9,
 				tx: GPIO_Pin_10,
 				rxSource: GPIO_PinSource9,
@@ -29,11 +40,12 @@ struct {
 				irqn: USART1_IRQn
 		},
 		/* Usart2 */ {
-				gpio: GPIOA,
-				rx: GPIO_Pin_3,
-				tx: GPIO_Pin_2,
-				rxSource: GPIO_PinSource3,
-				txSource: GPIO_PinSource2,
+				gpio: GPIOD,
+				ahb1Gpio: RCC_AHB1Periph_GPIOD,
+				rx: GPIO_Pin_6,
+				tx: GPIO_Pin_5,
+				rxSource: GPIO_PinSource6,
+				txSource: GPIO_PinSource5,
 				gpioAf: GPIO_AF_USART2,
 				usart: USART2,
 				irqn: USART2_IRQn
@@ -45,13 +57,15 @@ void Usart::initRcc()
 	switch(id) {
 	case Usarts::Usart1:
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		break;
 	case Usarts::Usart2:
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		break;
+
+	default: break;
 	}
+
+	RCC_AHB1PeriphClockCmd(config[id].ahb1Gpio, ENABLE);
 }
 
 void Usart::initGpio()
@@ -115,19 +129,80 @@ Usart::~Usart()
 	NVIC_DisableIRQ(config[id].irqn);
 }
 
+bool Usart::write(const uint8_t c)
+{
+	if(!s_states.flag(States::Writing << id)) {
+		s_states.setFlag(States::Writing << id);
+
+		USART_SendData(config[id].usart, static_cast<uint16_t>(c));
+		USART_ITConfig(config[id].usart, USART_IT_TXE, ENABLE);
+	}
+	else if(!s_writeQueues[id].enqueue(c))
+		return false;
+
+	return true;
+}
+
+bool Usart::write(const char c[])
+{
+	while(*c) {
+		if(!write(*c++))
+			return false;
+	}
+
+	return true;
+}
+
+bool Usart::write(const uint8_t *c, uint32_t size)
+{
+	for(uint32_t n = 0; n < size; n++) {
+		if(!write(c[n]))
+			return false;
+	}
+
+	return true;
+}
+
+
+uint8_t Usart::read()
+{
+	Container::OperationResult<volatile uint8_t> readResult;
+
+	while(!(readResult = s_readQueues[id].dequeue()).isValid) {}
+
+	return readResult.value;
+}
+
+bool Usart::bytesAvailable() const
+{
+	return s_readQueues[id].isEmpty();
+}
+
 } /* namespace Periph */
 
 void USART1_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
-		USART_SendData(USART1, USART_ReceiveData(USART1));
+		Periph::s_readQueues[0].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART1)));
 	}
 }
 
 void USART2_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
-		USART_SendData(USART2, USART_ReceiveData(USART2));
+		Periph::s_readQueues[1].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART2)));
+	}
+
+	if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET) {
+		Container::OperationResult<volatile uint8_t> writeData = Periph::s_writeQueues[1].dequeue();
+
+		if(writeData.isValid) { // We have more data in the buffer
+			USART_SendData(USART2, writeData.value);
+		}
+		else {
+			Periph::s_states.resetFlag(Periph::States::Writing << Periph::Usarts::Usart2);
+			USART_ITConfig(USART2, USART_IT_TXE, DISABLE);
+		}
 	}
 }
 
