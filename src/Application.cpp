@@ -6,7 +6,7 @@
  */
 
 #include "Application.h"
-#include "stm32f4xx.h"
+#include "Util/Logger.h"
 
 LOGGER_MODULE(Application)
 
@@ -33,12 +33,14 @@ void Application::run()
 	m_appRunningLed.turnOn();
 
 	for(;;) {
-		while(usartLog.bytesAvailable()) {
-			usartLog.write(usartLog.read());
-		}
+		uint8_t input[256];
 
-		for(int n = 0; n < 1000000; n++)
+		uint32_t inputSize = usartLog.readLine(input, 256);
+
+		for(int n = 0; n < 10000000; n++)
 		{}
+
+		usartLog.write(input, inputSize);
 	}
 
 	INF_LOG("Application ended.");

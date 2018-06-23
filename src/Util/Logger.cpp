@@ -5,8 +5,8 @@
  *      Author: xgallom
  */
 
-#include "Logger.h"
-#include "../Application.h"
+#include "Util/Logger.h"
+#include "Application.h"
 
 namespace Util {
 

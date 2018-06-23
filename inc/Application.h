@@ -8,6 +8,7 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include "stm32f4xx.h"
 #include "Periph/Led.h"
 #include "Util/Logger.h"
 

@@ -8,7 +8,7 @@
 #ifndef UTIL_LOGGER_H_
 #define UTIL_LOGGER_H_
 
-#include "../Periph/Usart.h"
+#include "Periph/Usart.h"
 
 namespace Util {
 
