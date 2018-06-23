@@ -33,7 +33,8 @@ void Application::run()
 
 	m_appRunningLed.turnOn();
 
-	m_engine1.update(100, Periph::Dirs::Forward);
+	m_engine1.setTargetSpeed(100);
+	m_engine1.setTargetDirection(Periph::Dirs::Forward);
 
 	for(;;) {
 		uint8_t input[256];
@@ -44,6 +45,8 @@ void Application::run()
 		{}
 
 		usartLog.write(input, inputSize);
+
+		m_engine1.update();
 	}
 
 	INF_LOG("Application ended.");
