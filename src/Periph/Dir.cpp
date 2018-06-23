@@ -5,7 +5,7 @@
  *      Author: Zahorack
  */
 
-#include "Dir.h"
+#include "Periph/Dir.h"
 
 namespace Periph {
 

@@ -9,7 +9,7 @@
 #define PERIPH_DIR_H_
 
 #include "stm32f4xx.h"
-#include "../Util/RefCounter.h"
+#include "Util/RefCounter.h"
 
 namespace Periph {
 

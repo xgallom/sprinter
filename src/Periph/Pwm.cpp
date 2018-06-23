@@ -6,7 +6,7 @@
  */
 
 
-#include "Pwm.h"
+#include "Periph/Pwm.h"
 
 static constexpr uint8_t  pwm_steps = 100;
 static constexpr uint32_t pulse_1ms = 180000;

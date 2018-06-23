@@ -8,23 +8,27 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include "stm32f4xx.h"
 #include "Periph/Led.h"
-#include "Periph/Usart.h"
+#include "Util/Logger.h"
 #include "Periph/Engine.h"
 
 class Application {
+	static Application *m_instance;
+
 	class ApplicationInitializator {
 	public:
 		ApplicationInitializator(Application *parent);
-	};
+	} m_applicationInitializator;
 
-	static Application *m_instance;
 
-	ApplicationInitializator applicationInitializator;
+public:
+	Util::Logger logger;
+	Periph::Usart usartLog;
 
-	Periph::Led appRunningLed;
-	Periph::Usart usart2;
-	Periph::Engine engine1;
+private:
+	Periph::Led m_appRunningLed;
+	Periph::Engine m_engine1;
 
 public:
 	Application();
@@ -32,6 +36,7 @@ public:
 	void run();
 
 	static Application *instance();
+
 };
 
 #define App ::Application::instance()

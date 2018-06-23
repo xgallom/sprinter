@@ -5,7 +5,7 @@
  *      Author: xgallom
  */
 
-#include "../Periph/Led.h"
+#include "Periph/Led.h"
 
 namespace Periph {
 

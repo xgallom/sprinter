@@ -6,7 +6,9 @@
  */
 
 #include "Application.h"
-#include "stm32f4xx.h"
+#include "Util/Logger.h"
+
+LOGGER_MODULE(Application)
 
 Application *Application::m_instance = nullptr;
 
@@ -18,30 +20,33 @@ Application::ApplicationInitializator::ApplicationInitializator(Application *par
 }
 
 Application::Application() :
-	applicationInitializator(this),
-	appRunningLed(Periph::Leds::Blue),
-	usart2(Periph::Usarts::Usart2, 9600),
-	engine1(Periph::Engines::M3)
-
+	m_applicationInitializator(this),
+	logger(&usartLog),
+	usartLog(Periph::Usarts::Usart2, 9600),
+	m_appRunningLed(Periph::Leds::Blue),
+	m_engine1(Periph::Engines::M3)
 {}
 
 void Application::run()
 {
-	appRunningLed.turnOn();
-	engine1.update(100, Periph::Dirs::Forward);
+	INF_LOG("Application started running.");
 
-	usart2.write("Application::run()\n");
+	m_appRunningLed.turnOn();
+
+	m_engine1.update(100, Periph::Dirs::Forward);
 
 	for(;;) {
-		while(usart2.bytesAvailable()) {
-			usart2.write(usart2.read());
-		}
+		uint8_t input[256];
 
-		for(int n = 0; n < 1000000; n++)
+		uint32_t inputSize = usartLog.readLine(input, 256);
+
+		for(int n = 0; n < 10000000; n++)
 		{}
+
+		usartLog.write(input, inputSize);
 	}
 
-
+	INF_LOG("Application ended.");
 }
 
 Application *Application::instance()

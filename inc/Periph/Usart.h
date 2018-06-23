@@ -42,7 +42,9 @@ public:
 	bool write(const uint8_t c);
 	bool write(const char c[]);
 	bool write(const uint8_t *c, uint32_t size);
+
 	uint8_t read();
+	uint32_t readLine(uint8_t *buffer, uint32_t maxSize);
 
 	bool bytesAvailable() const;
 };
