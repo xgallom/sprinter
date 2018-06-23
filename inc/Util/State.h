@@ -25,6 +25,7 @@ struct State {
 
 	bool flag(uint8_t offset) const { return m_stateVariable & (1 << offset); }
 	void setFlag(uint8_t offset) { m_stateVariable |= 1 << offset; }
+	void setFlagTo(uint8_t offset, bool value) { if(value) setFlag(offset); else resetFlag(offset); }
 	void resetFlag(uint8_t offset) { m_stateVariable &= ~(1 << offset); }
 	void toggleFlag(uint8_t offset) { m_stateVariable ^= 1 << offset; }
 
