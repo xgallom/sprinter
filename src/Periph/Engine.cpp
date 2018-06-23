@@ -20,7 +20,7 @@ enum Flags : uint8_t {
 }
 
 Util::State<uint16_t> s_engineState;
-uint8_t s_engineSpeeds[Engines::Size];
+uint8_t s_engineSpeeds[Engines::Size] = { 0, 0, 0, 0, 0, 0 };
 
 static Pwms::Enum enginesToPwms(Engines::Enum id)
 {
@@ -121,6 +121,7 @@ void Engine::update()
 
 	m_pwm.write(enginesToPwms(id), getCurrentSpeed() + deltaSpeed);
 
+	// TODO: Make changing direction slow down
 	if(getCurrentDirection() != getTargetDirection())
 		m_direction.setPinTo(getTargetDirection() ? true : false);
 }

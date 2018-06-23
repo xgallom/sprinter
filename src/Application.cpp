@@ -37,14 +37,15 @@ void Application::run()
 	m_engine1.setTargetDirection(Periph::Dirs::Forward);
 
 	for(;;) {
-		uint8_t input[256];
 
-		uint32_t inputSize = usartLog.readLine(input, 256);
+		//uint8_t input[256];
 
-		for(int n = 0; n < 10000000; n++)
+		//uint32_t inputSize = usartLog.readLine(input, 256);
+
+		for(int n = 0; n < 2000000; n++)
 		{}
 
-		usartLog.write(input, inputSize);
+		//usartLog.write(input, inputSize);
 
 		m_engine1.update();
 	}
