@@ -8,9 +8,9 @@
 #ifndef PERIPH_ENGINE_H_
 #define PERIPH_ENGINE_H_
 
+#include <Periph/DigitalOutputPin.h>
 #include "stm32f4xx.h"
 #include "Pwm.h"
-#include "Dir.h"
 
 namespace Periph {
 
@@ -27,30 +27,35 @@ enum Enum : uint8_t {
 };
 }
 
-
+namespace Dirs {
+enum Enum : bool {
+	Forward = false,
+	Backward = true
+};
+}
 
 class Engine {
-
-	Pwm pwm;
-	Dir dir;
-
 	const Engines::Enum id;
-	uint8_t m_speed;
 
-	void setSpeed(uint8_t speed);
-	void setDirection(Dirs::Enum direction);
+	Pwm m_pwm;
+	DigitalOutputPin m_direction;
 
 public:
 	Engine(Engines::Enum id);
 
+	void start();
+	void stop();
+	bool isRunning() const;
 
-	uint8_t getSpeed();
+	void setTargetSpeed(uint8_t speed);
+	uint8_t getTargetSpeed() const;
+	uint8_t getCurrentSpeed() const;
+
+	void setTargetDirection(Dirs::Enum direction);
+	Dirs::Enum getTargetDirection() const;
+	Dirs::Enum getCurrentDirection() const;
 
 	void update();
-	void update(uint8_t speed);
-	void update(uint8_t speed, Dirs::Enum direction);
-
-	void stop();
 };
 
 } /* namespace Periph */
