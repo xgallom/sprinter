@@ -44,6 +44,7 @@ public:
 	~Pwm();
 
 	void write(Pwms::Enum id, uint8_t value);
+	uint8_t read(Pwms::Enum id) const;
 };
 
 } /* namespace Periph */

@@ -69,6 +69,7 @@ static volatile uint32_t *OutChnl[Periph::Pwms::Size] = {
 		&(config[Timers::Timer2].tim->CCR4), // PA3
 };
 
+static uint8_t s_pwmSpeed[Periph::Pwms::Size] = {};
 
 void Pwm::initRCC()
 {
@@ -164,7 +165,6 @@ void Pwm::initTimTB(uint32_t frequency)
 
 }
 
-
 void Pwm::initPwm(){
 
 	TIM_Cmd(config[Timers::Timer1].tim, ENABLE);
@@ -207,7 +207,12 @@ Pwm::~Pwm()
 
 void Pwm::write(Pwms::Enum id, uint8_t value)
 {
-	 *OutChnl[id] = value;
+	 *OutChnl[id] = s_pwmSpeed[id] = value;
 }
 
-}/* namespace Periph */
+uint8_t Pwm::read(Pwms::Enum id) const
+{
+	return s_pwmSpeed[id];
+}
+
+} /* namespace Periph */
