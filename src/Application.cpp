@@ -6,7 +6,6 @@
  */
 
 #include "Application.h"
-#include "stm32f4xx.h"
 
 Application *Application::m_instance = nullptr;
 

@@ -5,9 +5,9 @@
  *      Author: xgallom
  */
 
-#include "Usart.h"
-#include "../Container/Queue.h"
-#include "../Util/State.h"
+#include "Periph/Usart.h"
+#include "Container/Queue.h"
+#include "Util/State.h"
 
 namespace Periph {
 static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
