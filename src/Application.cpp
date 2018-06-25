@@ -36,7 +36,7 @@ void Application::run()
 	m_engine1.setTargetSpeed(100);
 	m_engine1.setTargetDirection(Periph::Dirs::Forward);
 
-	Util::Timer timer(Util::Time::FromMilliSeconds(500));
+	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 
 	for(;;) {
@@ -47,10 +47,14 @@ void Application::run()
 
 		//usartLog.write(input, inputSize);
 
-		if(timer.run())
+		if(timer.run()){
+			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
+			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
+					}
+
 			m_engine1.update();
 	}
-
+	}
 	INF_LOG("Application ended.");
 }
 
