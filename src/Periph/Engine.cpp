@@ -32,28 +32,28 @@ static constexpr struct {
 	uint16_t id;
 } DirPinsConfig[Engines::Size] = {
 		{ /* M1 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_7
 		},
 		{ /* M2 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_8
 		},
 		{ /* M3 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_9
 		},
 		{ /* M4 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_10
 		},
 		{ /* M5 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_11
 		},
 		{ /* M6 */
-				port: GPIOA,
-				id: GPIO_Pin_4
+				port: GPIOE,
+				id: GPIO_Pin_12
 		}
 };
 
@@ -110,20 +110,23 @@ Dirs::Enum Engine::getCurrentDirection() const
 
 void Engine::update()
 {
-	// Todo: systick
-
 	uint8_t deltaSpeed = 0x00;
 
-	if(getCurrentSpeed() < getTargetSpeed())
-		deltaSpeed = 0x01;
-	else if(getCurrentSpeed() > getTargetSpeed())
-		deltaSpeed = 0xff; // Overflow <=> -1
-
-	m_pwm.write(enginesToPwms(id), getCurrentSpeed() + deltaSpeed);
-
-	// TODO: Make changing direction slow down
-	if(getCurrentDirection() != getTargetDirection())
+	if(getCurrentDirection() != getTargetDirection()) {
+	m_pwm.write(enginesToPwms(id), (getCurrentSpeed()) -1);
+		if(!getCurrentSpeed())
 		m_direction.setPinTo(getTargetDirection() ? true : false);
+	}
+
+	else {
+		if(getCurrentSpeed() < getTargetSpeed())
+			deltaSpeed = 0x01;
+		else if(getCurrentSpeed() > getTargetSpeed())
+			deltaSpeed = 0xff; // Overflow <=> -1
+
+		m_pwm.write(enginesToPwms(id), getCurrentSpeed() + deltaSpeed);
+	}
+
 }
 
 } /* namespace Periph */
