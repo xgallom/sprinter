@@ -39,7 +39,7 @@ void Timer::setInterval(Time a_interval)
 
 bool Timer::shouldUpdate() const
 {
-	return m_isRunning && m_currentTime.sinceLastReset() > m_lastTimeTriggered + m_interval;
+	return m_isRunning && m_currentTime.sinceLastReset() >= m_lastTimeTriggered + m_interval;
 }
 
 void Timer::wasTriggeredNow()
