@@ -37,6 +37,9 @@ public:
 	inline seconds_t seconds() const { return milliSeconds() / 1000; }
 	inline minutes_t minutes() const { return seconds() / 60; }
 
+	Time &operator =(const Time &) = default;
+	Time &operator =(Time &&) = default;
+
 	inline Time &operator +=(const Time &rhs) { m_micros += rhs.m_micros; return *this; }
 	inline Time &operator -=(const Time &rhs) { m_micros -= rhs.m_micros; return *this; }
 
