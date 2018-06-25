@@ -10,7 +10,7 @@
 
 #include "stm32f4xx.h"
 
-typedef uint64_t micros_t;
+typedef int64_t micros_t;
 typedef micros_t millis_t;
 typedef millis_t seconds_t;
 typedef seconds_t minutes_t;
