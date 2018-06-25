@@ -33,6 +33,11 @@ micros_t SysTickCounter::microsSinceLastReset() const
 	return s_microsSinceLastReset;
 }
 
+Util::Time SysTickCounter::sinceLastReset() const
+{
+	return Util::Time::fromMicroSeconds(microsSinceLastReset());
+}
+
 } /* namespace Periph */
 
 void SysTick_Handler(void)

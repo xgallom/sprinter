@@ -8,9 +8,7 @@
 #ifndef PERIPH_SYSTICKCOUNTER_H_
 #define PERIPH_SYSTICKCOUNTER_H_
 
-#include "stm32f4xx.h"
-
-typedef uint64_t micros_t;
+#include "Util/Time.h"
 
 namespace Periph {
 
@@ -22,6 +20,7 @@ public:
 	SysTickCounter();
 
 	micros_t microsSinceLastReset() const;
+	Util::Time sinceLastReset() const;
 };
 
 } /* namespace Periph */
