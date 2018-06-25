@@ -27,10 +27,10 @@ public:
 	Time(Time &&) = default;
 
 	inline static Time ZeroTime() { return Time(); }
-	inline static Time fromMicroSeconds(micros_t micros) { return Time(micros); }
-	inline static Time fromMilliSeconds(millis_t millis) { return fromMicroSeconds(static_cast<micros_t>(millis * 1000)); }
-	inline static Time fromSeconds(seconds_t seconds) { return fromMilliSeconds(static_cast<millis_t>(seconds * 1000)); }
-	inline static Time fromMinutes(minutes_t minutes) { return fromSeconds(static_cast<seconds_t>(minutes * 60)); }
+	inline static Time FromMicroSeconds(micros_t micros) { return Time(micros); }
+	inline static Time FromMilliSeconds(millis_t millis) { return FromMicroSeconds(static_cast<micros_t>(millis * 1000)); }
+	inline static Time FromSeconds(seconds_t seconds) { return FromMilliSeconds(static_cast<millis_t>(seconds * 1000)); }
+	inline static Time FromMinutes(minutes_t minutes) { return FromSeconds(static_cast<seconds_t>(minutes * 60)); }
 
 	inline micros_t microSeconds() const { return m_micros; }
 	inline millis_t milliSeconds() const { return microSeconds() / 1000; }
