@@ -26,6 +26,7 @@ public:
 	Time(const Time &) = default;
 	Time(Time &&) = default;
 
+	inline static Time ZeroTime() { return Time(); }
 	inline static Time fromMicroSeconds(micros_t micros) { return Time(micros); }
 	inline static Time fromMilliSeconds(millis_t millis) { return fromMicroSeconds(static_cast<micros_t>(millis * 1000)); }
 	inline static Time fromSeconds(seconds_t seconds) { return fromMilliSeconds(static_cast<millis_t>(seconds * 1000)); }
