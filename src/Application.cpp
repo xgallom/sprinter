@@ -6,7 +6,7 @@
  */
 
 #include "Application.h"
-#include "Util/Logger.h"
+#include "Util/Timer.h"
 
 LOGGER_MODULE(Application)
 
@@ -36,18 +36,19 @@ void Application::run()
 	m_engine1.setTargetSpeed(100);
 	m_engine1.setTargetDirection(Periph::Dirs::Forward);
 
+	Util::Timer timer(Util::Time::FromMilliSeconds(500));
+	timer.start();
+
 	for(;;) {
 
 		//uint8_t input[256];
 
 		//uint32_t inputSize = usartLog.readLine(input, 256);
 
-		for(int n = 0; n < 2000000; n++)
-		{}
-
 		//usartLog.write(input, inputSize);
 
-		m_engine1.update();
+		if(timer.run())
+			m_engine1.update();
 	}
 
 	INF_LOG("Application ended.");
