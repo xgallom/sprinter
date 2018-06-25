@@ -98,6 +98,11 @@ void Engine::setTargetDirection(Dirs::Enum direction)
 	s_engineState.setFlagTo(States::IsBackward + States::Offset * id, direction == Dirs::Backward ? true : false);
 }
 
+void Engine::setCurrentDirection(Dirs::Enum direction)
+{
+	m_direction.setPinTo(direction);
+}
+
 Dirs::Enum Engine::getTargetDirection() const
 {
 	return s_engineState.flag(States::IsBackward + States::Offset * id) ? Dirs::Backward : Dirs::Forward;
@@ -108,25 +113,38 @@ Dirs::Enum Engine::getCurrentDirection() const
 	return m_direction.readPin() ? Dirs::Backward : Dirs::Forward;
 }
 
+void Engine::speedUp()
+{
+	m_pwm.write(enginesToPwms(id), getCurrentSpeed() + 1);
+}
+
+void Engine::slowDown()
+{
+	m_pwm.write(enginesToPwms(id), getCurrentSpeed() - 1);
+}
+
+void Engine::turnAround()
+{
+	slowDown();
+
+	if(getCurrentSpeed() == 0x00)
+		setCurrentDirection(getTargetDirection());
+}
+
+void Engine::moveInDirection()
+{
+	if(getCurrentSpeed() < getTargetSpeed())
+		speedUp();
+	else if(getCurrentSpeed() > getTargetSpeed())
+		slowDown();
+}
+
 void Engine::update()
 {
-	uint8_t deltaSpeed = 0x00;
-
-	if(getCurrentDirection() != getTargetDirection()) {
-	m_pwm.write(enginesToPwms(id), (getCurrentSpeed()) -1);
-		if(!getCurrentSpeed())
-		m_direction.setPinTo(getTargetDirection() ? true : false);
-	}
-
-	else {
-		if(getCurrentSpeed() < getTargetSpeed())
-			deltaSpeed = 0x01;
-		else if(getCurrentSpeed() > getTargetSpeed())
-			deltaSpeed = 0xff; // Overflow <=> -1
-
-		m_pwm.write(enginesToPwms(id), getCurrentSpeed() + deltaSpeed);
-	}
-
+	if(getCurrentDirection() != getTargetDirection())
+		turnAround();
+	else
+		moveInDirection();
 }
 
 } /* namespace Periph */

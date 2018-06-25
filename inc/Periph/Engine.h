@@ -40,6 +40,12 @@ class Engine {
 	Pwm m_pwm;
 	DigitalOutputPin m_direction;
 
+	void turnAround();
+	void moveInDirection();
+	void setCurrentDirection(Dirs::Enum direction);
+	void slowDown();
+	void speedUp();
+
 public:
 	Engine(Engines::Enum id);
 
