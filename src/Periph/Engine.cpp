@@ -135,9 +135,9 @@ void Engine::slowDown()
 
 void Engine::turnAround()
 {
-	slowDown();
-
-	if(getCurrentSpeed() == 0x00)
+	if(getCurrentSpeed() != 0x00)
+		slowDown();
+	else
 		setCurrentDirection(getTargetDirection());
 }
 
