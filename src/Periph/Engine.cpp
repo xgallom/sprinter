@@ -27,6 +27,16 @@ static Pwms::Enum enginesToPwms(Engines::Enum id)
 	return static_cast<Pwms::Enum>(id);
 }
 
+static Dirs::Enum pinToDirection(bool pinState)
+{
+	return pinState ? Dirs::Backward : Dirs::Forward;
+}
+
+static bool directionToPin(Dirs::Enum direction)
+{
+	return direction == Dirs::Backward ? true : false;
+}
+
 static constexpr struct {
 	GPIO_TypeDef *port;
 	uint16_t id;
@@ -95,22 +105,22 @@ uint8_t Engine::getCurrentSpeed() const
 
 void Engine::setTargetDirection(Dirs::Enum direction)
 {
-	s_engineState.setFlagTo(States::IsBackward + States::Offset * id, direction == Dirs::Backward ? true : false);
+	s_engineState.setFlagTo(States::IsBackward + States::Offset * id, directionToPin(direction));
 }
 
 void Engine::setCurrentDirection(Dirs::Enum direction)
 {
-	m_direction.setPinTo(direction);
+	m_direction.setPinTo(directionToPin(direction));
 }
 
 Dirs::Enum Engine::getTargetDirection() const
 {
-	return s_engineState.flag(States::IsBackward + States::Offset * id) ? Dirs::Backward : Dirs::Forward;
+	return pinToDirection(s_engineState.flag(States::IsBackward + States::Offset * id));
 }
 
 Dirs::Enum Engine::getCurrentDirection() const
 {
-	return m_direction.readPin() ? Dirs::Backward : Dirs::Forward;
+	return pinToDirection(m_direction.readPin());
 }
 
 void Engine::speedUp()
