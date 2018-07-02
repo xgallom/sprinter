@@ -12,6 +12,7 @@
 #include "Periph/Led.h"
 #include "Util/Logger.h"
 #include "Periph/Engine.h"
+#include "Periph/I2C.h"
 
 class Application {
 	static Application *m_instance;
@@ -25,6 +26,7 @@ class Application {
 public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
+	Periph::I2C i2c;
 
 private:
 	Periph::Led m_appRunningLed;

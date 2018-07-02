@@ -18,13 +18,15 @@ Application::ApplicationInitializator::ApplicationInitializator(Application *par
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 }
-
+static uint8_t *buffer;
 Application::Application() :
 	m_applicationInitializator(this),
 	logger(&usartLog),
 	usartLog(Periph::Usarts::Usart2, 9600),
+	i2c(Periph::I2Cs::I2Cx2),
 	m_appRunningLed(Periph::Leds::Blue),
 	m_engine1(Periph::Engines::M3)
+
 {}
 
 void Application::run()
@@ -39,6 +41,8 @@ void Application::run()
 	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 
+
+
 	for(;;) {
 
 		//uint8_t input[256];
@@ -48,6 +52,9 @@ void Application::run()
 		//usartLog.write(input, inputSize);
 
 		if(timer.run()){
+
+		i2c.write(0x68, 0x3B, buffer, 2);
+
 			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
 			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
 					}
