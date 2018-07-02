@@ -77,11 +77,11 @@ void I2C::initI2C()
     I2C_DeInit(config[id].i2c);
 
 	I2C_InitTypeDef  I2C_InitStructure = {
-			I2C_ClockSpeed:		400000,
-			I2C_Mode:			I2C_Mode_I2C,
-			I2C_DutyCycle:		I2C_DutyCycle_2,
+			I2C_ClockSpeed:	400000,
+			I2C_Mode:	I2C_Mode_I2C,
+			I2C_DutyCycle:	I2C_DutyCycle_2,
 			I2C_OwnAddress1:	0x00,
-			I2C_Ack:			I2C_Ack_Enable,
+			I2C_Ack:	I2C_Ack_Enable,
 			I2C_AcknowledgedAddress:	I2C_AcknowledgedAddress_7bit
 	  };
 
@@ -95,8 +95,8 @@ void I2C::initNvic()
 	  NVIC_InitTypeDef NVIC_InitStructure = {
 			  NVIC_IRQChannel: static_cast<uint8_t>(config[id].irqnER | config[id].irqnEV),
 			  NVIC_IRQChannelPreemptionPriority:	0,
-			  NVIC_IRQChannelSubPriority:			0,
-			  NVIC_IRQChannelCmd:					ENABLE
+			  NVIC_IRQChannelSubPriority:	0,
+			  NVIC_IRQChannelCmd:	ENABLE
 
 	  };
 	  NVIC_Init(&NVIC_InitStructure);
