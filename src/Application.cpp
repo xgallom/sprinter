@@ -38,22 +38,21 @@ void Application::run()
 	m_engine1.setTargetSpeed(100);
 	m_engine1.setTargetDirection(Periph::Dirs::Forward);
 
-	Util::Timer timer(Util::Time::FromMilliSeconds(10));
+	Util::Timer timer(Util::Time::FromMilliSeconds(1000));
 	timer.start();
+
 
 
 
 	for(;;) {
 
+
 		//uint8_t input[256];
-
 		//uint32_t inputSize = usartLog.readLine(input, 256);
-
 		//usartLog.write(input, inputSize);
 
 		if(timer.run()){
-
-		i2c.write(0x68, 0x3B, buffer, 2);
+			INF_LOG("Connect.");
 
 			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
 			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);

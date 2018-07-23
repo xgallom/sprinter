@@ -14,7 +14,7 @@ struct {
 	GPIO_TypeDef *gpio;
 	I2C_TypeDef *i2c;
 	uint32_t ahb1Gpio, ahb1I2c;
-	uint16_t sda, scl;
+	uint32_t sda, scl;
 	uint8_t sdaSource, sclSource, gpioAf;
 	IRQn irqnER;
 	IRQn irqnEV;
@@ -51,30 +51,30 @@ void I2C::initRcc()
 	RCC_APB1PeriphClockCmd(config[id].ahb1I2c, ENABLE);
 	RCC_AHB1PeriphClockCmd(config[id].ahb1Gpio, ENABLE);
 
-	RCC_APB1PeriphResetCmd(config[id].ahb1I2c, ENABLE);
-	RCC_APB1PeriphResetCmd(config[id].ahb1I2c, DISABLE);
 }
 
 void I2C::initGpio()
 {
 	GPIO_InitTypeDef gpioInitStruct = {
-			GPIO_Pin: static_cast<uint16_t>(config[id].sda | config[id].scl),
+			GPIO_Pin: config[id].sda | config[id].scl,
 			GPIO_Mode: GPIO_Mode_AF,
-			GPIO_Speed: GPIO_Fast_Speed,
+			GPIO_Speed: GPIO_High_Speed,
 			GPIO_OType: GPIO_OType_OD,
-			GPIO_PuPd: GPIO_PuPd_NOPULL
+			GPIO_PuPd: GPIO_PuPd_UP
 	};
-
-	GPIO_Init(config[id].gpio, &gpioInitStruct);
 
 	GPIO_PinAFConfig(config[id].gpio, config[id].sdaSource, config[id].gpioAf);
 	GPIO_PinAFConfig(config[id].gpio, config[id].sclSource, config[id].gpioAf);
+
+	GPIO_Init(config[id].gpio, &gpioInitStruct);
+
 }
 
 void I2C::initI2C()
 {
 	//I2C_ITConfig(config[id].i2c, I2C_IT_EVT | I2C_IT_ERR, DISABLE);
-    I2C_DeInit(config[id].i2c);
+	I2C_DeInit(config[id].i2c);
+	I2C_Cmd(config[id].i2c, DISABLE);
 
 	I2C_InitTypeDef  I2C_InitStructure = {
 			I2C_ClockSpeed:	400000,
@@ -85,9 +85,9 @@ void I2C::initI2C()
 			I2C_AcknowledgedAddress:	I2C_AcknowledgedAddress_7bit
 	  };
 
-
     I2C_Init(config[id].i2c, &I2C_InitStructure);
     I2C_Cmd(config[id].i2c, ENABLE);
+
 }
 
 void I2C::initNvic()
@@ -129,6 +129,7 @@ bool I2C::start(uint8_t slaveAddress, uint8_t regAddress)
 {
 	if(!startCondition()) return false;
 	if(!sendSlaveAddressForWrite(slaveAddress)) return false;
+	config[id].i2c->SR2;
 	if(!sendRegisterAddress(regAddress)) return false;
 
 	return true;
@@ -225,15 +226,16 @@ bool I2C::write(uint8_t slaveAddress, uint8_t regAddress, uint8_t *buff, uint16_
 	return true;
 }
 
-bool I2C::checkEvent(uint32_t eventId) const {
+bool I2C::checkEvent(uint32_t eventId) {
 
-	static volatile uint32_t timeout = 18000000;
+	static volatile uint32_t timeout = 180000;
 	//TODO: timer timeout.
 	while(!I2C_CheckEvent(config[id].i2c, eventId)) {
       if(!(timeout--))
         return false;
     }
     return true;
+
   }
 
 } /* namespace Periph */

@@ -29,12 +29,10 @@ class I2C {
 	void initI2C();
 	void initNvic();
 
-	bool startCondition();
-	void stopCondition();
 
 	bool start(uint8_t slaveAddress, uint8_t regAddress);
 	bool startRead(uint8_t slaveAddress, uint8_t regAddress);
-	bool checkEvent(uint32_t eventId) const;
+	bool checkEvent(uint32_t eventId);
 	bool sendRegisterAddress(uint8_t regAddress);
 	bool sendSlaveAddressForWrite(uint8_t slaveAddress);
 	bool sendSlaveAddressForRead(uint8_t slaveAddress);
@@ -42,6 +40,8 @@ class I2C {
 public:
 	I2C(I2Cs::Enum id);
 
+	bool startCondition();
+	void stopCondition();
 
 	bool read(uint8_t slaveAddress, uint8_t regAddress, uint8_t *buff, uint16_t count);
 	bool write(uint8_t slaveAddress, uint8_t regAddress, uint8_t *buff, uint16_t count);
