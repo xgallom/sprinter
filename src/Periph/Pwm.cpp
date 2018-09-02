@@ -146,22 +146,28 @@ void Pwm::initTimOC()
 
 void Pwm::initTimTB(uint32_t frequency)
 {
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
+	TIM_TimeBaseInitTypeDef tim1;
+	TIM_TimeBaseInitTypeDef tim2;
+	TIM_TimeBaseStructInit(&tim1);
+	TIM_TimeBaseStructInit(&tim2);
 
+	const uint32_t timer_frequency = SystemCoreClock;
+	const uint32_t counter_frequency = pwm_steps * frequency;
+	const uint32_t PSC_Value = (timer_frequency / counter_frequency) - 1;
+	const uint16_t ARR_Value = pwm_steps - 1;
 
-    const uint32_t timer_frequency = SystemCoreClock;
-    const uint32_t counter_frequency = pwm_steps * frequency;
-    const uint32_t PSC_Value = (timer_frequency / counter_frequency) - 1;
-    const uint16_t ARR_Value = pwm_steps - 1;
+	tim1.TIM_Period = ARR_Value;
+	tim1.TIM_Prescaler = PSC_Value;
+	tim1.TIM_ClockDivision = 0;
+	tim1.TIM_CounterMode = TIM_CounterMode_Up;
 
-	TIM_TimeBaseStructure.TIM_Period = ARR_Value;
-	TIM_TimeBaseStructure.TIM_Prescaler = PSC_Value;
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	tim2.TIM_Period = ARR_Value;
+	tim2.TIM_Prescaler = PSC_Value/2;
+	tim2.TIM_ClockDivision = 0;
+	tim2.TIM_CounterMode = TIM_CounterMode_Up;
 
-	TIM_TimeBaseInit(config[Timers::Timer1].tim, &TIM_TimeBaseStructure);
-	TIM_TimeBaseInit(config[Timers::Timer2].tim, &TIM_TimeBaseStructure);
+	TIM_TimeBaseInit(config[Timers::Timer1].tim, &tim1);
+	TIM_TimeBaseInit(config[Timers::Timer2].tim, &tim2);
 
 }
 

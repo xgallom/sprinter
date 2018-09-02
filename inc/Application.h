@@ -12,6 +12,9 @@
 #include "Periph/Led.h"
 #include "Util/Logger.h"
 #include "Periph/Engine.h"
+#include "Util/Control.h"
+
+
 
 class Application {
 	static Application *m_instance;
@@ -25,16 +28,17 @@ class Application {
 public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
+	Util::Control ctrl;
+	Periph::Led Led1;
+
 
 private:
 	Periph::Led m_appRunningLed;
-	Periph::Engine m_engine1;
 
 public:
 	Application();
 
 	void run();
-
 	static Application *instance();
 
 };

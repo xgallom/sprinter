@@ -185,17 +185,48 @@ uint32_t Usart::readLine(uint8_t *buffer, uint32_t maxSize)
 	return maxSize;
 }
 
+uint32_t Usart::readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxSize)
+{
+	for(uint32_t n = 0; n < maxSize; n++) {
+		buffer[n] = read();
+
+		if(buffer[n] == character)
+			return n;
+	}
+	return maxSize;
+}
+
 bool Usart::bytesAvailable() const
 {
-	return s_readQueues[id].isEmpty();
+	return !s_readQueues[id].isEmpty();
+}
+
+uint32_t Usart::Available() const
+{
+	return s_readQueues[id].size();
 }
 
 } /* namespace Periph */
 
 void USART1_IRQHandler(void)
 {
+//	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+//		Periph::s_readQueues[0].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART1)));
+//	}
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
 		Periph::s_readQueues[0].enqueue(static_cast<uint8_t>(USART_ReceiveData(USART1)));
+	}
+
+	if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET) {
+		Container::OperationResult<volatile uint8_t> writeData = Periph::s_writeQueues[0].dequeue();
+
+		if(writeData.isValid) { // We have more data in the buffer
+			USART_SendData(USART1, writeData.value);
+		}
+		else {
+			Periph::s_states.resetFlag(Periph::States::Writing << Periph::Usarts::Usart1);
+			USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+		}
 	}
 }
 

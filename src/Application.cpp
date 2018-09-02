@@ -7,6 +7,7 @@
 
 #include "Application.h"
 #include "Util/Timer.h"
+#include "Util/trace.h"
 
 LOGGER_MODULE(Application)
 
@@ -22,9 +23,10 @@ Application::ApplicationInitializator::ApplicationInitializator(Application *par
 Application::Application() :
 	m_applicationInitializator(this),
 	logger(&usartLog),
-	usartLog(Periph::Usarts::Usart2, 9600),
+	usartLog(Periph::Usarts::Usart1, 9600),
 	m_appRunningLed(Periph::Leds::Blue),
-	m_engine1(Periph::Engines::M3)
+	Led1(Periph::Leds::Red)
+
 {}
 
 void Application::run()
@@ -33,26 +35,18 @@ void Application::run()
 
 	m_appRunningLed.turnOn();
 
-	m_engine1.setTargetSpeed(100);
-	m_engine1.setTargetDirection(Periph::Dirs::Forward);
-
 	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 
 	for(;;) {
 
-		//uint8_t input[256];
+		ctrl.updateControllerData();
 
-		//uint32_t inputSize = usartLog.readLine(input, 256);
-
-		//usartLog.write(input, inputSize);
 
 		if(timer.run()){
-			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
-			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
-					}
-
-			m_engine1.update();
+			//INF_LOG("Application update");
+			//Led1.toggle();
+			ctrl.update();
 	}
 	}
 	INF_LOG("Application ended.");
@@ -63,3 +57,37 @@ Application *Application::instance()
 	return m_instance;
 }
 
+#ifdef  USE_FULL_ASSERT
+/**
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
+
+void assert_failed(uint8_t* file, uint32_t line) {
+	/* User can add his own implementation to report the file name and line number,
+	 ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	TRACE("Wrong parameters value: file %s on line %d\r\n", file, line);
+
+	/* Infinite loop */
+	while (1) {
+	}
+}
+#endif
+
+
+void  TRACE(char* fmt,...){
+#ifdef	TRACE_ENABLE
+	char msg[1000] = {0};
+//	const uint8_t mark[10] = {"TRACE: "};
+	va_list arg;
+
+    va_start(arg, fmt);
+    vsnprintf(msg, sizeof(msg)-1, fmt, arg);
+//    usartTrace.write(mark, sizeof(mark));
+    App->usartLog.write((uint8_t*)msg, strlen(msg));
+    va_end(arg);
+#endif
+}

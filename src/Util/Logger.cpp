@@ -8,6 +8,7 @@
 #include "Util/Logger.h"
 #include "Application.h"
 
+
 namespace Util {
 
 Logger::Logger(Periph::Usart *usart) :
@@ -25,4 +26,9 @@ Logger *Logger::instance()
 	return App ? &App->logger : nullptr;
 }
 
+
 } /* namespace Util */
+
+
+
+

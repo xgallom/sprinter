@@ -19,7 +19,6 @@ public:
 	Logger(Periph::Usart *usart);
 
 	void write(const char module[], const char message[]);
-
 	static Logger *instance();
 };
 
@@ -30,8 +29,9 @@ public:
 #define LOG(MODULE, MSG) ::Util::Logger *logger = ::Util::Logger::instance(); if(logger) logger->write(MODULE, MSG);
 
 #define DBG_LOG(MSG) do { LOG(module, ": DEBUG: " MSG "\n") } while(false)
-#define INF_LOG(MSG) do { LOG(module, ": INFO_: " MSG "\n") } while(false)
+#define INF_LOG(MSG) do { LOG(module, ": INFO_: " MSG "\r\n") } while(false)
 #define WRN_LOG(MSG) do { LOG(module, ": WARN_: " MSG "\n") } while(false)
 #define ERR_LOG(MSG) do { LOG(module, ": ERROR: " MSG "\n") } while(false)
+
 
 #endif /* UTIL_LOGGER_H_ */
