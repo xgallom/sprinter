@@ -12,6 +12,8 @@
 #include "Periph/Engine.h"
 #include "Periph/Usart.h"
 #include "Util/Packet.h"
+#include "Util/Timer.h"
+
 
 struct ControlData{
   uint8_t  x  	 = 0x00;
@@ -32,6 +34,8 @@ class Control {
 
 	Periph::Engine m_engine1, m_engine2, m_engine3, m_engine4, m_engine5, m_engine6;
 	Util::Packet m_packet;
+	Timer m_watchdog;
+	uint32_t	m_disconnectedTime = 0;
 public:
 	Control();
 	~Control();

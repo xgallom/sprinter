@@ -5,10 +5,10 @@
  *      Author: Zahorack
  */
 
+#include <Util/Trace.h>
 #include "Util/Control.h"
 #include "Application.h"
-#include "Util/trace.h"
-
+#include "Util/Timer.h"
 
 
 namespace Util {
@@ -23,9 +23,12 @@ Control::Control():
 	m_engine4(Periph::Engines::M4),
 	m_engine5(Periph::Engines::M5),
 	m_engine6(Periph::Engines::M6),
-
+	m_watchdog(Util::Time::FromMilliSeconds(100)),
 	rfModule(Periph::Usarts::Usart2, 9600)
-{}
+
+{
+	m_watchdog.start();
+}
 
 Control::~Control(){}
 
@@ -56,13 +59,14 @@ void Control::setLeftSideDirection(Periph::Dirs::Enum dir){
 
 void Control::updateControllerData(){
 
+	if(m_watchdog.run()){
+		m_disconnectedTime++;
+	}
+
 	if(rfModule.bytesAvailable())
 		if(rfModule.Available() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
-
-//		TRACE("X: %d  ",ctrlData.x);
-//		TRACE("Y: %d  ",ctrlData.y);
-//		TRACE("POT: %d \r\n",ctrlData.pot);
+			m_disconnectedTime = 0;
 
 	uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
 
@@ -112,7 +116,7 @@ void Control::parseControllerData(){
 
 void Control::update()
 {
-	if(ctrlData.state){		//main STOP button on Joystick
+	if(ctrlData.state && m_disconnectedTime <= 10){		//main STOP button on Joystick
 		m_engine1.update();
 		m_engine2.update();
 		m_engine3.update();
@@ -127,6 +131,7 @@ void Control::update()
 		m_engine4.setTargetSpeed(0);
 		m_engine5.setTargetSpeed(0);
 		m_engine6.setTargetSpeed(0);
+		TRACE("DISCONNECTED\r\n");
 	}
 }
 

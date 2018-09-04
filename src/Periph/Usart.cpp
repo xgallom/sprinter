@@ -8,6 +8,7 @@
 #include "Periph/Usart.h"
 #include "Container/Queue.h"
 #include "Util/State.h"
+#include <Util/Trace.h>
 
 namespace Periph {
 static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
@@ -203,7 +204,10 @@ bool Usart::bytesAvailable() const
 
 uint32_t Usart::Available() const
 {
-	return s_readQueues[id].size();
+	uint32_t volume = s_readQueues[id].size();
+//	DTRACE("Uart bytes available : %d \r\n", volume);
+
+	return volume;
 }
 
 } /* namespace Periph */

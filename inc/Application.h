@@ -15,7 +15,6 @@
 #include "Util/Control.h"
 
 
-
 class Application {
 	static Application *m_instance;
 
@@ -29,8 +28,6 @@ public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
 	Util::Control ctrl;
-	Periph::Led Led1;
-
 
 private:
 	Periph::Led m_appRunningLed;

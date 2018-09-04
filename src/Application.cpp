@@ -5,9 +5,9 @@
  *      Author: xgallom
  */
 
+#include <Util/Trace.h>
 #include "Application.h"
 #include "Util/Timer.h"
-#include "Util/trace.h"
 
 LOGGER_MODULE(Application)
 
@@ -24,9 +24,7 @@ Application::Application() :
 	m_applicationInitializator(this),
 	logger(&usartLog),
 	usartLog(Periph::Usarts::Usart1, 9600),
-	m_appRunningLed(Periph::Leds::Blue),
-	Led1(Periph::Leds::Red)
-
+	m_appRunningLed(Periph::Leds::Blue)
 {}
 
 void Application::run()
@@ -45,7 +43,6 @@ void Application::run()
 
 		if(timer.run()){
 			//INF_LOG("Application update");
-			//Led1.toggle();
 			ctrl.update();
 	}
 	}
@@ -77,17 +74,3 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
-
-void  TRACE(char* fmt,...){
-#ifdef	TRACE_ENABLE
-	char msg[1000] = {0};
-//	const uint8_t mark[10] = {"TRACE: "};
-	va_list arg;
-
-    va_start(arg, fmt);
-    vsnprintf(msg, sizeof(msg)-1, fmt, arg);
-//    usartTrace.write(mark, sizeof(mark));
-    App->usartLog.write((uint8_t*)msg, strlen(msg));
-    va_end(arg);
-#endif
-}
