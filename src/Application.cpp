@@ -42,11 +42,7 @@ void Application::run()
 	timer.start();
 
 
-
-
 	for(;;) {
-
-
 		//uint8_t input[256];
 		//uint32_t inputSize = usartLog.readLine(input, 256);
 		//usartLog.write(input, inputSize);
@@ -57,12 +53,9 @@ void Application::run()
 		 uint8_t buff[256];
 
 
-
-
 		if(timer.run()){
 
 			i2c.read(MPU_ADDR, ACCEL_XOUT_H, buff,1);
-
 
 
 //			INF_LOG("Connect.");
