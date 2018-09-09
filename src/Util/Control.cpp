@@ -57,7 +57,7 @@ void Control::setLeftSideDirection(Periph::Dirs::Enum dir){
 	m_engine6.setTargetDirection(dir);
 }
 
-void Control::updateControllerData(){
+void Control::run(){
 
 	if(m_watchdog.run()){
 		m_disconnectedTime++;

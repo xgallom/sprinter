@@ -38,7 +38,7 @@ void Application::run()
 
 	for(;;) {
 
-		ctrl.updateControllerData();
+		ctrl.run();
 
 
 		if(timer.run()){

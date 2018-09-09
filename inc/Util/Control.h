@@ -43,7 +43,7 @@ public:
 	Periph::Usart rfModule;
 
 	void update();
-	void updateControllerData();
+	void run();
 	void parseControllerData();
 	void setRightSideSpeed(uint8_t speed);
 	void setLeftSideSpeed(uint8_t speed);
