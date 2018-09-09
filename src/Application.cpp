@@ -51,14 +51,27 @@ void Application::run()
 		//uint32_t inputSize = usartLog.readLine(input, 256);
 		//usartLog.write(input, inputSize);
 
+		uint8_t MPU_ADDR =  0b1101000 << 1;
+		 uint8_t ACCEL_XOUT_H = 0x3B;
+		 uint8_t ACCEL_XOUT_L = 0x3C;
+		 uint8_t buff[256];
+
+
+
+
 		if(timer.run()){
-			INF_LOG("Connect.");
 
-			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
-			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
-					}
+			i2c.read(MPU_ADDR, ACCEL_XOUT_H, buff,1);
 
-			m_engine1.update();
+
+
+//			INF_LOG("Connect.");
+//
+//			if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
+//			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
+//					}
+//
+//			m_engine1.update();
 	}
 	}
 	INF_LOG("Application ended.");

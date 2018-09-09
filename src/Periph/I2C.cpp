@@ -8,7 +8,10 @@
 #include "Periph/I2C.h"
 #include "Container/Queue.h"
 #include "Util/State.h"
+#include "Application.h"
+#include "Util/Trace.h"
 
+LOGGER_MODULE(Application)
 namespace Periph {
 struct {
 	GPIO_TypeDef *gpio;
@@ -50,7 +53,7 @@ void I2C::initRcc()
 {
 	RCC_APB1PeriphClockCmd(config[id].ahb1I2c, ENABLE);
 	RCC_AHB1PeriphClockCmd(config[id].ahb1Gpio, ENABLE);
-
+    PTRACE("I2C_RCC_INIT\r\n");
 }
 
 void I2C::initGpio()
@@ -62,32 +65,34 @@ void I2C::initGpio()
 			GPIO_OType: GPIO_OType_OD,
 			GPIO_PuPd: GPIO_PuPd_UP
 	};
-
 	GPIO_PinAFConfig(config[id].gpio, config[id].sdaSource, config[id].gpioAf);
 	GPIO_PinAFConfig(config[id].gpio, config[id].sclSource, config[id].gpioAf);
 
 	GPIO_Init(config[id].gpio, &gpioInitStruct);
 
+	RCC_APB1PeriphResetCmd(config[id].ahb1I2c, ENABLE);
+	RCC_APB1PeriphResetCmd(config[id].ahb1I2c, DISABLE);
+    PTRACE("I2C_GPIO_INIT\r\n");
 }
 
 void I2C::initI2C()
 {
 	//I2C_ITConfig(config[id].i2c, I2C_IT_EVT | I2C_IT_ERR, DISABLE);
-	I2C_DeInit(config[id].i2c);
-	I2C_Cmd(config[id].i2c, DISABLE);
+//	I2C_DeInit(config[id].i2c);
+//	I2C_Cmd(config[id].i2c, DISABLE);
 
 	I2C_InitTypeDef  I2C_InitStructure = {
 			I2C_ClockSpeed:	400000,
 			I2C_Mode:	I2C_Mode_I2C,
 			I2C_DutyCycle:	I2C_DutyCycle_2,
 			I2C_OwnAddress1:	0x00,
-			I2C_Ack:	I2C_Ack_Enable,
+			I2C_Ack:	I2C_Ack_Disable,
 			I2C_AcknowledgedAddress:	I2C_AcknowledgedAddress_7bit
 	  };
-
     I2C_Init(config[id].i2c, &I2C_InitStructure);
     I2C_Cmd(config[id].i2c, ENABLE);
 
+    PTRACE("I2C_INIT\r\n");
 }
 
 void I2C::initNvic()
@@ -114,33 +119,41 @@ I2C::I2C(I2Cs::Enum id) :
 bool I2C::startCondition()
 {
 	I2C_GenerateSTART(config[id].i2c, ENABLE);
-	if (!checkEvent(I2C_EVENT_MASTER_MODE_SELECT))
+	if (!checkEvent(I2C_EVENT_MASTER_MODE_SELECT)){
+		PTRACE("ERROR__I2C_GenerateSTART failed\r\n");
 		return false;
+	}
 
+	PTRACE("OK__I2C_GenerateSTART success\r\n");
 	return true;
 }
 
 void I2C::stopCondition()
 {
 	I2C_GenerateSTOP(config[id].i2c, ENABLE);
+	PTRACE("OK__I2C_GenerateSTOP success\r\n");
 }
 
 bool I2C::start(uint8_t slaveAddress, uint8_t regAddress)
 {
 	if(!startCondition()) return false;
 	if(!sendSlaveAddressForWrite(slaveAddress)) return false;
-	config[id].i2c->SR2;
+//	config[id].i2c->SR2;
 	if(!sendRegisterAddress(regAddress)) return false;
 
+	PTRACE("OK__I2C_start success\r\n");
 	return true;
 }
 
 bool I2C::sendRegisterAddress(uint8_t regAddress)
 {
 	I2C_SendData(config[id].i2c, regAddress);
-	if (!checkEvent(I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	if (!checkEvent(I2C_EVENT_MASTER_BYTE_TRANSMITTED)){
+		PTRACE("ERROR__I2C_sendRegisterAddress failed\r\n");
 		return false;
+	}
 
+	PTRACE("OK__I2C_sendRegisterAddress success\r\n");
 	return true;
 }
 
@@ -148,9 +161,12 @@ bool I2C::sendSlaveAddressForWrite(uint8_t slaveAddress)
 {
 	I2C_Send7bitAddress(config[id].i2c, slaveAddress, I2C_Direction_Transmitter);
 	//config[id].i2c->DR = (slaveAddress << 1) | dir;
-	if (!checkEvent(I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	if (!checkEvent(I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)){
+		PTRACE("ERROR__I2C_sendSlaveAddressForWrite failed\r\n");
 		return false;
+	}
 
+	PTRACE("OK__I2C_sendSlaveAddressForWrite success\r\n");
 	return true;
 }
 
@@ -158,9 +174,12 @@ bool I2C::sendSlaveAddressForRead(uint8_t slaveAddress)
 {
 	I2C_Send7bitAddress(config[id].i2c, slaveAddress, I2C_Direction_Receiver);
 	//config[id].i2c->DR = (slaveAddress << 1) | dir;
-	if (!checkEvent(I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
+	if (!checkEvent(I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)){
+		PTRACE("ERROR__I2C_sendSlaveAddressForRead failed\r\n");
 		return false;
+	}
 
+	PTRACE("OK__I2C_sendSlaveAddressForRead success\r\n");
 	return true;
 }
 
