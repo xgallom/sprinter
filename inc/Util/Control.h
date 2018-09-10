@@ -15,18 +15,18 @@
 #include "Util/Timer.h"
 
 
+#define	JOYSTICK_MIDDLE		100
+#define	JOYSTICK_TRESHOLD	7
+
 struct ControlData{
-  uint8_t  x  	 = 0x00;
-  uint8_t  y  	 = 0x00;
+  uint8_t  x  	 = 0;
+  uint8_t  y  	 = 0;
   uint8_t   pot	 = 0x00;
   uint8_t   state = 0x00;
   uint8_t data_crc = 0x00;
 };
 
 extern ControlData ctrlData;
-
-#define	JOYSTICK_MIDDLE		100
-#define	JOYSTICK_TRESHOLD	7
 
 namespace Util {
 

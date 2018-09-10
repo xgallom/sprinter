@@ -28,6 +28,12 @@ Control::Control():
 
 {
 	m_watchdog.start();
+	m_engine1.setTargetSpeed(0);
+	m_engine2.setTargetSpeed(0);
+	m_engine3.setTargetSpeed(0);
+	m_engine4.setTargetSpeed(0);
+	m_engine5.setTargetSpeed(0);
+	m_engine6.setTargetSpeed(0);
 }
 
 Control::~Control(){}
@@ -61,16 +67,18 @@ void Control::run(){
 
 	if(m_watchdog.run()){
 		m_disconnectedTime++;
+		//TRACE("disconnectedTime: %d \r\n", m_disconnectedTime);
 	}
 
 	if(rfModule.bytesAvailable())
 		if(rfModule.Available() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
-			m_disconnectedTime = 0;
+
 
 	uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
 
 	if(ctrlData.data_crc == DataCRC){
+		m_disconnectedTime = 0;
 		parseControllerData();
 	}
 
@@ -82,7 +90,7 @@ void Control::run(){
 
 void Control::parseControllerData(){
 
-	uint16_t right_speed =0, left_speed =0;
+	int8_t right_speed =0, left_speed =0;
 
 	if(ctrlData.x > (JOYSTICK_MIDDLE + JOYSTICK_TRESHOLD)){
 		setRightSideDirection(Periph::Dirs::Forward);
@@ -104,27 +112,20 @@ void Control::parseControllerData(){
 	}
 	else left_speed = 0;
 
-	setRightSideSpeed(clamp(right_speed, 0, 100));
-	setLeftSideSpeed(clamp(left_speed, 0, 100));
+	setRightSideSpeed(right_speed);
+	setLeftSideSpeed(left_speed);
 
-	TRACE("right: %d  ",right_speed);
-	TRACE("left: %d  ",left_speed);
-	TRACE("state: %d  ",ctrlData.state);
-	TRACE("POT: %d \r\n",ctrlData.pot);
+//	TRACE("right: %d  ",right_speed);
+//	TRACE("left: %d  ",left_speed);
+//	TRACE("state: %d  ",ctrlData.state);
+//	TRACE("POT: %d \r\n",ctrlData.pot);
 
+	TRACE("right: %d \r\n",m_engine1.getCurrentSpeed());
 }
 
 void Control::update()
 {
-	if(ctrlData.state && m_disconnectedTime <= 10){		//main STOP button on Joystick
-		m_engine1.update();
-		m_engine2.update();
-		m_engine3.update();
-		m_engine4.update();
-		m_engine5.update();
-		m_engine6.update();
-	}
-	else{
+	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
 		m_engine1.setTargetSpeed(0);
 		m_engine2.setTargetSpeed(0);
 		m_engine3.setTargetSpeed(0);
@@ -133,6 +134,14 @@ void Control::update()
 		m_engine6.setTargetSpeed(0);
 		TRACE("DISCONNECTED\r\n");
 	}
+
+	m_engine1.update();
+	m_engine2.update();
+	m_engine3.update();
+	m_engine4.update();
+	m_engine5.update();
+	m_engine6.update();
+//	TRACE("UPDATE\r\n");
 }
 
 int Control::clamp(int val, int min, int max) {
