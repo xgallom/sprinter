@@ -24,6 +24,10 @@ enum Enum : uint8_t{
 	Pwm6,
 	Pwm7,
 	Pwm8,
+	Pwm9,
+	Pwm10,
+	Pwm11,
+	Pwm12,
 
 	Size
 };
@@ -34,7 +38,7 @@ class Pwm {
 
 	void initRCC();
 	void initGpio();
-	void initTimOC();
+	void initTimOC(uint32_t frequency);
 	void initTimTB(uint32_t frequency);
 	void initPwm();
 	void deinitPwm();
@@ -43,8 +47,8 @@ public:
 	Pwm(uint32_t frequency);
 	~Pwm();
 
-	void write(Pwms::Enum id, uint8_t value);
-	uint8_t read(Pwms::Enum id) const;
+	void write(Pwms::Enum id, uint16_t value);
+	uint16_t read(Pwms::Enum id) const;
 };
 
 } /* namespace Periph */

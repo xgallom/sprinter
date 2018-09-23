@@ -11,8 +11,10 @@
 #include "stm32f4xx.h"
 #include "Periph/Engine.h"
 #include "Periph/Usart.h"
+#include "Periph/Servo.h"
 #include "Util/Packet.h"
 #include "Util/Timer.h"
+#include "Util/Tool.h"
 
 
 #define	JOYSTICK_MIDDLE		100
@@ -33,8 +35,10 @@ namespace Util {
 class Control {
 
 	Periph::Engine m_engine1, m_engine2, m_engine3, m_engine4, m_engine5, m_engine6;
+	Periph::Servo m_servo1, m_servo2;
 	Util::Packet m_packet;
 	Timer m_watchdog;
+	Util::Tool tool;
 	uint32_t	m_disconnectedTime = 0;
 public:
 	Control();

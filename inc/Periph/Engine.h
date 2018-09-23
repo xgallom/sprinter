@@ -23,6 +23,8 @@ enum Enum : uint8_t {
 	M5,
 	M6,
 
+	M7,	//differential
+
 	Size
 };
 }

@@ -12,6 +12,7 @@
 #include "Periph/Led.h"
 #include "Util/Logger.h"
 #include "Periph/Engine.h"
+#include "Periph/Servo.h"
 #include "Util/Control.h"
 
 

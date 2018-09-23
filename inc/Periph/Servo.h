@@ -6,7 +6,7 @@
  */
 
 #ifndef PERIPH_SERVO_H_
-#define PERIPH_SERVO_H__
+#define PERIPH_SERVO_H_
 
 #include <Periph/DigitalOutputPin.h>
 #include "stm32f4xx.h"
@@ -14,7 +14,7 @@
 
 namespace Periph {
 
-namespace Serves {
+namespace Servos {
 enum Enum : uint8_t {
 	Servo1 = 0,
 	Servo2,
@@ -26,19 +26,20 @@ enum Enum : uint8_t {
 }
 
 class Servo {
-	const Serves::Enum id;
+	const Servos::Enum id;
 	Pwm m_pwm;
 
 	void incrementAngle();
 	void decrementAngle();
 
 public:
-	Servo(Serves::Enum id);
+	Servo(Servos::Enum id);
+	~Servo();
 
-	void setTargetAngle(uint8_t angle);
-	uint8_t getCurrentAngle();
-	uint8_t getTargetAngle();
-
+	void setTargetAngle(uint16_t angle);
+	uint16_t getCurrentAngle() const;
+	uint16_t getTargetAngle() const;
+	void test();
 	void update();
 
 };

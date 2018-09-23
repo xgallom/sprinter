@@ -10,11 +10,15 @@
 #include "Application.h"
 #include "Util/Timer.h"
 
-
 namespace Util {
 
 ControlData ctrlData;
 LOGGER_MODULE(Application)
+
+enum modes : uint8_t{
+  vehicle_mode = 0,
+  printing_mode
+  };
 
 Control::Control():
 	m_engine1(Periph::Engines::M1),
@@ -23,6 +27,8 @@ Control::Control():
 	m_engine4(Periph::Engines::M4),
 	m_engine5(Periph::Engines::M5),
 	m_engine6(Periph::Engines::M6),
+	m_servo1(Periph::Servos::Servo1),
+	m_servo2(Periph::Servos::Servo2),
 	m_watchdog(Util::Time::FromMilliSeconds(100)),
 	rfModule(Periph::Usarts::Usart2, 9600)
 
@@ -112,8 +118,8 @@ void Control::parseControllerData(){
 	}
 	else left_speed = 0;
 
-	setRightSideSpeed(right_speed);
-	setLeftSideSpeed(left_speed);
+	setRightSideSpeed(tool.clamp(right_speed, 0, 100));
+	setLeftSideSpeed(tool.clamp(left_speed, 0, 100));
 
 	TRACE("right: %d  ",right_speed);
 	TRACE("left: %d  ",left_speed);
@@ -148,10 +154,6 @@ void Control::test() {
 		}
 
 	update();
-}
-
-int Control::clamp(int val, int min, int max) {
-    return val < min ? min : (val > max ? max : val);
 }
 
 } /* namespace Util */
