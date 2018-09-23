@@ -46,8 +46,8 @@ public:
 	uint8_t read();
 	uint32_t readLine(uint8_t *buffer, uint32_t maxSize);
 	uint32_t readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxSize);
-	bool bytesAvailable() const;
-	uint32_t Available() const;
+	bool Available() const;
+	uint32_t bytesAvailable() const;
 };
 
 } /* namespace Periph */

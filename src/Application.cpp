@@ -32,18 +32,16 @@ void Application::run()
 	INF_LOG("Application started running.");
 
 	m_appRunningLed.turnOn();
-
 	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 
 	for(;;) {
-
 		ctrl.run();
-
 
 		if(timer.run()){
 			//INF_LOG("Application update");
 			ctrl.update();
+			//ctrl.test();
 	}
 	}
 	INF_LOG("Application ended.");

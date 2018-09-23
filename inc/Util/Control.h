@@ -41,7 +41,7 @@ public:
 	~Control();
 
 	Periph::Usart rfModule;
-
+	void test();
 	void update();
 	void run();
 	void parseControllerData();

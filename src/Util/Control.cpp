@@ -70,8 +70,8 @@ void Control::run(){
 		//TRACE("disconnectedTime: %d \r\n", m_disconnectedTime);
 	}
 
-	if(rfModule.bytesAvailable())
-		if(rfModule.Available() >= sizeof(ctrlData) +1) {
+	if(rfModule.Available())
+		if(rfModule.bytesAvailable() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
 
@@ -115,12 +115,10 @@ void Control::parseControllerData(){
 	setRightSideSpeed(right_speed);
 	setLeftSideSpeed(left_speed);
 
-//	TRACE("right: %d  ",right_speed);
-//	TRACE("left: %d  ",left_speed);
-//	TRACE("state: %d  ",ctrlData.state);
-//	TRACE("POT: %d \r\n",ctrlData.pot);
-
-	TRACE("right: %d \r\n",m_engine1.getCurrentSpeed());
+	TRACE("right: %d  ",right_speed);
+	TRACE("left: %d  ",left_speed);
+	TRACE("state: %d  ",ctrlData.state);
+	TRACE("POT: %d \r\n",ctrlData.pot);
 }
 
 void Control::update()
@@ -141,7 +139,15 @@ void Control::update()
 	m_engine4.update();
 	m_engine5.update();
 	m_engine6.update();
-//	TRACE("UPDATE\r\n");
+	//	TRACE("UPDATE\r\n");
+}
+void Control::test() {
+
+	if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
+			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
+		}
+
+	update();
 }
 
 int Control::clamp(int val, int min, int max) {

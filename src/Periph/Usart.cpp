@@ -197,12 +197,12 @@ uint32_t Usart::readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxS
 	return maxSize;
 }
 
-bool Usart::bytesAvailable() const
+bool Usart::Available() const
 {
 	return !s_readQueues[id].isEmpty();
 }
 
-uint32_t Usart::Available() const
+uint32_t Usart::bytesAvailable() const
 {
 	uint32_t volume = s_readQueues[id].size();
 //	DTRACE("Uart bytes available : %d \r\n", volume);
