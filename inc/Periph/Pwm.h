@@ -49,6 +49,8 @@ public:
 
 	void write(Pwms::Enum id, uint16_t value);
 	uint16_t read(Pwms::Enum id) const;
+	void deintServoPwm();
+	void intServoPwm();
 };
 
 } /* namespace Periph */

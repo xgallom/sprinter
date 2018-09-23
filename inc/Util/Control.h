@@ -21,10 +21,13 @@
 #define	JOYSTICK_TRESHOLD	7
 
 struct ControlData{
-  uint8_t  x  	 = 0;
-  uint8_t  y  	 = 0;
-  uint8_t   pot	 = 0x00;
-  uint8_t   state = 0x00;
+  uint8_t  x  	 = 0x00;
+  uint8_t  y  	 = 0x00;
+  uint8_t  pot	 = 0x00;
+  uint8_t  button_left = 0x00;
+  uint8_t  button_right= 0x00;
+  uint8_t  state   = 0x00;
+  uint8_t  mode    = 0x00;
   uint8_t data_crc = 0x00;
 };
 
@@ -34,12 +37,13 @@ namespace Util {
 
 class Control {
 
-	Periph::Engine m_engine1, m_engine2, m_engine3, m_engine4, m_engine5, m_engine6;
+	Periph::Engine m_engine1, m_engine2, m_engine3, m_engine4, m_engine5, m_engine6, m_engine7;
 	Periph::Servo m_servo1, m_servo2;
 	Util::Packet m_packet;
 	Timer m_watchdog;
 	Util::Tool tool;
 	uint32_t	m_disconnectedTime = 0;
+
 public:
 	Control();
 	~Control();
@@ -48,12 +52,18 @@ public:
 	void test();
 	void update();
 	void run();
-	void parseControllerData();
+	void updateVehicleData();
+	void updatePrintingData();
 	void setRightSideSpeed(uint8_t speed);
 	void setLeftSideSpeed(uint8_t speed);
 	void setRightSideDirection(Periph::Dirs::Enum dir);
 	void setLeftSideDirection(Periph::Dirs::Enum dir);
-	int clamp(int val, int min, int max);
+	void stopEngines();
+	void updateEngines();
+	void stopServos();
+	void startServos();
+
+	void switchMode();
 
 };
 

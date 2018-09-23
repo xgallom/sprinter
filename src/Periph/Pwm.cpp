@@ -259,6 +259,17 @@ void Pwm::deinitPwm()
 	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, DISABLE);
 }
 
+void Pwm::deintServoPwm()
+{
+	TIM_Cmd(config[Timers::Timer3].tim, DISABLE);
+	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, DISABLE);
+}
+
+void Pwm::intServoPwm()
+{
+	TIM_Cmd(config[Timers::Timer3].tim, ENABLE);
+	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, ENABLE);
+}
 
 Pwm::Pwm(uint32_t frequency)
 {

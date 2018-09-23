@@ -20,6 +20,8 @@ enum modes : uint8_t{
   printing_mode
   };
 
+static 	uint8_t s_mode = 0x00;
+
 Control::Control():
 	m_engine1(Periph::Engines::M1),
 	m_engine2(Periph::Engines::M2),
@@ -27,6 +29,7 @@ Control::Control():
 	m_engine4(Periph::Engines::M4),
 	m_engine5(Periph::Engines::M5),
 	m_engine6(Periph::Engines::M6),
+	m_engine7(Periph::Engines::M7),
 	m_servo1(Periph::Servos::Servo1),
 	m_servo2(Periph::Servos::Servo2),
 	m_watchdog(Util::Time::FromMilliSeconds(100)),
@@ -40,6 +43,7 @@ Control::Control():
 	m_engine4.setTargetSpeed(0);
 	m_engine5.setTargetSpeed(0);
 	m_engine6.setTargetSpeed(0);
+	m_engine7.setTargetSpeed(0);
 }
 
 Control::~Control(){}
@@ -69,6 +73,49 @@ void Control::setLeftSideDirection(Periph::Dirs::Enum dir){
 	m_engine6.setTargetDirection(dir);
 }
 
+void Control::stopEngines(){
+	m_engine1.setTargetSpeed(0);
+	m_engine2.setTargetSpeed(0);
+	m_engine3.setTargetSpeed(0);
+	m_engine4.setTargetSpeed(0);
+	m_engine5.setTargetSpeed(0);
+	m_engine6.setTargetSpeed(0);
+	m_engine7.setTargetSpeed(0);
+}
+
+void Control::updateEngines(){
+	m_engine1.update();
+	m_engine2.update();
+	m_engine3.update();
+	m_engine4.update();
+	m_engine5.update();
+	m_engine6.update();
+	m_engine7.update();
+
+}
+
+void Control::stopServos(){
+	m_servo1.hardStop();
+	m_servo2.hardStop();
+}
+void Control::startServos(){
+	m_servo1.hardStart();
+	m_servo2.hardStart();
+}
+
+void Control::switchMode(){
+	stopEngines();
+	s_mode = ctrlData.mode;
+
+//	if(s_mode == printing_mode){
+//		startServos();
+//	}
+//	else if(s_mode == vehicle_mode){
+//		stopServos();
+//	}
+}
+
+
 void Control::run(){
 
 	if(m_watchdog.run()){
@@ -80,21 +127,47 @@ void Control::run(){
 		if(rfModule.bytesAvailable() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
+			uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
 
-	uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
+			if(ctrlData.data_crc == DataCRC){
+				m_disconnectedTime = 0;
 
-	if(ctrlData.data_crc == DataCRC){
-		m_disconnectedTime = 0;
-		parseControllerData();
-	}
+				if(ctrlData.mode != s_mode) switchMode();
 
-//		TRACE("RX_CRC: %d  ",ctrlData.data_crc);
-//		TRACE("DATA_CRC: %d \r\n", DataCRC);
+				TRACE("right: %d  ",ctrlData.x);
+				TRACE("left: %d  ",ctrlData.y);
+				TRACE("state: %d  ",ctrlData.state);
+//				TRACE("button L: %d  ",ctrlData.button_left);
+//				TRACE("button R: %d  ",ctrlData.button_right);
+//				TRACE("mode: %d  ",ctrlData.mode);
+				TRACE("POT: %d \r\n",ctrlData.pot);
+			}
 
 	}
 }
+void Control::updatePrintingData(){
 
-void Control::parseControllerData(){
+	uint8_t sensitivity = ctrlData.pot;
+	m_engine7.setTargetSpeed(0);
+
+	if(ctrlData.button_left){
+		m_engine7.setTargetSpeed(sensitivity);
+		m_engine7.setTargetDirection(Periph::Dirs::Backward);
+	}
+
+	if(ctrlData.button_right){
+		m_engine7.setTargetSpeed(sensitivity);
+		m_engine7.setTargetDirection(Periph::Dirs::Forward);
+	}
+
+	if(ctrlData.x == 100) m_servo1.incrementAngle();
+	else if(ctrlData.x == 0) m_servo1.decrementAngle();
+
+	if(ctrlData.y == 100) m_servo2.incrementAngle();
+	else if(ctrlData.y == 0) m_servo2.decrementAngle();
+}
+
+void Control::updateVehicleData(){
 
 	int8_t right_speed =0, left_speed =0;
 
@@ -121,32 +194,23 @@ void Control::parseControllerData(){
 	setRightSideSpeed(tool.clamp(right_speed, 0, 100));
 	setLeftSideSpeed(tool.clamp(left_speed, 0, 100));
 
-	TRACE("right: %d  ",right_speed);
-	TRACE("left: %d  ",left_speed);
-	TRACE("state: %d  ",ctrlData.state);
-	TRACE("POT: %d \r\n",ctrlData.pot);
 }
 
 void Control::update()
 {
 	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
-		m_engine1.setTargetSpeed(0);
-		m_engine2.setTargetSpeed(0);
-		m_engine3.setTargetSpeed(0);
-		m_engine4.setTargetSpeed(0);
-		m_engine5.setTargetSpeed(0);
-		m_engine6.setTargetSpeed(0);
+		stopEngines();
 		TRACE("DISCONNECTED\r\n");
 	}
+	else {
+		if(ctrlData.mode == vehicle_mode) updateVehicleData();
+		else updatePrintingData();
+	}
 
-	m_engine1.update();
-	m_engine2.update();
-	m_engine3.update();
-	m_engine4.update();
-	m_engine5.update();
-	m_engine6.update();
-	//	TRACE("UPDATE\r\n");
+	updateEngines();
 }
+
+
 void Control::test() {
 
 	if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){

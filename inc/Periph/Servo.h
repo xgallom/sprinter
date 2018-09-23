@@ -11,6 +11,7 @@
 #include <Periph/DigitalOutputPin.h>
 #include "stm32f4xx.h"
 #include "Pwm.h"
+#include "Util/Tool.h"
 
 namespace Periph {
 
@@ -28,18 +29,27 @@ enum Enum : uint8_t {
 class Servo {
 	const Servos::Enum id;
 	Pwm m_pwm;
+	Util::Tool m_tool;
 
-	void incrementAngle();
-	void decrementAngle();
+
 
 public:
 	Servo(Servos::Enum id);
 	~Servo();
 
+	void incrementAngle();
+	void decrementAngle();
+
+	void start();
+	void stop();
+	bool isRunning() const;
+
 	void setTargetAngle(uint16_t angle);
 	uint16_t getCurrentAngle() const;
 	uint16_t getTargetAngle() const;
 	void test();
+	void hardStop();
+	void hardStart();
 	void update();
 
 };

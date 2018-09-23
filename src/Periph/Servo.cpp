@@ -8,6 +8,18 @@
 #include "Periph/Servo.h"
 #include "Util/State.h"
 
+namespace Periph {
+
+namespace States {
+enum Flags : uint8_t {
+	IsRunning = 0x00,
+	IsStopped,
+
+	Offset
+};
+}
+Util::State<uint16_t> s_servoState;
+
 /*Servo  specification
  *
  * Left position   s_servoConstatnt
@@ -17,12 +29,13 @@
  * Working resolution: +-1000 samples
  *
  */
-
 static constexpr uint16_t  s_servoConstatnt = 500;	 	//first acceptable value in us
 static constexpr uint16_t  s_servoHomePosition = s_servoConstatnt + 1000;
+static constexpr uint16_t  s_servoMaxPosition = s_servoConstatnt + 2000;
+static constexpr uint16_t  s_servoMinPosition = s_servoConstatnt;
 
 
-namespace Periph {
+
 uint16_t s_servoAngles[Servos::Size] = { 0, 0, 0, 0 };
 
 static Pwms::Enum servosToPwms(Servos::Enum id)
@@ -37,11 +50,28 @@ Servo::Servo(Servos::Enum id) :
 	m_pwm.write(servosToPwms(id), s_servoHomePosition);
 }
 
-Servo::~Servo(){}
+Servo::~Servo(){
+	start();
+}
+
+void Servo::start()
+{
+	s_servoState.setFlag(States::IsRunning + States::Offset * id);
+}
 
 void Servo::setTargetAngle(uint16_t angle)
 {
 	s_servoAngles[id] = angle;
+}
+
+void Servo::stop()
+{
+	s_servoState.resetFlag(States::IsRunning + States::Offset * id);
+}
+
+bool Servo::isRunning() const
+{
+	return s_servoState.flag(States::IsRunning + States::Offset * id);
 }
 
 uint16_t Servo::getTargetAngle() const
@@ -56,12 +86,16 @@ uint16_t Servo::getCurrentAngle() const
 
 void Servo::incrementAngle()
 {
-	m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
+	if(getCurrentAngle() < s_servoMaxPosition){
+		m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
+	}
 }
 
 void Servo::decrementAngle()
 {
-	m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
+	if(getCurrentAngle() > s_servoMinPosition){
+		m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
+	}
 }
 
 void Servo::update()
@@ -71,6 +105,16 @@ void Servo::update()
 
 	else if(getCurrentAngle() > getTargetAngle())
 		decrementAngle();
+}
+
+void Servo::hardStop(){
+	m_pwm.deintServoPwm();
+	stop();
+}
+
+void Servo::hardStart(){
+	m_pwm.intServoPwm();
+	stop();
 }
 
 void Servo::test(){

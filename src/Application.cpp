@@ -32,7 +32,7 @@ void Application::run()
 	INF_LOG("Application started running.");
 
 	m_appRunningLed.turnOn();
-	Util::Timer timer(Util::Time::FromMilliSeconds(1));
+	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 	for(;;) {
 		ctrl.run();

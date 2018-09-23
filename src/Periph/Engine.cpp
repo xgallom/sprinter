@@ -64,6 +64,10 @@ static constexpr struct {
 		{ /* M6 */
 				port: GPIOE,
 				id: GPIO_Pin_12
+		},
+		{ /* M7 */
+				port: GPIOE,
+				id: GPIO_Pin_14
 		}
 };
 
