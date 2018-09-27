@@ -73,7 +73,7 @@ static constexpr struct {
 
 Engine::Engine(Engines::Enum id) :
 	id(id),
-	m_pwm(1000),
+	m_pwm(10000),
 	m_direction(DirPinsConfig[id].port, DirPinsConfig[id].id)
 {
 	m_pwm.write(enginesToPwms(id), 0);

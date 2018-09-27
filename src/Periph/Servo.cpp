@@ -45,13 +45,14 @@ static Pwms::Enum servosToPwms(Servos::Enum id)
 
 Servo::Servo(Servos::Enum id) :
 	id(id),
-	m_pwm(1000)
+	m_pwm(10000)
 {
+	start();
 	m_pwm.write(servosToPwms(id), s_servoHomePosition);
 }
 
 Servo::~Servo(){
-	start();
+	stop();
 }
 
 void Servo::start()

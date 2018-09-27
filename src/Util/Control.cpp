@@ -21,6 +21,8 @@ enum modes : uint8_t{
   };
 
 static 	uint8_t s_mode = 0x00;
+static  bool steper_state = false;
+static  bool dataOK = false;
 
 Control::Control():
 	m_engine1(Periph::Engines::M1),
@@ -32,6 +34,7 @@ Control::Control():
 	m_engine7(Periph::Engines::M7),
 	m_servo1(Periph::Servos::Servo1),
 	m_servo2(Periph::Servos::Servo2),
+	m_stepper1(Periph::Steppers::Stepper1),
 	m_watchdog(Util::Time::FromMilliSeconds(100)),
 	rfModule(Periph::Usarts::Usart2, 9600)
 
@@ -106,7 +109,7 @@ void Control::startServos(){
 void Control::switchMode(){
 	stopEngines();
 	s_mode = ctrlData.mode;
-
+	steper_state = false;
 //	if(s_mode == printing_mode){
 //		startServos();
 //	}
@@ -118,6 +121,15 @@ void Control::switchMode(){
 
 void Control::run(){
 
+
+	if(steper_state && s_mode == vehicle_mode){
+		m_stepper1.run();
+	DTRACE("Stepper RUN");
+	}
+	else {
+		//m_stepper1.disable();
+	}
+
 	if(m_watchdog.run()){
 		m_disconnectedTime++;
 		//TRACE("disconnectedTime: %d \r\n", m_disconnectedTime);
@@ -127,11 +139,13 @@ void Control::run(){
 		if(rfModule.bytesAvailable() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
+			dataOK = false;
 			uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
 
 			if(ctrlData.data_crc == DataCRC){
 				m_disconnectedTime = 0;
 
+				dataOK = true;
 				if(ctrlData.mode != s_mode) switchMode();
 
 				TRACE("right: %d  ",ctrlData.x);
@@ -150,6 +164,7 @@ void Control::updatePrintingData(){
 	uint8_t sensitivity = ctrlData.pot;
 	m_engine7.setTargetSpeed(0);
 
+
 	if(ctrlData.button_left){
 		m_engine7.setTargetSpeed(sensitivity);
 		m_engine7.setTargetDirection(Periph::Dirs::Backward);
@@ -163,8 +178,8 @@ void Control::updatePrintingData(){
 	if(ctrlData.x == 100) m_servo1.incrementAngle();
 	else if(ctrlData.x == 0) m_servo1.decrementAngle();
 
-	if(ctrlData.y == 100) m_servo2.incrementAngle();
-	else if(ctrlData.y == 0) m_servo2.decrementAngle();
+	if(ctrlData.y > 90) m_servo2.incrementAngle();
+	else if(ctrlData.y < 10) m_servo2.decrementAngle();
 }
 
 void Control::updateVehicleData(){
@@ -194,18 +209,31 @@ void Control::updateVehicleData(){
 	setRightSideSpeed(tool.clamp(right_speed, 0, 100));
 	setLeftSideSpeed(tool.clamp(left_speed, 0, 100));
 
+	steper_state = false;
+
+	if(ctrlData.button_left){
+		steper_state = true;
+		m_stepper1.setCurrentDirection(Periph::Dirs::Backward);
+	}
+
+	if(ctrlData.button_right){
+		steper_state = true;
+		m_stepper1.setCurrentDirection(Periph::Dirs::Forward);
+
+	}
 }
 
 void Control::update()
 {
 	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
 		stopEngines();
+		m_stepper1.disable();
 		TRACE("DISCONNECTED\r\n");
 	}
-	else {
-		if(ctrlData.mode == vehicle_mode) updateVehicleData();
-		else updatePrintingData();
-	}
+	else if(dataOK){
+			if(ctrlData.mode == vehicle_mode) updateVehicleData();
+			else updatePrintingData();
+		}
 
 	updateEngines();
 }
