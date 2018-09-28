@@ -187,11 +187,11 @@ void Control::updateVehicleData(){
 	int8_t right_speed =0, left_speed =0;
 
 	if(ctrlData.x > (JOYSTICK_MIDDLE + JOYSTICK_TRESHOLD)){
-		setRightSideDirection(Periph::Dirs::Forward);
+		setRightSideDirection(Periph::Dirs::Backward);
 		right_speed = ctrlData.x - JOYSTICK_MIDDLE;
 	}
 	else if(ctrlData.x < (JOYSTICK_MIDDLE - JOYSTICK_TRESHOLD)){
-		setRightSideDirection(Periph::Dirs::Backward);
+		setRightSideDirection(Periph::Dirs::Forward);
 		right_speed = JOYSTICK_MIDDLE - ctrlData.x;
 	}
 	else right_speed = 0;
