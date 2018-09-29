@@ -13,7 +13,7 @@
 
 /* GPIO pinout list  */
 
-
+#define skurvene whitespacesi
 /*
     _____________________________________________________________________
 	|alternate | function  | application   | pin   |   notes			 |

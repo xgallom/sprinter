@@ -21,7 +21,7 @@ enum packet_type{
 	packet_type_header_ack,
 	packet_type_controller_data,
 	packet_type_move_data,
-	packet_type_print_data
+	packet_type_print_data,
 	packet_type_nack
 };
 
