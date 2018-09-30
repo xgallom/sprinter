@@ -44,8 +44,10 @@ public:
 	bool write(const uint8_t *c, uint32_t size);
 
 	uint8_t read();
+	uint16_t readWord();
 	uint32_t readLine(uint8_t *buffer, uint32_t maxSize);
 	uint32_t readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxSize);
+	uint32_t readBytes(uint8_t *buffer, uint32_t maxSize);
 	bool Available() const;
 	uint32_t bytesAvailable() const;
 };

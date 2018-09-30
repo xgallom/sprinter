@@ -174,6 +174,17 @@ uint8_t Usart::read()
 	return readResult.value;
 }
 
+uint16_t Usart::readWord()
+{
+	uint8_t buff[2];
+
+	for(uint8_t n = 0; n < 2; n++) {
+		buff[n] = read();
+	}
+
+	return (uint16_t)(buff[1]<<8 | buff[0]);
+}
+
 uint32_t Usart::readLine(uint8_t *buffer, uint32_t maxSize)
 {
 	for(uint32_t n = 0; n < maxSize; n++) {
@@ -193,6 +204,14 @@ uint32_t Usart::readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxS
 
 		if(buffer[n] == character)
 			return n;
+	}
+	return maxSize;
+}
+
+uint32_t Usart::readBytes(uint8_t *buffer, uint32_t maxSize)
+{
+	for(uint32_t n = 0; n < maxSize; n++) {
+		buffer[n] = read();
 	}
 	return maxSize;
 }

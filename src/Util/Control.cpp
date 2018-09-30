@@ -110,6 +110,7 @@ void Control::switchMode(){
 	stopEngines();
 	s_mode = ctrlData.mode;
 	steper_state = false;
+
 //	if(s_mode == printing_mode){
 //		startServos();
 //	}

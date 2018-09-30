@@ -11,7 +11,8 @@
 
 namespace Util {
 
-const uint8_t crc8_Table[ ] =
+
+static const uint8_t crc8_Table[ ] =
 {
 	0,  94, 188, 226,  97,  63, 221, 131, 194, 156, 126,  32, 163, 253,  31,  65,
 	157, 195,  33, 127, 252, 162,  64,  30,  95,   1, 227, 189,  62,  96, 130, 220,
@@ -31,24 +32,7 @@ const uint8_t crc8_Table[ ] =
 	116,  42, 200, 150,  21,  75, 169, 247, 182, 232,  10,  84, 215, 137, 107,  53
 } ;
 
-typedef struct {
-	uint16_t 	mark;
-	uint8_t		type;
-	uint16_t	data_len;
-	uint8_t		head_crc;
-} __attribute__((packed)) Packet_Header;
 
-
-typedef struct {
-	Packet_Header 	header;
-	uint8_t 		crc;
-	uint8_t			*data;
-} __attribute__((packed)) Data_Packet;
-
-
-typedef struct {
-
-} __attribute__((packed)) Status_Packet;
 
 
 uint8_t Packet::calc_crc8(uint8_t* data, uint16_t len){
