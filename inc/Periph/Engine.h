@@ -54,6 +54,7 @@ public:
 	void start();
 	void stop();
 	bool isRunning() const;
+
 	void setCurrentDirection(Dirs::Enum direction);
 	void setTargetSpeed(uint8_t speed);
 	uint8_t getTargetSpeed() const;

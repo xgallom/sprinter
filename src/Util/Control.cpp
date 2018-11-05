@@ -17,12 +17,74 @@ LOGGER_MODULE(Application)
 
 enum modes : uint8_t{
   vehicle_mode = 0,
-  printing_mode
+  sunTracker_mode,
+  printing_mode,
+  simulation_mode,
+
+  modes_size
   };
 
 static 	uint8_t s_mode = 0x00;
-static  bool steper_state = false;
 static  bool dataOK = false;
+
+static constexpr uint8_t KVADRANT_OFFSET = 70;
+
+/*simulacia tlace stvorcovej plochy*/
+enum tasks : uint8_t{
+  up = 0,
+  right,
+  down,
+  left,
+
+  tasks_size
+  };
+uint8_t task = right;
+
+static uint8_t nextTask(){
+	task++;
+
+	if(task >= tasks_size)
+		task = up;
+
+	return task;
+}
+
+void Control::taskManager(uint8_t l_task){
+	switch(l_task){
+		case down:
+			m_stepper1.setTargetSteps(1000);
+			m_stepper1.setCurrentDirection(Periph::Dirs::Backward);
+			break;
+		case left:
+			m_stepper2.setTargetSteps(1000);
+			m_stepper2.setCurrentDirection(Periph::Dirs::Backward);
+			break;
+		case up:
+			m_stepper1.setTargetSteps(1000);
+			m_stepper1.setCurrentDirection(Periph::Dirs::Forward);
+			break;
+		case right:
+			m_stepper2.setTargetSteps(1000);
+			m_stepper2.setCurrentDirection(Periph::Dirs::Forward);
+			break;
+
+	}
+}
+void Control::updateSimulation(){
+	m_stepper1.start();
+	m_stepper2.start();
+
+	if(task == up || task== down){
+		if(!m_stepper1.isBussy()){
+			taskManager(nextTask());
+		}
+	}
+	else if(task == right || task== left){
+		if(!m_stepper2.isBussy())
+			taskManager(nextTask());
+	}
+
+}
 
 Control::Control():
 	m_engine1(Periph::Engines::M1),
@@ -35,21 +97,21 @@ Control::Control():
 	m_servo1(Periph::Servos::Servo1),
 	m_servo2(Periph::Servos::Servo2),
 	m_stepper1(Periph::Steppers::Stepper1),
+	m_stepper2(Periph::Steppers::Stepper2),
 	m_watchdog(Util::Time::FromMilliSeconds(100)),
 	rfModule(Periph::Usarts::Usart2, 9600)
 
 {
 	m_watchdog.start();
-	m_engine1.setTargetSpeed(0);
-	m_engine2.setTargetSpeed(0);
-	m_engine3.setTargetSpeed(0);
-	m_engine4.setTargetSpeed(0);
-	m_engine5.setTargetSpeed(0);
-	m_engine6.setTargetSpeed(0);
-	m_engine7.setTargetSpeed(0);
+	m_servo2.start();
+	m_servo2.addAngle(60);   //korekcia pociatocnej polohy
+	stop();
+
 }
 
-Control::~Control(){}
+Control::~Control(){
+	stop();
+}
 
 
 void Control::setRightSideSpeed(uint8_t speed){
@@ -97,43 +159,50 @@ void Control::updateEngines(){
 
 }
 
-void Control::stopServos(){
-	m_servo1.hardStop();
-	m_servo2.hardStop();
-}
-void Control::startServos(){
-	m_servo1.hardStart();
-	m_servo2.hardStart();
-}
-
 void Control::switchMode(){
-	stopEngines();
-	s_mode = ctrlData.mode;
-	steper_state = false;
 
-//	if(s_mode == printing_mode){
-//		startServos();
-//	}
-//	else if(s_mode == vehicle_mode){
-//		stopServos();
-//	}
+	stop();
+	s_mode = ctrlData.mode;
 }
 
+void Control::stop(){
+		stopEngines();
+		m_stepper2.stop();
+		m_stepper1.stop();
+		m_servo1.stop();
+		m_servo2.stop();
+
+		m_state = false;
+}
+
+void Control::start(){
+
+		//m_stepper2.start();
+		//m_stepper1.start();
+		m_servo1.start();
+		m_servo2.start();
+
+		m_state = true;
+}
 
 void Control::run(){
 
-
-	if(steper_state && s_mode == vehicle_mode){
-		m_stepper1.run();
-	DTRACE("Stepper RUN");
+	if(s_mode == printing_mode){
+		m_stepper1.freeRun();
+		m_stepper2.freeRun();
+		DTRACE("Stepper RUN");
 	}
-	else {
-		//m_stepper1.disable();
+	else if(s_mode == simulation_mode){
+		m_stepper1.run();
+		m_stepper2.run();
+	}
+	else  {
+		m_stepper1.stop();
+		m_stepper2.stop();
 	}
 
 	if(m_watchdog.run()){
 		m_disconnectedTime++;
-		//TRACE("disconnectedTime: %d \r\n", m_disconnectedTime);
 	}
 
 	if(rfModule.Available())
@@ -141,13 +210,14 @@ void Control::run(){
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
 			dataOK = false;
-			uint8_t DataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
+			uint8_t dataCRC = m_packet.calc_crc8((uint8_t *)&ctrlData, sizeof(ctrlData) -1);
 
-			if(ctrlData.data_crc == DataCRC){
+			if(ctrlData.data_crc == dataCRC){
 				m_disconnectedTime = 0;
-
 				dataOK = true;
-				if(ctrlData.mode != s_mode) switchMode();
+
+				if(ctrlData.mode != s_mode)
+					switchMode();
 
 				TRACE("right: %d  ",ctrlData.x);
 				TRACE("left: %d  ",ctrlData.y);
@@ -158,29 +228,56 @@ void Control::run(){
 				TRACE("POT: %d \r\n",ctrlData.pot);
 			}
 
-	}
+		}
 }
-void Control::updatePrintingData(){
+
+void Control::updateSunTrackerData(){
 
 	uint8_t sensitivity = ctrlData.pot;
 	m_engine7.setTargetSpeed(0);
 
-
 	if(ctrlData.button_left){
 		m_engine7.setTargetSpeed(sensitivity);
-		m_engine7.setTargetDirection(Periph::Dirs::Backward);
+
+		if(m_engine7.getCurrentDirection() != Periph::Dirs::Backward)
+			m_engine7.setTargetDirection(Periph::Dirs::Backward);
 	}
 
 	if(ctrlData.button_right){
 		m_engine7.setTargetSpeed(sensitivity);
-		m_engine7.setTargetDirection(Periph::Dirs::Forward);
+
+		if(m_engine7.getCurrentDirection() != Periph::Dirs::Forward)
+			m_engine7.setTargetDirection(Periph::Dirs::Forward);
 	}
 
-	if(ctrlData.x == 100) m_servo1.incrementAngle();
-	else if(ctrlData.x == 0) m_servo1.decrementAngle();
+	if(ctrlData.x > 90) m_servo1.incrementAngle();
+	else if(ctrlData.x < 10) m_servo1.decrementAngle();
 
 	if(ctrlData.y > 90) m_servo2.incrementAngle();
 	else if(ctrlData.y < 10) m_servo2.decrementAngle();
+}
+
+void Control::updatePrintingData(){
+
+	if(ctrlData.x > (JOYSTICK_MIDDLE + KVADRANT_OFFSET)){
+		m_stepper2.softwareEnable();
+		m_stepper2.setCurrentDirection(Periph::Dirs::Backward);
+	}
+	else if(ctrlData.x < (JOYSTICK_MIDDLE - KVADRANT_OFFSET)){
+		m_stepper2.softwareEnable();
+		m_stepper2.setCurrentDirection(Periph::Dirs::Forward);
+	}
+	else 	m_stepper2.softwareDisable();
+
+	if(ctrlData.y > (JOYSTICK_MIDDLE + KVADRANT_OFFSET)){
+		m_stepper1.softwareEnable();
+		m_stepper1.setCurrentDirection(Periph::Dirs::Forward);
+	}
+	else if(ctrlData.y < (JOYSTICK_MIDDLE - KVADRANT_OFFSET)){
+		m_stepper1.softwareEnable();
+		m_stepper1.setCurrentDirection(Periph::Dirs::Backward);
+	}
+	else 	m_stepper1.softwareDisable();
 }
 
 void Control::updateVehicleData(){
@@ -209,35 +306,25 @@ void Control::updateVehicleData(){
 
 	setRightSideSpeed(tool.clamp(right_speed, 0, 100));
 	setLeftSideSpeed(tool.clamp(left_speed, 0, 100));
-
-	steper_state = false;
-
-	if(ctrlData.button_left){
-		steper_state = true;
-		m_stepper1.setCurrentDirection(Periph::Dirs::Backward);
-	}
-
-	if(ctrlData.button_right){
-		steper_state = true;
-		m_stepper1.setCurrentDirection(Periph::Dirs::Forward);
-
-	}
 }
 
-void Control::update()
-{
+void Control::update(){
 	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
-		stopEngines();
-		m_stepper1.disable();
+		stop();
 		TRACE("DISCONNECTED\r\n");
 	}
 	else if(dataOK){
-			if(ctrlData.mode == vehicle_mode) updateVehicleData();
-			else updatePrintingData();
-		}
+		start();
+
+		if(s_mode == vehicle_mode) updateVehicleData();
+		else if(s_mode == sunTracker_mode) updateSunTrackerData();
+		else if(s_mode == printing_mode) updatePrintingData();
+		else if(s_mode == simulation_mode) updateSimulation();
+	}
 
 	updateEngines();
 }
+
 
 
 void Control::test() {
@@ -245,7 +332,6 @@ void Control::test() {
 	if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
 			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
 		}
-
 	update();
 }
 

@@ -33,11 +33,16 @@ enum Enum : uint8_t {
 }
 
 class Stepper{
+
 	const Steppers::Enum id;
 	DigitalOutputPin m_direction;
 	DigitalOutputPin m_step;
 	DigitalOutputPin m_enable;
 	Util::Timer m_timer;
+
+	uint8_t m_state = 0;
+	uint32_t m_targetSteps;
+	uint32_t m_currentSteps;
 public:
 	Stepper(Steppers::Enum id);
 	~Stepper();
@@ -47,11 +52,33 @@ public:
 	void initGpio();
 	void initRCC();
 
+	void init();
 	void run();
-	void setCurrentDirection(Dirs::Enum direction);
-	void disable();
-	void enable();
+	void stop();
+	void start();
+	void freeRun();	/*asynchronics run*/
 
+	bool isBussy(){ return (getTargetSteps() > getCurrentSteps()); };
+
+	void setTargetSteps(uint32_t steps);
+	uint32_t getCurrentSteps() const;
+	uint32_t getTargetSteps() const;
+	void setCurrentDirection(Dirs::Enum direction);
+	Dirs::Enum getCurrentDirection() const;
+
+	void enable();
+	void disable();
+	uint8_t getState() const;
+
+	void hardwareDisable();
+	void hardwareEnable();
+	uint8_t	getHardwareState() const{ return m_enable.readPin();};
+
+	void softwareDisable();
+	void softwareEnable();
+	uint8_t getSoftwareState() const{ return m_state; };
+
+	void update();
 };
 
 

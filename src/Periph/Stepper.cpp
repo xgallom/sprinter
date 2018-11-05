@@ -65,6 +65,11 @@ static bool directionToPin(Dirs::Enum direction)
 	return direction == Dirs::Backward ? true : false;
 }
 
+static Dirs::Enum pinToDirection(bool pinState)
+{
+	return pinState ? Dirs::Backward : Dirs::Forward;
+}
+
 Stepper::Stepper(Steppers::Enum id) :
 	id(id),
 	m_direction(DirPinsConfig[id].port, DirPinsConfig[id].id),
@@ -72,35 +77,124 @@ Stepper::Stepper(Steppers::Enum id) :
 	m_enable(EnablePinsConfig[id].port, EnablePinsConfig[id].id),
 	m_timer(Util::Time::FromMilliSeconds(1))
 {
+	init();
 	m_timer.start();
-	enable();
 };
 
 Stepper::~Stepper()
 {};
 
+void Stepper::init(){
+
+	m_step.resetPin();
+	disable();
+}
+
+void Stepper::freeRun(){
+
+	if(m_timer.run()){
+		if(getSoftwareState()){
+			hardwareEnable();
+			m_step.togglePin();
+		}
+		else hardwareDisable();
+	}
+}
+
 void Stepper::run()
 {
-	//enable();
 	if(m_timer.run()){
-		m_step.togglePin();
+		//if(getSoftwareState() && getHardwareState()){
+			update();
+		//}
+		//else hardwareDisable();
 	}
+}
+
+void Stepper::update()
+{
+	if(isBussy()){
+		m_step.togglePin();
+		m_currentSteps++;
+	}
+}
+
+void Stepper::stop()
+{
+	disable();
+}
+
+void Stepper::start()
+{
+	enable();
+}
+
+void Stepper::setTargetSteps(uint32_t steps)
+{
+	m_currentSteps = 0;
+	m_targetSteps = steps;
+}
+
+uint32_t Stepper::getCurrentSteps() const
+{
+	return m_currentSteps;
+}
+
+uint32_t Stepper::getTargetSteps() const
+{
+	return m_targetSteps;
 }
 
 void Stepper::setCurrentDirection(Dirs::Enum direction)
 {
-	m_direction.setPinTo(directionToPin(direction));
+		m_direction.setPinTo(directionToPin(direction));
 }
 
-void Stepper::disable()
+Dirs::Enum Stepper::getCurrentDirection() const
 {
-	m_enable.resetPin();
+	return pinToDirection(m_direction.readPin());
 }
 
-void Stepper::enable()
+void Stepper::hardwareDisable()
 {
-	m_enable.resetPin();
+	if(m_enable.readPin() != true)
+		m_enable.setPin();
 }
 
+void Stepper::hardwareEnable()
+{
+	if(m_enable.readPin() != false)
+		m_enable.resetPin();
+}
+
+void Stepper::softwareDisable(){
+
+	if(m_state != false){
+		m_step.resetPin();
+		m_state = false;
+	}
+};
+
+void Stepper::softwareEnable(){
+
+	if(m_state != true){
+		m_state = true;
+	}
+}
+
+void Stepper::enable(){
+	softwareEnable();
+	hardwareEnable();
+}
+
+void Stepper::disable(){
+	softwareDisable();
+	hardwareDisable();
+}
+
+uint8_t Stepper::getState() const{
+
+	return (getSoftwareState() && getHardwareState());
+}
 
 } /* namespace Periph */

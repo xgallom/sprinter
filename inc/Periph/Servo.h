@@ -11,6 +11,7 @@
 #include <Periph/DigitalOutputPin.h>
 #include "stm32f4xx.h"
 #include "Pwm.h"
+#include "Util/Timer.h"
 #include "Util/Tool.h"
 
 namespace Periph {
@@ -29,7 +30,9 @@ enum Enum : uint8_t {
 class Servo {
 	const Servos::Enum id;
 	Pwm m_pwm;
+	Util::Timer m_timer;
 	Util::Tool m_tool;
+
 
 
 
@@ -40,6 +43,7 @@ public:
 	void incrementAngle();
 	void decrementAngle();
 
+	void run();
 	void start();
 	void stop();
 	bool isRunning() const;
@@ -47,6 +51,7 @@ public:
 	void setTargetAngle(uint16_t angle);
 	uint16_t getCurrentAngle() const;
 	uint16_t getTargetAngle() const;
+	void addAngle(int16_t angle);
 	void test();
 	void hardStop();
 	void hardStart();

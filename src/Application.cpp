@@ -35,13 +35,13 @@ void Application::run()
 	Util::Timer timer(Util::Time::FromMilliSeconds(10));
 	timer.start();
 
+	/* @non-terminating@ */
 	for(;;) {
 		ctrl.run();
 
 		if(timer.run()){
-			//INF_LOG("Application update");
 			ctrl.update();
-	}
+		}
 	}
 	INF_LOG("Application ended.");
 }
@@ -72,4 +72,15 @@ void assert_failed(uint8_t* file, uint32_t line) {
 	}
 }
 #endif
+
+//NASA JPL assert example:
+//#define c_assert(e) ((e) ? (true) : \
+//TRACE("%s,%d: assertion '%s' failed\n", \
+//__FILE__, __LINE__, #e), false)
+//
+//if (!c_assert(3 >= 0) == true) {
+// return ERROR;
+// }
+
+
 

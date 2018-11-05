@@ -45,9 +45,11 @@ static Pwms::Enum servosToPwms(Servos::Enum id)
 
 Servo::Servo(Servos::Enum id) :
 	id(id),
-	m_pwm(10000)
+	m_pwm(10000),
+	m_timer(Util::Time::FromMilliSeconds(10))
 {
 	start();
+	m_timer.start();
 	m_pwm.write(servosToPwms(id), s_servoHomePosition);
 }
 
@@ -80,6 +82,10 @@ uint16_t Servo::getTargetAngle() const
 	return s_servoAngles[id];
 }
 
+void Servo::addAngle(int16_t angle){
+	m_pwm.write(servosToPwms(id), getCurrentAngle() + angle);
+}
+
 uint16_t Servo::getCurrentAngle() const
 {
 	return m_pwm.read(servosToPwms(id));
@@ -87,16 +93,18 @@ uint16_t Servo::getCurrentAngle() const
 
 void Servo::incrementAngle()
 {
-	if(getCurrentAngle() < s_servoMaxPosition){
-		m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
-	}
+	if(isRunning())
+		if(getCurrentAngle() < s_servoMaxPosition){
+			m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
+		}
 }
 
 void Servo::decrementAngle()
 {
-	if(getCurrentAngle() > s_servoMinPosition){
-		m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
-	}
+	if(isRunning())
+		if(getCurrentAngle() > s_servoMinPosition){
+			m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
+		}
 }
 
 void Servo::update()
@@ -108,6 +116,13 @@ void Servo::update()
 		decrementAngle();
 }
 
+void Servo::run(){
+
+	if(m_timer.run()){
+		update();
+	}
+}
+
 void Servo::hardStop(){
 	m_pwm.deintServoPwm();
 	stop();
@@ -115,7 +130,7 @@ void Servo::hardStop(){
 
 void Servo::hardStart(){
 	m_pwm.intServoPwm();
-	stop();
+	start();
 }
 
 void Servo::test(){
