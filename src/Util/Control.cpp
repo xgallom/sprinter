@@ -38,7 +38,8 @@ enum tasks : uint8_t{
 
   tasks_size
   };
-uint8_t task = right;
+
+static uint8_t task = right;
 
 static uint8_t nextTask(){
 	task++;
@@ -74,12 +75,12 @@ void Control::updateSimulation(){
 	m_stepper1.start();
 	m_stepper2.start();
 
-	if(task == up || task== down){
+	if(task == up || task == down){
 		if(!m_stepper1.isBussy()){
 			taskManager(nextTask());
 		}
 	}
-	else if(task == right || task== left){
+	else if(task == right || task == left){
 		if(!m_stepper2.isBussy())
 			taskManager(nextTask());
 	}
@@ -163,6 +164,7 @@ void Control::switchMode(){
 
 	stop();
 	s_mode = ctrlData.mode;
+
 }
 
 void Control::stop(){
@@ -190,11 +192,16 @@ void Control::run(){
 	if(s_mode == printing_mode){
 		m_stepper1.freeRun();
 		m_stepper2.freeRun();
+
+		task = right;
+		m_stepper1.setTargetSteps(0);
+		m_stepper2.setTargetSteps(0);
 		DTRACE("Stepper RUN");
 	}
 	else if(s_mode == simulation_mode){
 		m_stepper1.run();
 		m_stepper2.run();
+
 	}
 	else  {
 		m_stepper1.stop();
@@ -205,7 +212,7 @@ void Control::run(){
 		m_disconnectedTime++;
 	}
 
-	if(rfModule.Available())
+if(rfModule.Available())
 		if(rfModule.bytesAvailable() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
