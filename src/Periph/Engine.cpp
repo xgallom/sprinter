@@ -13,85 +13,86 @@ namespace Periph {
 namespace States {
 enum Flags : uint8_t {
 	IsRunning = 0x00,
-	IsBackward,
-
-	Offset
+	IsBackward
 };
+
+static const uint8_t Offset = 1;
 }
 
-Util::State<uint16_t> s_engineState;
-uint8_t s_engineSpeeds[Engines::Size] = { 0, 0, 0, 0, 0, 0 };
+static Util::State<uint16_t> s_engineState;
+static uint8_t s_engineSpeeds[Engines::Size] = { 0, 0, 0, 0, 0, 0 };
 
 static Pwms::Enum enginesToPwms(Engines::Enum id)
 {
 	return static_cast<Pwms::Enum>(id);
 }
 
-static Dirs::Enum pinToDirection(bool pinState)
+static Util::Dirs::Enum pinToDirection(bool pinState)
 {
-	return pinState ? Dirs::Backward : Dirs::Forward;
+	return pinState ? Util::Dirs::Backward : Util::Dirs::Forward;
 }
 
-static bool directionToPin(Dirs::Enum direction)
+static bool directionToPin(Util::Dirs::Enum direction)
 {
-	return direction == Dirs::Backward ? true : false;
+	return direction == Util::Dirs::Backward ? true : false;
 }
 
-static constexpr struct {
+struct {
 	GPIO_TypeDef *port;
 	uint16_t id;
-} DirPinsConfig[Engines::Size] = {
+} static const DirPinsConfig[Engines::Size] = {
 		{ /* M1 */
-				port: GPIOE,
-				id: GPIO_Pin_7
+				.port = GPIOE,
+				.id = GPIO_Pin_7
 		},
 		{ /* M2 */
-				port: GPIOE,
-				id: GPIO_Pin_8
+				.port = GPIOE,
+				.id = GPIO_Pin_8
 		},
 		{ /* M3 */
-				port: GPIOE,
-				id: GPIO_Pin_9
+				.port = GPIOE,
+				.id = GPIO_Pin_9
 		},
 		{ /* M4 */
-				port: GPIOE,
-				id: GPIO_Pin_10
+				.port = GPIOE,
+				.id = GPIO_Pin_10
 		},
 		{ /* M5 */
-				port: GPIOE,
-				id: GPIO_Pin_11
+				.port = GPIOE,
+				.id = GPIO_Pin_11
 		},
 		{ /* M6 */
-				port: GPIOE,
-				id: GPIO_Pin_12
+				.port = GPIOE,
+				.id = GPIO_Pin_12
 		},
 		{ /* M7 */
-				port: GPIOE,
-				id: GPIO_Pin_14
+				.port = GPIOE,
+				.id = GPIO_Pin_14
 		}
 };
 
 Engine::Engine(Engines::Enum id) :
 	id(id),
-	m_pwm(10000),
-	m_direction(DirPinsConfig[id].port, DirPinsConfig[id].id)
+	m_direction(DirPinsConfig[id].port, DirPinsConfig[id].id),
+	m_timer(Util::Time::FromMilliSeconds(10))
 {
+	m_timer.start();
 	m_pwm.write(enginesToPwms(id), 0);
 }
 
 void Engine::start()
 {
-	s_engineState.setFlag(States::IsRunning + States::Offset * id);
+	s_engineState.setFlag(States::IsRunning + (id << States::Offset));
 }
 
 void Engine::stop()
 {
-	s_engineState.resetFlag(States::IsRunning + States::Offset * id);
+	s_engineState.resetFlag(States::IsRunning + (id << States::Offset));
 }
 
 bool Engine::isRunning() const
 {
-	return s_engineState.flag(States::IsRunning + States::Offset * id);
+	return s_engineState.flag(States::IsRunning + (id << States::Offset));
 }
 
 void Engine::setTargetSpeed(uint8_t speed)
@@ -109,39 +110,48 @@ uint8_t Engine::getCurrentSpeed() const
 	return m_pwm.read(enginesToPwms(id));
 }
 
-void Engine::setTargetDirection(Dirs::Enum direction)
+void Engine::setTargetDirection(Util::Dirs::Enum direction)
 {
-	s_engineState.setFlagTo(States::IsBackward + States::Offset * id, directionToPin(direction));
+	s_engineState.setFlagTo(States::IsBackward + (id << States::Offset), directionToPin(direction));
 }
 
-void Engine::setCurrentDirection(Dirs::Enum direction)
+Util::Dirs::Enum Engine::getTargetDirection() const
 {
-	m_direction.setPinTo(directionToPin(direction));
+	return pinToDirection(s_engineState.flag(States::IsBackward + (id << States::Offset)));
 }
 
-Dirs::Enum Engine::getTargetDirection() const
-{
-	return pinToDirection(s_engineState.flag(States::IsBackward + States::Offset * id));
-}
-
-Dirs::Enum Engine::getCurrentDirection() const
+Util::Dirs::Enum Engine::getCurrentDirection() const
 {
 	return pinToDirection(m_direction.readPin());
 }
 
+void Engine::update()
+{
+	if(m_timer.run()) {
+		if(isRunning()) {
+			if(getCurrentDirection() != getTargetDirection())
+				turnAround();
+			else
+				moveInDirection();
+		}
+		else if(getCurrentSpeed())
+			setCurrentSpeed(0);
+	}
+}
+
 void Engine::speedUp()
 {
-	m_pwm.write(enginesToPwms(id), getCurrentSpeed() + 1);
+	setCurrentSpeed(getCurrentSpeed() + 1);
 }
 
 void Engine::slowDown()
 {
-	m_pwm.write(enginesToPwms(id), getCurrentSpeed() - 1);
+	setCurrentSpeed(getCurrentSpeed() - 1);
 }
 
 void Engine::turnAround()
 {
-	if(getCurrentSpeed() != 0x00)
+	if(getCurrentSpeed())
 		slowDown();
 	else
 		setCurrentDirection(getTargetDirection());
@@ -155,12 +165,14 @@ void Engine::moveInDirection()
 		slowDown();
 }
 
-void Engine::update()
+void Engine::setCurrentSpeed(uint8_t speed)
 {
-	if(getCurrentDirection() != getTargetDirection())
-		turnAround();
-	else
-		moveInDirection();
+	m_pwm.write(enginesToPwms(id), speed);
+}
+
+void Engine::setCurrentDirection(Util::Dirs::Enum direction)
+{
+	m_direction.setPinTo(directionToPin(direction));
 }
 
 } /* namespace Periph */

@@ -36,21 +36,12 @@ enum Enum : uint8_t{
 class Pwm {
 	static Util::RefCounter s_refCounter;
 
-	void initRCC();
-	void initGpio();
-	void initTimOC(uint32_t frequency);
-	void initTimTB(uint32_t frequency);
-	void initPwm();
-	void deinitPwm();
-
 public:
-	Pwm(uint32_t frequency);
+	Pwm();
 	~Pwm();
 
 	void write(Pwms::Enum id, uint16_t value);
 	uint16_t read(Pwms::Enum id) const;
-	void deintServoPwm();
-	void intServoPwm();
 };
 
 } /* namespace Periph */

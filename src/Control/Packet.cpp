@@ -5,14 +5,11 @@
  *      Author: Zahorack
  */
 
-#include "Util/Packet.h"
+#include "Control/Packet.h"
 
+namespace Control {
 
-
-namespace Util {
-
-
-static const uint8_t crc8_Table[ ] =
+static const uint8_t crc8_Table[] =
 {
 	0,  94, 188, 226,  97,  63, 221, 131, 194, 156, 126,  32, 163, 253,  31,  65,
 	157, 195,  33, 127, 252, 162,  64,  30,  95,   1, 227, 189,  62,  96, 130, 220,
@@ -30,18 +27,15 @@ static const uint8_t crc8_Table[ ] =
 	87,   9, 235, 181,  54, 104, 138, 212, 149, 203,  41, 119, 244, 170,  72,  22,
 	233, 183,  85,  11, 136, 214,  52, 106,  43, 117, 151, 201,  74,  20, 246, 168,
 	116,  42, 200, 150,  21,  75, 169, 247, 182, 232,  10,  84, 215, 137, 107,  53
-} ;
+};
 
+uint8_t Packet::CalculateCRC8(uint8_t* data, uint16_t len)
+{
+	uint8_t crc = 0;
 
+	for(uint16_t n = 0; n< len; n++)
+		crc = crc8_Table[crc ^ data[n]];
 
-
-uint8_t Packet::calc_crc8(uint8_t* data, uint16_t len){
-	uint8_t 	crc = 0;
-	uint16_t 	n;
-
-	for(n = 0; n< len; n++){
-		crc = crc8_Table[ crc ^ data[n] ] ;
-	}
 	return crc;
 }
 

@@ -8,7 +8,6 @@
 #include "Periph/Usart.h"
 #include "Container/Queue.h"
 #include "Util/State.h"
-#include <Util/Trace.h>
 
 namespace Periph {
 static Container::Queue<volatile uint8_t, 512> s_readQueues[Usarts::Size];
@@ -28,28 +27,28 @@ struct {
 	uint8_t rxSource, txSource, gpioAf;
 	USART_TypeDef *usart;
 	IRQn irqn;
-} constexpr config[Usarts::Size] = {
+} static const config[Usarts::Size] = {
 		/* Usart1 */ {
-				gpio: GPIOA,
-				ahb1Gpio: RCC_AHB1Periph_GPIOA,
-				rx: GPIO_Pin_9,
-				tx: GPIO_Pin_10,
-				rxSource: GPIO_PinSource9,
-				txSource: GPIO_PinSource10,
-				gpioAf: GPIO_AF_USART1,
-				usart: USART1,
-				irqn: USART1_IRQn
+				.gpio = GPIOA,
+				.ahb1Gpio = RCC_AHB1Periph_GPIOA,
+				.rx = GPIO_Pin_9,
+				.tx = GPIO_Pin_10,
+				.rxSource = GPIO_PinSource9,
+				.txSource = GPIO_PinSource10,
+				.gpioAf = GPIO_AF_USART1,
+				.usart = USART1,
+				.irqn = USART1_IRQn
 		},
 		/* Usart2 */ {
-				gpio: GPIOD,
-				ahb1Gpio: RCC_AHB1Periph_GPIOD,
-				rx: GPIO_Pin_6,
-				tx: GPIO_Pin_5,
-				rxSource: GPIO_PinSource6,
-				txSource: GPIO_PinSource5,
-				gpioAf: GPIO_AF_USART2,
-				usart: USART2,
-				irqn: USART2_IRQn
+				.gpio = GPIOD,
+				.ahb1Gpio = RCC_AHB1Periph_GPIOD,
+				.rx = GPIO_Pin_6,
+				.tx = GPIO_Pin_5,
+				.rxSource = GPIO_PinSource6,
+				.txSource = GPIO_PinSource5,
+				.gpioAf = GPIO_AF_USART2,
+				.usart = USART2,
+				.irqn = USART2_IRQn
 		}
 };
 
@@ -216,7 +215,7 @@ uint32_t Usart::readBytes(uint8_t *buffer, uint32_t maxSize)
 	return maxSize;
 }
 
-bool Usart::Available() const
+bool Usart::available() const
 {
 	return !s_readQueues[id].isEmpty();
 }

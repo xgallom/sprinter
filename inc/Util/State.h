@@ -19,19 +19,19 @@ struct StateMask {
 
 template<typename T>
 struct State {
-	T m_stateVariable;
+	T stateVariable;
 
-	State(T initialState = 0) : m_stateVariable(initialState) {}
+	State(T initialState = 0) : stateVariable(initialState) {}
 
-	bool flag(uint8_t offset) const { return m_stateVariable & (1 << offset); }
-	void setFlag(uint8_t offset) { m_stateVariable |= 1 << offset; }
+	bool flag(uint8_t offset) const { return stateVariable & (1 << offset); }
+	void setFlag(uint8_t offset) { stateVariable |= 1 << offset; }
 	void setFlagTo(uint8_t offset, bool value) { if(value) setFlag(offset); else resetFlag(offset); }
-	void resetFlag(uint8_t offset) { m_stateVariable &= ~(1 << offset); }
-	void toggleFlag(uint8_t offset) { m_stateVariable ^= 1 << offset; }
+	void resetFlag(uint8_t offset) { stateVariable &= ~(1 << offset); }
+	void toggleFlag(uint8_t offset) { stateVariable ^= 1 << offset; }
 
-	T mask(StateMask stateMask) const { return (m_stateVariable >> stateMask.offset) & stateMask.mask; }
+	T mask(StateMask stateMask) const { return (stateVariable >> stateMask.offset) & stateMask.mask; }
 	void setMask(StateMask stateMask, T value) {
-		m_stateVariable = (m_stateVariable & ~(stateMask.mask << stateMask.offset)) | (value << stateMask.offset);
+		stateVariable = (stateVariable & ~(stateMask.mask << stateMask.offset)) | (value << stateMask.offset);
 	}
 };
 

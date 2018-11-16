@@ -13,7 +13,7 @@
 #include "Util/Logger.h"
 #include "Periph/Engine.h"
 #include "Periph/Servo.h"
-#include "Util/Control.h"
+#include "Control/Control.h"
 
 
 class Application {
@@ -28,10 +28,12 @@ class Application {
 public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
-	Util::Control ctrl;
 
 private:
 	Periph::Led m_appRunningLed;
+
+	Control::Control control;
+	Control::Communication communication;
 
 public:
 	Application();

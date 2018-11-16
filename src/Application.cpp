@@ -5,7 +5,6 @@
  *      Author: xgallom
  */
 
-#include <Util/Trace.h>
 #include "Application.h"
 #include "Util/Timer.h"
 
@@ -32,17 +31,17 @@ void Application::run()
 	INF_LOG("Application started running.");
 
 	m_appRunningLed.turnOn();
-	Util::Timer timer(Util::Time::FromMilliSeconds(10));
-	timer.start();
 
 	/* @non-terminating@ */
 	for(;;) {
-		ctrl.run();
+		Container::OperationResult<Control::ControlData> communicationResult = communication.update();
 
-		if(timer.run()){
-			ctrl.update();
-		}
+		if(communicationResult.isValid)
+			control.setControlData(communicationResult.value);
+
+		control.update();
 	}
+
 	INF_LOG("Application ended.");
 }
 

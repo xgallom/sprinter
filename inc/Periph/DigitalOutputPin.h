@@ -15,6 +15,7 @@ namespace Periph {
 
 class DigitalOutputPin {
 	static Util::RefCounter s_refCounter;
+
 	const uint16_t id;
 	GPIO_TypeDef * const port;
 

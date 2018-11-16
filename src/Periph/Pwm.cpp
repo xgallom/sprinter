@@ -8,16 +8,17 @@
 
 #include "Periph/Pwm.h"
 
-static constexpr uint8_t  pwm_steps = 100;
-static constexpr uint32_t pulse_1ms = 180000;
-static constexpr uint16_t  servo_pwm_frequency = 50;
-
 namespace Periph {
+
+// TODO
+static const uint32_t PwmFrequency = 10000;
+static const uint16_t  PwmSteps = 100, ServoPwmSteps = 20000;
+static const uint16_t ServoPwmFrequency = 50;
 
 Util::RefCounter Pwm::s_refCounter;
 
-namespace Timers{
-enum Enum : uint8_t{
+namespace Timers {
+enum Enum : uint8_t {
 	Timer1 = 0,
 	Timer2,
 	Timer3,
@@ -30,70 +31,67 @@ struct {
 		GPIO_TypeDef 	*gpio;
 		TIM_TypeDef     *tim;
 		uint32_t        p1, p2, p3, p4;
-		uint8_t p1Source, p2Source, p3Source, p4Source, gpioAf;
-} constexpr config[Timers::Size] = {
-		/*Timer1*/ {					//16bit
-			gpio: GPIOC,
-			tim: TIM8,
-			p1: GPIO_Pin_6,
-			p2: GPIO_Pin_7,
-			p3: GPIO_Pin_8,
-			p4: GPIO_Pin_9,
-			p1Source: GPIO_PinSource6,
-			p2Source: GPIO_PinSource7,
-			p3Source: GPIO_PinSource8,
-			p4Source: GPIO_PinSource9,
-			gpioAf: GPIO_AF_TIM8
-		}, /*TImer2*/ {					//16bit
-			gpio: GPIOD,
-			tim: TIM4,
-			p1: GPIO_Pin_12,
-			p2: GPIO_Pin_13,
-			p3: GPIO_Pin_14,
-			p4: GPIO_Pin_15,
-			p1Source: GPIO_PinSource12,
-			p2Source: GPIO_PinSource13,
-			p3Source: GPIO_PinSource14,
-			p4Source: GPIO_PinSource14,
-			gpioAf: GPIO_AF_TIM4
-		}, /*TImer3*/ {					//32bit
-			gpio: GPIOA,
-			tim: TIM2,
-			p1: GPIO_Pin_0,
-			p2: GPIO_Pin_1,
-			p3: GPIO_Pin_2,
-			p4: GPIO_Pin_3,
-			p1Source: GPIO_PinSource0,
-			p2Source: GPIO_PinSource1,
-			p3Source: GPIO_PinSource2,
-			p4Source: GPIO_PinSource3,
-			gpioAf: GPIO_AF_TIM2
+		uint8_t p1Source, p2Source, p3Source, p4Source;
+		uint8_t gpioAf;
+} static const Config[Timers::Size] = {
+		/*Timer1*/ {					//16bit // TODO
+			.gpio = GPIOC,
+			.tim = TIM8,
+			.p1 = GPIO_Pin_6,
+			.p2 = GPIO_Pin_7,
+			.p3 = GPIO_Pin_8,
+			.p4 = GPIO_Pin_9,
+			.p1Source = GPIO_PinSource6,
+			.p2Source = GPIO_PinSource7,
+			.p3Source = GPIO_PinSource8,
+			.p4Source = GPIO_PinSource9,
+			.gpioAf = GPIO_AF_TIM8
+		}, /*Timer2*/ {					//16bit
+			.gpio = GPIOD,
+			.tim = TIM4,
+			.p1 = GPIO_Pin_12,
+			.p2 = GPIO_Pin_13,
+			.p3 = GPIO_Pin_14,
+			.p4 = GPIO_Pin_15,
+			.p1Source = GPIO_PinSource12,
+			.p2Source = GPIO_PinSource13,
+			.p3Source = GPIO_PinSource14,
+			.p4Source = GPIO_PinSource14,
+			.gpioAf = GPIO_AF_TIM4
+		}, /*Timer3*/ {					//32bit
+			.gpio = GPIOA,
+			.tim = TIM2,
+			.p1 = GPIO_Pin_0,
+			.p2 = GPIO_Pin_1,
+			.p3 = GPIO_Pin_2,
+			.p4 = GPIO_Pin_3,
+			.p1Source = GPIO_PinSource0,
+			.p2Source = GPIO_PinSource1,
+			.p3Source = GPIO_PinSource2,
+			.p4Source = GPIO_PinSource3,
+			.gpioAf = GPIO_AF_TIM2
 		}
 };
 
 /* PWM output pin */
-static volatile uint32_t *OutChnl[Periph::Pwms::Size] = {
+static volatile uint32_t *OutChnl[Pwms::Size] = {
+		&(Config[Timers::Timer1].tim->CCR4), // PC9
+		&(Config[Timers::Timer1].tim->CCR3), // PC8
+		&(Config[Timers::Timer1].tim->CCR2), // PC7
+		&(Config[Timers::Timer1].tim->CCR1), // PC6
 
-		&(config[Timers::Timer1].tim->CCR4), // PC9
-		&(config[Timers::Timer1].tim->CCR3), // PC8
-		&(config[Timers::Timer1].tim->CCR2), // PC7
-		&(config[Timers::Timer1].tim->CCR1), // PC6
+		&(Config[Timers::Timer2].tim->CCR1), // PD12
+		&(Config[Timers::Timer2].tim->CCR2), // PD13
+		&(Config[Timers::Timer2].tim->CCR3), // PD14
+		&(Config[Timers::Timer2].tim->CCR4), // PD15
 
-		&(config[Timers::Timer2].tim->CCR1), // PD12
-		&(config[Timers::Timer2].tim->CCR2), // PD13
-		&(config[Timers::Timer2].tim->CCR3), // PD14
-		&(config[Timers::Timer2].tim->CCR4), // PD15
-
-		&(config[Timers::Timer3].tim->CCR1), // PA0
-		&(config[Timers::Timer3].tim->CCR2), // PA1
-		&(config[Timers::Timer3].tim->CCR3), // PA2
-		&(config[Timers::Timer3].tim->CCR4), // PA3
-
+		&(Config[Timers::Timer3].tim->CCR1), // PA0
+		&(Config[Timers::Timer3].tim->CCR2), // PA1
+		&(Config[Timers::Timer3].tim->CCR3), // PA2
+		&(Config[Timers::Timer3].tim->CCR4), // PA3
 };
 
-static uint16_t s_pwmSpeed[Periph::Pwms::Size] = {};
-
-void Pwm::initRCC()
+void initRCC()
 {
 	 RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 	 RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
@@ -104,116 +102,86 @@ void Pwm::initRCC()
 	 RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 }
 
-void Pwm::initGpio()
+static void initSingleGpio(Timers::Enum timer)
 {
-	 GPIO_InitTypeDef GPIO_InitStructure;
-	 GPIO_StructInit(&GPIO_InitStructure);
+	GPIO_InitTypeDef init = {
+		.GPIO_Pin = Config[timer].p1 | Config[timer].p2 | Config[timer].p3 | Config[timer].p4,
+		.GPIO_Mode = GPIO_Mode_AF,
+		.GPIO_Speed = GPIO_Speed_50MHz,
+		.GPIO_OType = GPIO_OType_PP,
+		.GPIO_PuPd = GPIO_PuPd_NOPULL,
+	};
 
-	 GPIO_InitStructure.GPIO_Pin = config[Timers::Timer3].p1 | config[Timers::Timer3].p2 |
-			 config[Timers::Timer3].p3 | config[Timers::Timer3].p4;
-	 GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	 GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	 GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	 GPIO_Init(config[Timers::Timer3].gpio, &GPIO_InitStructure);
+	GPIO_Init(Config[timer].gpio, &init);
 
-	 GPIO_InitStructure.GPIO_Pin = config[Timers::Timer2].p1 | config[Timers::Timer2].p2 |
-			 config[Timers::Timer2].p3 | config[Timers::Timer2].p4;
-	 GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	 GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	 GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	 GPIO_Init(config[Timers::Timer2].gpio, &GPIO_InitStructure);
-
-
-	 GPIO_InitStructure.GPIO_Pin = config[Timers::Timer1].p1 | config[Timers::Timer1].p2 |
-			 config[Timers::Timer1].p3 | config[Timers::Timer1].p4;
-	 GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	 GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	 GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	 GPIO_Init(config[Timers::Timer1].gpio, &GPIO_InitStructure);
-
-
-	 /* set alternative function */
-
-	 GPIO_PinAFConfig(config[Timers::Timer1].gpio, config[Timers::Timer1].p1Source, config[Timers::Timer1].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer1].gpio, config[Timers::Timer1].p2Source, config[Timers::Timer1].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer1].gpio, config[Timers::Timer1].p3Source, config[Timers::Timer1].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer1].gpio, config[Timers::Timer1].p4Source, config[Timers::Timer1].gpioAf);
-
-	 GPIO_PinAFConfig(config[Timers::Timer2].gpio, config[Timers::Timer2].p1Source, config[Timers::Timer2].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer2].gpio, config[Timers::Timer2].p2Source, config[Timers::Timer2].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer2].gpio, config[Timers::Timer2].p3Source, config[Timers::Timer2].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer2].gpio, config[Timers::Timer2].p4Source, config[Timers::Timer2].gpioAf);
-
-	 GPIO_PinAFConfig(config[Timers::Timer3].gpio, config[Timers::Timer3].p1Source, config[Timers::Timer3].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer3].gpio, config[Timers::Timer3].p2Source, config[Timers::Timer3].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer3].gpio, config[Timers::Timer3].p3Source, config[Timers::Timer3].gpioAf);
-	 GPIO_PinAFConfig(config[Timers::Timer3].gpio, config[Timers::Timer3].p4Source, config[Timers::Timer3].gpioAf);
+	GPIO_PinAFConfig(Config[timer].gpio, Config[timer].p1Source, Config[timer].gpioAf);
+	GPIO_PinAFConfig(Config[timer].gpio, Config[timer].p2Source, Config[timer].gpioAf);
+	GPIO_PinAFConfig(Config[timer].gpio, Config[timer].p3Source, Config[timer].gpioAf);
+	GPIO_PinAFConfig(Config[timer].gpio, Config[timer].p4Source, Config[timer].gpioAf);
 }
 
-
-void Pwm::initTimOC(uint32_t frequency)
+static void initGpio()
 {
-	TIM_OCInitTypeDef TIM_OCInitStructure;
-	TIM_OCInitTypeDef servo;
-	TIM_OCStructInit(&TIM_OCInitStructure);
-	TIM_OCStructInit(&servo);
-
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStructure.TIM_Pulse = SystemCoreClock / frequency;
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
-	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
-
-	servo.TIM_OCMode = TIM_OCMode_PWM2;
-	servo.TIM_OutputState = TIM_OutputState_Enable;
-	servo.TIM_Pulse = SystemCoreClock / servo_pwm_frequency;
-	servo.TIM_OCPolarity = TIM_OCPolarity_Low;
-	servo.TIM_OCIdleState = TIM_OCIdleState_Set;
-
-	TIM_OC1Init(config[Timers::Timer1].tim, &TIM_OCInitStructure);
-	TIM_OC2Init(config[Timers::Timer1].tim, &TIM_OCInitStructure);
-	TIM_OC3Init(config[Timers::Timer1].tim, &TIM_OCInitStructure);
-	TIM_OC4Init(config[Timers::Timer1].tim, &TIM_OCInitStructure);
-
-	TIM_OC1Init(config[Timers::Timer2].tim, &TIM_OCInitStructure);
-	TIM_OC2Init(config[Timers::Timer2].tim, &TIM_OCInitStructure);
-	TIM_OC3Init(config[Timers::Timer2].tim, &TIM_OCInitStructure);
-	TIM_OC4Init(config[Timers::Timer2].tim, &TIM_OCInitStructure);
-
-	TIM_OC1Init(config[Timers::Timer3].tim, &servo);
-	TIM_OC2Init(config[Timers::Timer3].tim, &servo);
-	TIM_OC3Init(config[Timers::Timer3].tim, &servo);
-	TIM_OC4Init(config[Timers::Timer3].tim, &servo);
+	initSingleGpio(Timers::Timer1);
+	initSingleGpio(Timers::Timer2);
+	initSingleGpio(Timers::Timer3);
 }
 
-
-void Pwm::initTimTB(uint32_t frequency)
+static void initSingleTimerOC(Timers::Enum timer, uint32_t frequency)
 {
-	TIM_TimeBaseInitTypeDef engine1;
-	TIM_TimeBaseInitTypeDef engine2;
-	TIM_TimeBaseInitTypeDef servo;
-	TIM_TimeBaseStructInit(&engine1);
-	TIM_TimeBaseStructInit(&engine2);
-	TIM_TimeBaseStructInit(&servo);
+	static TIM_OCInitTypeDef init = {
+			.TIM_OCMode = TIM_OCMode_PWM2,
+			.TIM_OutputState = TIM_OutputState_Enable,
+			.TIM_OutputNState = TIM_OutputNState_Disable,
+			.TIM_Pulse = 0,
+			.TIM_OCPolarity = TIM_OCPolarity_Low,
+			.TIM_OCNPolarity = TIM_OCPolarity_High,
+			.TIM_OCIdleState = TIM_OCIdleState_Set,
+			.TIM_OCNIdleState = TIM_OCNIdleState_Reset
+	};
 
-	const uint32_t timer_frequency = SystemCoreClock;
-	const uint32_t counter_frequency = pwm_steps * frequency;
-	const uint32_t PSC_Value = (timer_frequency / counter_frequency) - 1;
-	const uint16_t ARR_Value = pwm_steps - 1;
+	init.TIM_Pulse = SystemCoreClock / frequency,
 
-	engine1.TIM_Period = ARR_Value;
-	engine1.TIM_Prescaler = PSC_Value;
-	engine1.TIM_ClockDivision = 0;
-	engine1.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_OC1Init(Config[timer].tim, &init);
+	TIM_OC2Init(Config[timer].tim, &init);
+	TIM_OC3Init(Config[timer].tim, &init);
+	TIM_OC4Init(Config[timer].tim, &init);
+}
 
-	engine2.TIM_Period = ARR_Value;
-	engine2.TIM_Prescaler = PSC_Value/2;
-	engine2.TIM_ClockDivision = 0;
-	engine2.TIM_CounterMode = TIM_CounterMode_Up;
+static void initTimerOC()
+{
+	initSingleTimerOC(Timers::Timer1, PwmFrequency);
+	initSingleTimerOC(Timers::Timer2, PwmFrequency);
+	initSingleTimerOC(Timers::Timer3, ServoPwmFrequency);
+}
 
+static void initSingleTimerTB(Timers::Enum timer, uint32_t period, uint32_t prescaler)
+{
+	static TIM_TimeBaseInitTypeDef init = {
+		.TIM_Prescaler = 0,
+		.TIM_CounterMode = TIM_CounterMode_Up,
+		.TIM_Period = 0,
+		.TIM_ClockDivision = TIM_CKD_DIV1,
+		.TIM_RepetitionCounter = 0
+	};
+
+	init.TIM_Period = period;
+	init.TIM_Prescaler = prescaler;
+
+	TIM_TimeBaseInit(Config[timer].tim, &init);
+}
+
+static void initTimerTB()
+{
+	const uint32_t
+		period         = PwmSteps       - 1,
+		servoPeriod    = ServoPwmSteps - 1,
+		prescaler      = (SystemCoreClock / (PwmSteps      * PwmFrequency       )) - 1,
+		servoPrescaler = (SystemCoreClock / (ServoPwmSteps * ServoPwmFrequency)) - 1;
+
+	initSingleTimerTB(Timers::Timer1, period, prescaler);
+	initSingleTimerTB(Timers::Timer2, period, prescaler / 2);
+	initSingleTimerTB(Timers::Timer3, servoPeriod, servoPrescaler / 2);
 
 	/* Servo Motor time base configuration
 	 * Recommended frequency : 50 Hz
@@ -221,63 +189,37 @@ void Pwm::initTimTB(uint32_t frequency)
 	 * -90deg  position	1000 us
 	 * +90deg  position	2000 us
 	 */
-	const uint32_t servo_pwm_steps	   = 20000;			//20 000 us full period
-	const uint32_t servo_counter_frequency = servo_pwm_steps * servo_pwm_frequency;
-	const uint32_t servo_PSC_Value = (SystemCoreClock / servo_counter_frequency) - 1;
-	const uint16_t servo_ARR_Value = servo_pwm_steps - 1;
-
-	servo.TIM_Period = servo_ARR_Value;
-	servo.TIM_Prescaler = servo_PSC_Value /2;
-	servo.TIM_ClockDivision = 0;
-	servo.TIM_CounterMode = TIM_CounterMode_Up;
-
-	TIM_TimeBaseInit(config[Timers::Timer1].tim, &engine1);
-	TIM_TimeBaseInit(config[Timers::Timer2].tim, &engine2);
-	TIM_TimeBaseInit(config[Timers::Timer3].tim, &servo);
-
 }
 
-void Pwm::initPwm(){
-
-	TIM_Cmd(config[Timers::Timer1].tim, ENABLE);
-	TIM_Cmd(config[Timers::Timer2].tim, ENABLE);
-	TIM_Cmd(config[Timers::Timer3].tim, ENABLE);
-
-	TIM_CtrlPWMOutputs(config[Timers::Timer1].tim, ENABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer2].tim, ENABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, ENABLE);
-}
-
-void Pwm::deinitPwm()
+static void initPwm()
 {
-	TIM_Cmd(config[Timers::Timer1].tim, DISABLE);
-	TIM_Cmd(config[Timers::Timer2].tim, DISABLE);
-	TIM_Cmd(config[Timers::Timer3].tim, DISABLE);
+	TIM_Cmd(Config[Timers::Timer1].tim, ENABLE);
+	TIM_Cmd(Config[Timers::Timer2].tim, ENABLE);
+	TIM_Cmd(Config[Timers::Timer3].tim, ENABLE);
 
-	TIM_CtrlPWMOutputs(config[Timers::Timer1].tim, DISABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer2].tim, DISABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, DISABLE);
+	TIM_CtrlPWMOutputs(Config[Timers::Timer1].tim, ENABLE);
+	TIM_CtrlPWMOutputs(Config[Timers::Timer2].tim, ENABLE);
+	TIM_CtrlPWMOutputs(Config[Timers::Timer3].tim, ENABLE);
 }
 
-void Pwm::deintServoPwm()
+static void deinitPwm()
 {
-	TIM_Cmd(config[Timers::Timer3].tim, DISABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, DISABLE);
+	TIM_Cmd(Config[Timers::Timer1].tim, DISABLE);
+	TIM_Cmd(Config[Timers::Timer2].tim, DISABLE);
+	TIM_Cmd(Config[Timers::Timer3].tim, DISABLE);
+
+	TIM_CtrlPWMOutputs(Config[Timers::Timer1].tim, DISABLE);
+	TIM_CtrlPWMOutputs(Config[Timers::Timer2].tim, DISABLE);
+	TIM_CtrlPWMOutputs(Config[Timers::Timer3].tim, DISABLE);
 }
 
-void Pwm::intServoPwm()
-{
-	TIM_Cmd(config[Timers::Timer3].tim, ENABLE);
-	TIM_CtrlPWMOutputs(config[Timers::Timer3].tim, ENABLE);
-}
-
-Pwm::Pwm(uint32_t frequency)
+Pwm::Pwm()
 {
 	if(!s_refCounter.referenceExists()) {
 		initRCC();
 		initGpio();
-		initTimTB(frequency);
-		initTimOC(frequency);
+		initTimerTB();
+		initTimerOC();
 		initPwm();
 	}
 
@@ -294,12 +236,12 @@ Pwm::~Pwm()
 
 void Pwm::write(Pwms::Enum id, uint16_t value)
 {
-	 *OutChnl[id] = s_pwmSpeed[id] = value;
+	 *OutChnl[id] = value;
 }
 
 uint16_t Pwm::read(Pwms::Enum id) const
 {
-	return s_pwmSpeed[id];
+	return *OutChnl[id];
 }
 
 } /* namespace Periph */

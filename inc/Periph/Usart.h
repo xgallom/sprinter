@@ -48,8 +48,12 @@ public:
 	uint32_t readLine(uint8_t *buffer, uint32_t maxSize);
 	uint32_t readBytesUntil(uint8_t character, uint8_t *buffer, uint32_t maxSize);
 	uint32_t readBytes(uint8_t *buffer, uint32_t maxSize);
-	bool Available() const;
+	bool available() const;
 	uint32_t bytesAvailable() const;
+
+	template<typename T>
+	void readStruct(T &buffer)
+	{ readBytes(reinterpret_cast<uint8_t *>(&buffer), sizeof(T)); }
 };
 
 } /* namespace Periph */
