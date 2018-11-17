@@ -27,15 +27,35 @@ Container::OperationResult<ControlData> Communication::update()
 	}
 	*/
 
-	if(m_rfModule.bytesAvailable() > sizeof(ControlData)) {
+	if(m_state == WaitingForNextPacket) {
+		waitForNextPacket();
+		return Container::OperationResult<ControlData>();
+	}
+	else
+		return readPacket();
+}
+
+void Communication::waitForNextPacket()
+{
+	while(m_rfModule.available()) {
+		if(m_rfModule.read() == ';') {
+			m_state = ReadingPacket;
+			break;
+		}
+	}
+}
+
+Container::OperationResult<ControlData> Communication::readPacket()
+{
+	if(m_rfModule.bytesAvailable() >= sizeof(ControlData)) {
 		ControlData controlData;
 
 		m_rfModule.readStruct(controlData);
 
-		if(controlData.end != ';' || controlData.dataCrc != Control::Packet::CalculateCRC8(reinterpret_cast<uint8_t *>(&controlData.data), sizeof(ControlData::Data)))
-			return Container::OperationResult<ControlData>();
+		if(controlData.end == ';' && controlData.dataCrc == Control::Packet::CalculateCRC8(reinterpret_cast<uint8_t *>(&controlData.data), sizeof(ControlData::Data)))
+			return Container::OperationResult<ControlData>(controlData);
 
-		return Container::OperationResult<ControlData>(controlData);
+		m_state = WaitingForNextPacket;
 	}
 
 	return Container::OperationResult<ControlData>();

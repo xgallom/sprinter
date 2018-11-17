@@ -40,11 +40,22 @@ struct ControlData {
 class Communication {
 	Periph::Usart m_rfModule;
 
+	enum State {
+		WaitingForNextPacket,
+		ReadingPacket
+	};
+
+	State m_state = WaitingForNextPacket;
+
 public:
 	Communication();
 
 	Container::OperationResult<ControlData> update();
 	void sendStatus();
+
+private:
+	void waitForNextPacket();
+	Container::OperationResult<ControlData> readPacket();
 };
 
 }
