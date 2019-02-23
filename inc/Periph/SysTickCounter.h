@@ -29,4 +29,11 @@ extern "C" {
 void SysTick_Handler(void);
 }
 
+extern "C" {
+int64_t Get_Micros(void);
+}
+
+extern "C" {
+int64_t Get_Milis(void);
+}
 #endif /* PERIPH_SYSTICKCOUNTER_H_ */

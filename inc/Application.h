@@ -14,6 +14,8 @@
 #include "Periph/Engine.h"
 #include "Periph/Servo.h"
 #include "Util/Control.h"
+#include "Periph/Encoder.h"
+#include "Util/Pid.h"
 
 
 class Application {
@@ -28,10 +30,14 @@ class Application {
 public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
+	Periph::Encoder encoder;
 	Util::Control ctrl;
+	Periph::Engine engine;
+	Util::Pid pid;
 
 private:
 	Periph::Led m_appRunningLed;
+
 
 public:
 	Application();

@@ -8,10 +8,14 @@
 #include <Util/Trace.h>
 #include "Application.h"
 #include "Util/Timer.h"
+#include "Periph/Encoder.h"
+#include "stm32f4xx.h"
 
 LOGGER_MODULE(Application)
 
 Application *Application::m_instance = nullptr;
+
+Util::PidArgs_t pidArgs;
 
 Application::ApplicationInitializator::ApplicationInitializator(Application *parent)
 {
@@ -24,7 +28,9 @@ Application::Application() :
 	m_applicationInitializator(this),
 	logger(&usartLog),
 	usartLog(Periph::Usarts::Usart1, 9600),
-	m_appRunningLed(Periph::Leds::Blue)
+	encoder(Periph::EncoderPins::EncoderPin1),
+	m_appRunningLed(Periph::Leds::Blue),
+	engine(Periph::Engines::M6)
 {}
 
 void Application::run()
@@ -32,19 +38,48 @@ void Application::run()
 	INF_LOG("Application started running.");
 
 	m_appRunningLed.turnOn();
-	Util::Timer timer(Util::Time::FromMilliSeconds(10));
+	Util::Timer timer(Util::Time::FromMilliSeconds(100));
 	timer.start();
+
+	pidArgs.Kd = 0.005;
+	pidArgs.Ki = 3;
+	pidArgs.Kp = 1;
+	pidArgs.dt = 0.1;
+	pidArgs.max = 100;
+	pidArgs.min = 0;
+
+	pid.setParameters(pidArgs);
+
 
 	/* @non-terminating@ */
 	for(;;) {
 		ctrl.run();
 
+
+		engine.update();
+		encoder.update();
+
 		if(timer.run()){
-			ctrl.update();
+			uint8_t pidresult = pid.process(50, encoder.getAngularSpeed()*1.1);
+			TRACE("PID : %d\n\r", encoder.getAngularSpeed());
+
+			engine.setTargetSpeed(pidresult);
+
+			//ctrl.update();
+			static uint32_t cnt =0;
+			cnt++;
+
+			if(cnt > 100) {
+				TRACE("angular speed: %d  period: %d  ticks: %d \n\r", encoder.getAngularSpeed(), encoder.getPeriod(), encoder.getCounter());
+				cnt = 0;
+			}
 		}
 	}
 	INF_LOG("Application ended.");
 }
+
+
+
 
 Application *Application::instance()
 {

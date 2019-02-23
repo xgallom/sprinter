@@ -13,9 +13,11 @@
 #include "Periph/Usart.h"
 #include "Periph/Servo.h"
 #include "Periph/Stepper.h"
+#include "Periph/Adc.h"
 #include "Util/Packet.h"
 #include "Util/Timer.h"
 #include "Util/Tool.h"
+#include "Device/Suntracker.h"
 
 
 #define	JOYSTICK_MIDDLE		100
@@ -42,6 +44,7 @@ class Control {
 	Periph::Servo 	m_servo1, m_servo2;
 	Periph::Stepper m_stepper1, m_stepper2;
 	Util::Packet 	m_packet;
+	Device::Suntracker m_suntracker;
 	Timer 		m_watchdog;
 	Util::Tool 	tool;
 	uint32_t 	m_disconnectedTime = 0;

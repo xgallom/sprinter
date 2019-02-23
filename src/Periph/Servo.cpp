@@ -83,7 +83,9 @@ uint16_t Servo::getTargetAngle() const
 }
 
 void Servo::addAngle(int16_t angle){
-	m_pwm.write(servosToPwms(id), getCurrentAngle() + angle);
+	if(getCurrentAngle() + angle < s_servoMaxPosition && getCurrentAngle() + angle > s_servoMinPosition){
+		m_pwm.write(servosToPwms(id), getCurrentAngle() + angle);
+	}
 }
 
 uint16_t Servo::getCurrentAngle() const

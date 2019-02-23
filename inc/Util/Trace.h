@@ -15,7 +15,7 @@
 
 
 #define TRACE_ENABLE
-//#define DTRACE_ENABLE
+//efine DTRACE_ENABLE
 
 #ifdef __cplusplus
 extern "C" {

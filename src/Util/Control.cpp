@@ -178,7 +178,6 @@ void Control::stop(){
 }
 
 void Control::start(){
-
 		//m_stepper2.start();
 		//m_stepper1.start();
 		m_servo1.start();
@@ -188,6 +187,8 @@ void Control::start(){
 }
 
 void Control::run(){
+
+	m_suntracker.update();
 
 	if(s_mode == printing_mode){
 		m_stepper1.freeRun();
@@ -318,7 +319,7 @@ void Control::updateVehicleData(){
 void Control::update(){
 	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
 		stop();
-		TRACE("DISCONNECTED\r\n");
+		//TRACE("DISCONNECTED\r\n");
 	}
 	else if(dataOK){
 		start();

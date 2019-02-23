@@ -44,3 +44,13 @@ void SysTick_Handler(void)
 {
 	++Periph::s_microsSinceLastReset;
 }
+
+int64_t Get_Micros(void)
+{
+	return Periph::s_microsSinceLastReset;
+}
+
+int64_t Get_Milis(void)
+{
+	return Periph::s_microsSinceLastReset/1000;
+}
