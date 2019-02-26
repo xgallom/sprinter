@@ -28,12 +28,13 @@ Application::Application() :
 	m_applicationInitializator(this),
 	logger(&usartLog),
 	usartLog(Periph::Usarts::Usart1, 9600),
-	encoder(Periph::EncoderPins::EncoderPin1),
 	m_appRunningLed(Periph::Leds::Blue),
-	engine(Periph::Engines::M6)
+	i2c(Periph::I2Cs::I2Cx2)
 {}
 
+
 void Application::run()
+
 {
 	INF_LOG("Application started running.");
 
@@ -48,38 +49,46 @@ void Application::run()
 	pidArgs.max = 100;
 	pidArgs.min = 0;
 
-	pid.setParameters(pidArgs);
 
+
+	uint8_t MPU_ADDR =  0b1101000 << 1;
+	uint8_t ACCEL_XOUT_H = 0x3B;
+	uint8_t ACCEL_XOUT_L = 0x3C;
+	uint8_t buff[256];
 
 	/* @non-terminating@ */
 	for(;;) {
 		ctrl.run();
+		//engine.update();
+
+//		engine1.setCurrentDirection(Periph::Dirs::Forward);
+//		engine1.setCurrentSpeed(50);
+//
+//		engine2.setCurrentDirection(Periph::Dirs::Forward);
+//		engine2.setCurrentSpeed(50);
+
+		if(timer.run()) {
+
+			//uint8_t pidresult = pid.process(70, encoder.getAngularSpeedInScale());
+
+			//TRACE("%d", encoder.getAngularSpeedInScale());
+			//TRACE(" ");
+			//TRACE("%d\n\r", encoder.getCounter());
+			//TRACE(" ");
 
 
-		engine.update();
-		encoder.update();
 
-		if(timer.run()){
-			uint8_t pidresult = pid.process(50, encoder.getAngularSpeed()*1.1);
-			TRACE("PID : %d\n\r", encoder.getAngularSpeed());
-
-			engine.setTargetSpeed(pidresult);
-
-			//ctrl.update();
 			static uint32_t cnt =0;
 			cnt++;
-
 			if(cnt > 100) {
-				TRACE("angular speed: %d  period: %d  ticks: %d \n\r", encoder.getAngularSpeed(), encoder.getPeriod(), encoder.getCounter());
+				//TRACE("angular speed: %d  period: %d  ticks: %d \n\r", encoder.getAngularSpeed(), encoder.getPeriod(), encoder.getCounter());
 				cnt = 0;
 			}
 		}
+
 	}
 	INF_LOG("Application ended.");
 }
-
-
-
 
 Application *Application::instance()
 {

@@ -27,7 +27,42 @@ enum Enum : uint8_t {
 
 	Size
 };
+
+constexpr struct {
+	GPIO_TypeDef *port;
+	uint16_t id;
+} DirPinsConfig[Engines::Size] = {
+		{ /* M1 */
+				port: GPIOE,
+				id: GPIO_Pin_7
+		},
+		{ /* M2 */
+				port: GPIOE,
+				id: GPIO_Pin_8
+		},
+		{ /* M3 */
+				port: GPIOE,
+				id: GPIO_Pin_9
+		},
+		{ /* M4 */
+				port: GPIOE,
+				id: GPIO_Pin_10
+		},
+		{ /* M5 */
+				port: GPIOE,
+				id: GPIO_Pin_11
+		},
+		{ /* M6 */
+				port: GPIOE,
+				id: GPIO_Pin_12
+		},
+		{ /* M7 */
+				port: GPIOE,
+				id: GPIO_Pin_14
+		}
+};
 }
+
 
 namespace Dirs {
 enum Enum : bool {
@@ -57,6 +92,7 @@ public:
 
 	void setCurrentDirection(Dirs::Enum direction);
 	void setTargetSpeed(uint8_t speed);
+	void setCurrentSpeed(uint8_t speed);
 	uint8_t getTargetSpeed() const;
 	uint8_t getCurrentSpeed() const;
 

@@ -6,19 +6,29 @@
  */
 
 #include "Util/Pid.h"
+#include <stdlib.h>
+#include <string.h>
+#include "Util/Trace.h"
 
 namespace Util {
 
+Pid::Pid(const PidArgs_t *p_args):
+	m_args(p_args),
+	pre_error(0),
+	integral(0)
+{}
 
-void Pid::setParameters(PidArgs_t args)
-{
-	m_args.Kd = args.Kd;
-	m_args.Ki = args.Ki;
-	m_args.Kp = args.Kp;
-	m_args.dt = args.dt;
-	m_args.max = args.max;
-	m_args.min = args.min;
-}
+//void Pid::setParameters(PidArgs_t args)
+//{
+////	memcpy(&m_args, &args, sizeof(m_args));
+//
+//	m_args.Kd = args.Kd;
+//	m_args.Ki = args.Ki;
+//	m_args.Kp = args.Kp;
+//	m_args.dt = args.dt;
+//	m_args.max = args.max;
+//	m_args.min = args.min;
+//}
 
 uint8_t Pid::process(uint8_t set_value, uint8_t feedback_value)
 {
@@ -26,31 +36,33 @@ uint8_t Pid::process(uint8_t set_value, uint8_t feedback_value)
 	float error = set_value - feedback_value;
 
 	// Proportional term
-	float Pout = m_args.Kp * error;
+	float Pout = m_args->Kp * error;
 
 	// Integral term
-	integral += error * m_args.dt;
-	float Iout = m_args.Ki * integral;
+	integral += error * m_args->dt;
+	float Iout = m_args->Ki * integral;
 
 	// Derivative term
-	float derivative = (error - pre_error) / m_args.dt;
-	float Dout = m_args.Kd * derivative;
+	float derivative = (error - pre_error) / m_args->dt;
+	float Dout = m_args->Kd * derivative;
 
 	// Calculate total output
-	uint8_t output = (uint8_t)(Pout + Iout + Dout);
+	int64_t output = (Pout + Iout + Dout);
 
 	// Restrict to max/min
-	if( output > m_args.max ) {
-		output = m_args.max;
+	if( output >= m_args->max ) {
+		output = m_args->max;
 	}
-	else if( output < m_args.min) {
-		output = m_args.min;
+	else if( output < m_args->min) {
+		output = m_args->min;
 	}
 
 	// Save error to previous error
 	pre_error = error;
 
-	return output;
+	//TRACE("error:%d int:%d der:%d P:%d I:%d D:%d\n\r", (int)error, (int)integral, (int)derivative, (int)Pout, (int)Iout, (int)Dout);
+
+	return (uint8_t)output;
 }
 
 } /* Namespace Util*/

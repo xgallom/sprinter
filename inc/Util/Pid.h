@@ -23,13 +23,15 @@ typedef struct {
 
 class Pid {
 
-	PidArgs_t m_args;
+	const PidArgs_t *m_args;
 	float	pre_error;
 	float	integral;
 public:
 
-	void update();
-	void setParameters(PidArgs_t args);
+
+	Pid(const PidArgs_t *m_args);
+
+	//void setParameters(PidArgs_t args);
 	uint8_t process(uint8_t, uint8_t);
 
 };

@@ -18,6 +18,10 @@
 #include "Util/Timer.h"
 #include "Util/Tool.h"
 #include "Device/Suntracker.h"
+#include "Periph/Encoder.h"
+#include "Util/Odometry.h"
+#include "Util/Pid.h"
+#include "Periph/EngineGroup.h"
 
 
 #define	JOYSTICK_MIDDLE		100
@@ -40,15 +44,50 @@ namespace Util {
 
 class Control {
 
-	Periph::Engine 	m_engine1, m_engine2, m_engine3, m_engine4, m_engine5, m_engine6, m_engine7;
+	Periph::Encoder m_encoders[6] = {
+		Periph::Encoder(Periph::EncoderPins::EncoderPin1), Periph::Encoder(Periph::EncoderPins::EncoderPin2),
+		Periph::Encoder(Periph::EncoderPins::EncoderPin3), Periph::Encoder(Periph::EncoderPins::EncoderPin4),
+		Periph::Encoder(Periph::EncoderPins::EncoderPin5), Periph::Encoder(Periph::EncoderPins::EncoderPin6)
+	};
+
+	Periph::Engine m_engines[7] = {
+		Periph::Engine(Periph::Engines::M1), Periph::Engine(Periph::Engines::M2),
+		Periph::Engine(Periph::Engines::M3), Periph::Engine(Periph::Engines::M4),
+		Periph::Engine(Periph::Engines::M5), Periph::Engine(Periph::Engines::M6),
+		Periph::Engine(Periph::Engines::M7)
+	};
+
+	const Util::PidArgs_t m_pidArgs = {
+		.Kp = 1,
+		.Ki = 6,
+		.Kd = 0.05,
+		.dt = 0.1,
+		.min = 0,
+		.max = 99
+	};
+
+	Util::Pid m_pids[6] = {
+		Util::Pid(&m_pidArgs), Util::Pid(&m_pidArgs), Util::Pid(&m_pidArgs),
+		Util::Pid(&m_pidArgs), Util::Pid(&m_pidArgs), Util::Pid(&m_pidArgs)
+	};
+
 	Periph::Servo 	m_servo1, m_servo2;
 	Periph::Stepper m_stepper1, m_stepper2;
 	Util::Packet 	m_packet;
 	Device::Suntracker m_suntracker;
-	Timer 		m_watchdog;
+
+	Util::Timer	m_timer;
+	Util::Timer 	m_watchdog;
 	Util::Tool 	tool;
+	Util::Odometry	odometry;
+
 	uint32_t 	m_disconnectedTime = 0;
 	bool 		m_state = true;
+
+	void setRightSideSpeed(uint8_t speed);
+	void setLeftSideSpeed(uint8_t speed);
+	void setRightSideDirection(Periph::Dirs::Enum dir);
+	void setLeftSideDirection(Periph::Dirs::Enum dir);
 
 public:
 	Control();
@@ -66,10 +105,7 @@ public:
 	void updateSimulation();
 	void taskManager(uint8_t task);
 
-	void setRightSideSpeed(uint8_t speed);
-	void setLeftSideSpeed(uint8_t speed);
-	void setRightSideDirection(Periph::Dirs::Enum dir);
-	void setLeftSideDirection(Periph::Dirs::Enum dir);
+	void updateEncoders();
 	void stopEngines();
 	void updateEngines();
 	void stopServos();

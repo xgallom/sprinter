@@ -6,14 +6,24 @@
  */
 
 #include "Periph/Encoder.h"
+#include "Periph/Engine.h"
 #include "Util/Trace.h"
 #include <Periph/SysTickCounter.h>
 
 namespace Periph {
 
-static const uint8_t WheelRadius   = 90;
-static const uint32_t EncoderAngleOnePick  = 3;
-static const uint8_t EncoderImpulsMaxDealy  = 500;
+static const uint8_t  WheelRadius   		= 90;
+static const uint16_t EncoderImpulsMaxDealy 	= 500;
+static const uint32_t EncoderAngleOnePick  	= 3;
+static const uint32_t FullCircleAngle 		= 360;
+
+static const float Circumference = 2 * 3.14 * WheelRadius;
+static const float OnePickDistance = (Circumference / FullCircleAngle) * EncoderAngleOnePick;
+
+typedef struct {
+        float x_est_last = 0;
+        float P_last = 0;
+} kalmanArgs_t;
 
 struct {
 	GPIO_TypeDef	*port;
@@ -21,7 +31,7 @@ struct {
 	uint8_t		EXTIpinSource;
 	uint32_t 	line;
 	uint8_t 	IRQChannel;
-} static const config[EncoderPins::Size] = {
+}static const config[EncoderPins::Size] = {
 		{ /* EncoderPin1 */
 				.port = GPIOG,
 				.pin = GPIO_Pin_0,
@@ -66,9 +76,10 @@ struct {
 		}
 };
 
-volatile uint32_t EncoderCounters[EncoderPins::Size];
+volatile int32_t EncoderCounters[EncoderPins::Size];
 volatile uint32_t EncoderPeriodMilis[EncoderPins::Size];
 volatile uint32_t EncoderLastTickMilis[EncoderPins::Size];
+kalmanArgs_t KalmanArgs[EncoderPins::Size] = {0};
 
 Encoder::Encoder(EncoderPins::Enum a_id):
 		id(a_id),
@@ -78,6 +89,7 @@ Encoder::Encoder(EncoderPins::Enum a_id):
 	initExti();
 	initNvic();
 	m_timer.start();
+	reset();
 
 	TRACE("Encoder init OK\n\r");
 }
@@ -159,7 +171,7 @@ void Encoder::initExti()
 	EXTI_InitTypeDef init = {
 		.EXTI_Line = config[id].line,
 		.EXTI_Mode = EXTI_Mode_Interrupt,
-		.EXTI_Trigger = EXTI_Trigger_Rising,
+		.EXTI_Trigger = EXTI_Trigger_Rising_Falling,
 		.EXTI_LineCmd = ENABLE
 	};
 
@@ -172,7 +184,7 @@ void Encoder::initNvic()
 		.NVIC_IRQChannel = config[id].IRQChannel,
 		/* Default priority Droup2 - 2bit preemp and 2bit sub */
 		.NVIC_IRQChannelPreemptionPriority = 0x02,
-		.NVIC_IRQChannelSubPriority = (id < 0b11 ? id : 0b11),
+		.NVIC_IRQChannelSubPriority = 0,//(id < 3 ? id : 3),
 		.NVIC_IRQChannelCmd = ENABLE
 	};
 	/* Add to NVIC */
@@ -180,7 +192,7 @@ void Encoder::initNvic()
 }
 
 
-uint32_t Encoder::getCounter()
+int32_t Encoder::getCounter()
 {
 	return EncoderCounters[id];
 }
@@ -193,11 +205,17 @@ uint32_t Encoder::getPeriod()
 
 /* Time spend on one encoder tick
  *
- * __maximum value for 100% PWM duty is 91.
+ * __maximum value for 100% PWM duty is 91 [deg/s]
  */
 uint8_t Encoder::getAngularSpeed()
 {
 	return (uint8_t)(EncoderAngleOnePick / (getPeriod() / 1000.0));
+}
+
+/* Return speed coresponding with engine speeds, resp. in percents [0 - 100 %]*/
+uint8_t Encoder::getAngularSpeedInScale()
+{
+	return (uint8_t)((EncoderAngleOnePick / (getPeriod() / 1000.0)) * 1.1);
 }
 
 /* Needed when wheel isn't turning around */
@@ -212,46 +230,60 @@ void Encoder::update()
 	}
 }
 
+void Encoder::reset()
+{
+	Periph::EncoderCounters[id] = 0;
+}
+
+int32_t Encoder::getDistance()
+{
+	return OnePickDistance * getCounter();
+}
+
 }  /* End of Periph namespace */
 
 
-static int KalmanFilter(int z_measured)
+int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id)
 {
-        static float x_est_last = 0;
-        static float P_last = 0;
+//        static float x_est_last = 0;
+//        static float P_last = 0;
         float K;
         float P;
         float P_temp;
         float x_temp_est;
         float x_est;
-        float Q = 0.05; //0.25;
+        float Q = 0.07;//0.05; //0.25;
         float R = 3; //0.7;
 
-        x_temp_est = x_est_last;
-        P_temp = P_last + Q;
+        x_temp_est = Periph::KalmanArgs[id].x_est_last;
+        P_temp = Periph::KalmanArgs[id].P_last + Q;
 
         K = P_temp * (1.0/(P_temp + R));
 
         x_est = x_temp_est + K * ((int)z_measured - x_temp_est);
         P = (1- K) * P_temp;
 
-        P_last = P;
-        x_est_last = x_est;
+        Periph::KalmanArgs[id].P_last = P;
+        Periph::KalmanArgs[id].x_est_last = x_est;
 
         return (int)x_est;
 }
 
-static void EncoderHandler(Periph::EncoderPins::Enum id)
+void EncoderHandler(Periph::EncoderPins::Enum id)
 {
 	int64_t currentMilis = Get_Milis();
-	static int64_t lastMilis = currentMilis;
 
-	Periph::EncoderCounters[id]++;
-
-	Periph::EncoderPeriodMilis[id] = KalmanFilter((currentMilis - lastMilis));
-
-	lastMilis = currentMilis;
-	Periph::EncoderLastTickMilis[id] = lastMilis;
+	/* Pozor treba osetrovat, kvoli rychlim skokom na hrane */
+	if((currentMilis - Periph::EncoderLastTickMilis[id]) > 20 ) {
+		if(GPIO_ReadOutputDataBit(Periph::Engines::DirPinsConfig[id].port, Periph::Engines::DirPinsConfig[id].id) == Periph::Dirs::Forward) {
+			Periph::EncoderCounters[id]++;
+		}
+		else {
+			Periph::EncoderCounters[id]--;
+		}
+		Periph::EncoderPeriodMilis[id] = KalmanFilter((currentMilis - Periph::EncoderLastTickMilis[id]), id);
+		Periph::EncoderLastTickMilis[id] = currentMilis;
+	}
 }
 
 extern "C" void EXTI0_IRQHandler(void)
@@ -303,7 +335,7 @@ extern "C" void EXTI4_IRQHandler(void)
     }
 }
 
-extern "C" void EXTI15_10_IRQHandler(void)
+extern "C" void EXTI9_5_IRQHandler(void)
 {
     if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
 

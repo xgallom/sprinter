@@ -50,7 +50,8 @@ static uint8_t nextTask(){
 	return task;
 }
 
-void Control::taskManager(uint8_t l_task){
+void Control::taskManager(uint8_t l_task)
+{
 	switch(l_task){
 		case down:
 			m_stepper1.setTargetSteps(1000);
@@ -71,7 +72,8 @@ void Control::taskManager(uint8_t l_task){
 
 	}
 }
-void Control::updateSimulation(){
+void Control::updateSimulation()
+{
 	m_stepper1.start();
 	m_stepper2.start();
 
@@ -88,26 +90,22 @@ void Control::updateSimulation(){
 }
 
 Control::Control():
-	m_engine1(Periph::Engines::M1),
-	m_engine2(Periph::Engines::M2),
-	m_engine3(Periph::Engines::M3),
-	m_engine4(Periph::Engines::M4),
-	m_engine5(Periph::Engines::M5),
-	m_engine6(Periph::Engines::M6),
-	m_engine7(Periph::Engines::M7),
 	m_servo1(Periph::Servos::Servo1),
 	m_servo2(Periph::Servos::Servo2),
 	m_stepper1(Periph::Steppers::Stepper1),
 	m_stepper2(Periph::Steppers::Stepper2),
+	m_timer(Util::Time::FromMilliSeconds(100)),
 	m_watchdog(Util::Time::FromMilliSeconds(100)),
-	rfModule(Periph::Usarts::Usart2, 9600)
+	rfModule(Periph::Usarts::Usart2, 9600),
+	odometry(m_encoders)
 
 {
+
 	m_watchdog.start();
+	m_timer.start();
 	m_servo2.start();
 	m_servo2.addAngle(60);   //korekcia pociatocnej polohy
 	stop();
-
 }
 
 Control::~Control(){
@@ -115,78 +113,120 @@ Control::~Control(){
 }
 
 
-void Control::setRightSideSpeed(uint8_t speed){
-	m_engine1.setTargetSpeed(speed);
-	m_engine2.setTargetSpeed(speed);
-	m_engine3.setTargetSpeed(speed);
+void Control::setRightSideSpeed(uint8_t speed)
+{
+	m_engines[0].setTargetSpeed(m_pids[0].process(speed, m_encoders[0].getAngularSpeedInScale()));
+	m_engines[1].setTargetSpeed(m_pids[1].process(speed, m_encoders[1].getAngularSpeedInScale()));
+	m_engines[2].setTargetSpeed(m_pids[2].process(speed, m_encoders[2].getAngularSpeedInScale()));
 }
 
-void Control::setLeftSideSpeed(uint8_t speed){
-	m_engine4.setTargetSpeed(speed);
-	m_engine5.setTargetSpeed(speed);
-	m_engine6.setTargetSpeed(speed);
+void Control::setLeftSideSpeed(uint8_t speed)
+{
+	//m_engines[3].setTargetSpeed(m_pids[3].process(speed, m_encoders[3].getAngularSpeedInScale()));
+
+	//m_engines[4].setCurrentSpeed(70);
+	//m_engines[4].setCurrentSpeed(m_pids[4].process(50, m_encoders[4].getAngularSpeedInScale()));
+	//m_engines[5].setCurrentSpeed(m_pids[5].process(speed, m_encoders[5].getAngularSpeedInScale()));
+
+
+
+//	uint8_t s =  m_encoders[5].getAngularSpeedInScale();
+//	uint8_t y = m_pids[5].process(50,(uint8_t)s);
+
+	//m_engines[5].setCurrentDirection(Periph::Dirs::Forward);
+	m_engines[5].setCurrentSpeed(70);
+
+	//TRACE("u: %d s: %d y: %d period:%d \n\r",speed, s, y, m_encoders[5].getPeriod());
+	TRACE("p1: %d  p2:%d\n\r", m_encoders[4].getAngularSpeedInScale(), m_encoders[5].getAngularSpeedInScale());
 }
 
-void Control::setRightSideDirection(Periph::Dirs::Enum dir){
-	m_engine1.setTargetDirection(dir);
-	m_engine2.setTargetDirection(dir);
-	m_engine3.setTargetDirection(dir);
+void Control::setRightSideDirection(Periph::Dirs::Enum dir)
+{
+	m_engines[0].setCurrentDirection(dir);
+	m_engines[1].setCurrentDirection(dir);
+	m_engines[2].setCurrentDirection(dir);
 }
 
-void Control::setLeftSideDirection(Periph::Dirs::Enum dir){
-	m_engine4.setTargetDirection(dir);
-	m_engine5.setTargetDirection(dir);
-	m_engine6.setTargetDirection(dir);
+void Control::setLeftSideDirection(Periph::Dirs::Enum dir)
+{
+	m_engines[3].setCurrentDirection(dir);
+	m_engines[4].setCurrentDirection(dir);
+	m_engines[5].setCurrentDirection(dir);
 }
 
-void Control::stopEngines(){
-	m_engine1.setTargetSpeed(0);
-	m_engine2.setTargetSpeed(0);
-	m_engine3.setTargetSpeed(0);
-	m_engine4.setTargetSpeed(0);
-	m_engine5.setTargetSpeed(0);
-	m_engine6.setTargetSpeed(0);
-	m_engine7.setTargetSpeed(0);
+void Control::stopEngines()
+{
+//	m_engines[0].setTargetSpeed(m_pids[0].process(0, m_encoders[0].getAngularSpeedInScale()));
+//	m_engines[1].setTargetSpeed(m_pids[1].process(0, m_encoders[1].getAngularSpeedInScale()));
+//	m_engines[2].setTargetSpeed(m_pids[2].process(0, m_encoders[2].getAngularSpeedInScale()));
+//	m_engines[3].setTargetSpeed(m_pids[3].process(0, m_encoders[3].getAngularSpeedInScale()));
+//	m_engines[4].setTargetSpeed(m_pids[4].process(0, m_encoders[4].getAngularSpeedInScale()));
+//	m_engines[5].setTargetSpeed(m_pids[5].process(0, m_encoders[5].getAngularSpeedInScale()));
 }
 
-void Control::updateEngines(){
-	m_engine1.update();
-	m_engine2.update();
-	m_engine3.update();
-	m_engine4.update();
-	m_engine5.update();
-	m_engine6.update();
-	m_engine7.update();
+void Control::updateEngines()
+{
+//	m_engines[0].update();
+//	m_engines[1].update();
+//	m_engines[2].update();
+//	m_engines[3].update();
+//	m_engines[4].update();
+//	m_engines[5].update();
+//	m_engines[6].update();
 
 }
 
-void Control::switchMode(){
+void Control::updateEncoders()
+{
+	m_encoders[0].update();
+	m_encoders[1].update();
+	m_encoders[2].update();
+	m_encoders[3].update();
+	m_encoders[4].update();
+	m_encoders[5].update();
 
+}
+
+void Control::switchMode()
+{
 	stop();
 	s_mode = ctrlData.mode;
 
 }
 
-void Control::stop(){
-		stopEngines();
-		m_stepper2.stop();
-		m_stepper1.stop();
-		m_servo1.stop();
-		m_servo2.stop();
+void Control::stop()
+{
+	stopEngines();
+	m_stepper2.stop();
+	m_stepper1.stop();
+	m_servo1.stop();
+	m_servo2.stop();
 
-		m_state = false;
+	m_state = false;
 }
 
-void Control::start(){
-		//m_stepper2.start();
-		//m_stepper1.start();
-		m_servo1.start();
-		m_servo2.start();
+void Control::start()
+{
+	//m_stepper2.start();
+	//m_stepper1.start();
+	m_servo1.start();
+	m_servo2.start();
 
-		m_state = true;
+	m_state = true;
 }
 
-void Control::run(){
+void Control::run()
+{
+
+	if(m_timer.run()) {
+		update();
+	}
+
+	//updateEngines();
+
+	updateEncoders();
+
+	odometry.update();
 
 	m_suntracker.update();
 
@@ -213,7 +253,7 @@ void Control::run(){
 		m_disconnectedTime++;
 	}
 
-if(rfModule.Available())
+	if(rfModule.Available())
 		if(rfModule.bytesAvailable() >= sizeof(ctrlData) +1) {
 			rfModule.readBytesUntil(';', (uint8_t *)&ctrlData, sizeof(ctrlData) +1);
 
@@ -227,35 +267,35 @@ if(rfModule.Available())
 				if(ctrlData.mode != s_mode)
 					switchMode();
 
-				TRACE("right: %d  ",ctrlData.x);
-				TRACE("left: %d  ",ctrlData.y);
-				TRACE("state: %d  ",ctrlData.state);
-//				TRACE("button L: %d  ",ctrlData.button_left);
-//				TRACE("button R: %d  ",ctrlData.button_right);
-//				TRACE("mode: %d  ",ctrlData.mode);
-				TRACE("POT: %d \r\n",ctrlData.pot);
+//				TRACE("right: %d  ",ctrlData.x);
+//				TRACE("left: %d  ",ctrlData.y);
+//				TRACE("state: %d  ",ctrlData.state);
+////				TRACE("button L: %d  ",ctrlData.button_left);
+////				TRACE("button R: %d  ",ctrlData.button_right);
+////				TRACE("mode: %d  ",ctrlData.mode);
+//				TRACE("POT: %d \r\n",ctrlData.pot);
 			}
 
 		}
 }
 
-void Control::updateSunTrackerData(){
-
+void Control::updateSunTrackerData()
+{
 	uint8_t sensitivity = ctrlData.pot;
-	m_engine7.setTargetSpeed(0);
+	m_engines[6].setTargetSpeed(0);
 
 	if(ctrlData.button_left){
-		m_engine7.setTargetSpeed(sensitivity);
+		m_engines[6].setTargetSpeed(sensitivity);
 
-		if(m_engine7.getCurrentDirection() != Periph::Dirs::Backward)
-			m_engine7.setTargetDirection(Periph::Dirs::Backward);
+		if(m_engines[6].getCurrentDirection() != Periph::Dirs::Backward)
+			m_engines[6].setTargetDirection(Periph::Dirs::Backward);
 	}
 
 	if(ctrlData.button_right){
-		m_engine7.setTargetSpeed(sensitivity);
+		m_engines[6].setTargetSpeed(sensitivity);
 
-		if(m_engine7.getCurrentDirection() != Periph::Dirs::Forward)
-			m_engine7.setTargetDirection(Periph::Dirs::Forward);
+		if(m_engines[6].getCurrentDirection() != Periph::Dirs::Forward)
+			m_engines[6].setTargetDirection(Periph::Dirs::Forward);
 	}
 
 	if(ctrlData.x > 90) m_servo1.incrementAngle();
@@ -265,8 +305,8 @@ void Control::updateSunTrackerData(){
 	else if(ctrlData.y < 10) m_servo2.decrementAngle();
 }
 
-void Control::updatePrintingData(){
-
+void Control::updatePrintingData()
+{
 	if(ctrlData.x > (JOYSTICK_MIDDLE + KVADRANT_OFFSET)){
 		m_stepper2.softwareEnable();
 		m_stepper2.setCurrentDirection(Periph::Dirs::Backward);
@@ -288,8 +328,8 @@ void Control::updatePrintingData(){
 	else 	m_stepper1.softwareDisable();
 }
 
-void Control::updateVehicleData(){
-
+void Control::updateVehicleData()
+{
 	int8_t right_speed =0, left_speed =0;
 
 	if(ctrlData.x > (JOYSTICK_MIDDLE + JOYSTICK_TRESHOLD)){
@@ -312,11 +352,12 @@ void Control::updateVehicleData(){
 	}
 	else left_speed = 0;
 
-	setRightSideSpeed(tool.clamp(right_speed, 0, 100));
-	setLeftSideSpeed(tool.clamp(left_speed, 0, 100));
+	setRightSideSpeed(tool.clamp(right_speed, 0, 80));
+	setLeftSideSpeed(tool.clamp(left_speed, 0, 80));
 }
 
-void Control::update(){
+void Control::update()
+{
 	if(!(ctrlData.state) || m_disconnectedTime >= 10){		//main STOP button on Joystick
 		stop();
 		//TRACE("DISCONNECTED\r\n");
@@ -329,18 +370,7 @@ void Control::update(){
 		else if(s_mode == printing_mode) updatePrintingData();
 		else if(s_mode == simulation_mode) updateSimulation();
 	}
-
-	updateEngines();
 }
 
-
-
-void Control::test() {
-
-	if(m_engine1.getCurrentSpeed() == m_engine1.getTargetSpeed()){
-			m_engine1.setTargetDirection(m_engine1.getCurrentDirection() ? Periph::Dirs::Forward : Periph::Dirs::Backward);
-		}
-	update();
-}
 
 } /* namespace Util */

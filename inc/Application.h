@@ -16,6 +16,7 @@
 #include "Util/Control.h"
 #include "Periph/Encoder.h"
 #include "Util/Pid.h"
+#include "Periph/I2C.h"
 
 
 class Application {
@@ -30,10 +31,8 @@ class Application {
 public:
 	Util::Logger logger;
 	Periph::Usart usartLog;
-	Periph::Encoder encoder;
 	Util::Control ctrl;
-	Periph::Engine engine;
-	Util::Pid pid;
+	Periph::I2C i2c;
 
 private:
 	Periph::Led m_appRunningLed;

@@ -37,44 +37,10 @@ static bool directionToPin(Dirs::Enum direction)
 	return direction == Dirs::Backward ? true : false;
 }
 
-static constexpr struct {
-	GPIO_TypeDef *port;
-	uint16_t id;
-} DirPinsConfig[Engines::Size] = {
-		{ /* M1 */
-				port: GPIOE,
-				id: GPIO_Pin_7
-		},
-		{ /* M2 */
-				port: GPIOE,
-				id: GPIO_Pin_8
-		},
-		{ /* M3 */
-				port: GPIOE,
-				id: GPIO_Pin_9
-		},
-		{ /* M4 */
-				port: GPIOE,
-				id: GPIO_Pin_10
-		},
-		{ /* M5 */
-				port: GPIOE,
-				id: GPIO_Pin_11
-		},
-		{ /* M6 */
-				port: GPIOE,
-				id: GPIO_Pin_12
-		},
-		{ /* M7 */
-				port: GPIOE,
-				id: GPIO_Pin_14
-		}
-};
-
 Engine::Engine(Engines::Enum id) :
 	id(id),
 	m_pwm(10000),
-	m_direction(DirPinsConfig[id].port, DirPinsConfig[id].id)
+	m_direction(Engines::DirPinsConfig[id].port, Engines::DirPinsConfig[id].id)
 {
 	m_pwm.write(enginesToPwms(id), 0);
 }
@@ -97,6 +63,11 @@ bool Engine::isRunning() const
 void Engine::setTargetSpeed(uint8_t speed)
 {
 	s_engineSpeeds[id] = speed;
+}
+
+void Engine::setCurrentSpeed(uint8_t speed)
+{
+	m_pwm.write(enginesToPwms(id), speed);
 }
 
 uint8_t Engine::getTargetSpeed() const

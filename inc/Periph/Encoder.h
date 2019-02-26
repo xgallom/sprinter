@@ -41,11 +41,19 @@ public:
 
 	void handler();
 	void update();
-	uint32_t getCounter();
+
+	void reset();
+
+	int32_t getDistance();
+	int32_t getCounter();
 	uint32_t getPeriod();
 	uint8_t getAngularSpeed();
+	uint8_t getAngularSpeedInScale();
 };
 
 }
+
+extern "C" void EncoderHandler(Periph::EncoderPins::Enum id);
+extern "C" int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id);
 
 #endif
