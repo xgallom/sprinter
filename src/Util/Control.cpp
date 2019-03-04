@@ -122,22 +122,12 @@ void Control::setRightSideSpeed(uint8_t speed)
 
 void Control::setLeftSideSpeed(uint8_t speed)
 {
-	//m_engines[3].setTargetSpeed(m_pids[3].process(speed, m_encoders[3].getAngularSpeedInScale()));
-
-	//m_engines[4].setCurrentSpeed(70);
-	//m_engines[4].setCurrentSpeed(m_pids[4].process(50, m_encoders[4].getAngularSpeedInScale()));
-	//m_engines[5].setCurrentSpeed(m_pids[5].process(speed, m_encoders[5].getAngularSpeedInScale()));
-
-
-
-//	uint8_t s =  m_encoders[5].getAngularSpeedInScale();
-//	uint8_t y = m_pids[5].process(50,(uint8_t)s);
-
-	//m_engines[5].setCurrentDirection(Periph::Dirs::Forward);
-	m_engines[5].setCurrentSpeed(70);
+	m_engines[3].setTargetSpeed(m_pids[3].process(speed, m_encoders[3].getAngularSpeedInScale()));
+	m_engines[4].setTargetSpeed(m_pids[4].process(speed, m_encoders[4].getAngularSpeedInScale()));
+	m_engines[5].setTargetSpeed(m_pids[5].process(speed, m_encoders[5].getAngularSpeedInScale()));
 
 	//TRACE("u: %d s: %d y: %d period:%d \n\r",speed, s, y, m_encoders[5].getPeriod());
-	TRACE("p1: %d  p2:%d\n\r", m_encoders[4].getAngularSpeedInScale(), m_encoders[5].getAngularSpeedInScale());
+	//TRACE("p1: %d  p2:%d\n\r", m_encoders[0].getAngularSpeedInScale(), m_encoders[1].getAngularSpeedInScale());
 }
 
 void Control::setRightSideDirection(Periph::Dirs::Enum dir)
@@ -156,24 +146,23 @@ void Control::setLeftSideDirection(Periph::Dirs::Enum dir)
 
 void Control::stopEngines()
 {
-//	m_engines[0].setTargetSpeed(m_pids[0].process(0, m_encoders[0].getAngularSpeedInScale()));
-//	m_engines[1].setTargetSpeed(m_pids[1].process(0, m_encoders[1].getAngularSpeedInScale()));
-//	m_engines[2].setTargetSpeed(m_pids[2].process(0, m_encoders[2].getAngularSpeedInScale()));
-//	m_engines[3].setTargetSpeed(m_pids[3].process(0, m_encoders[3].getAngularSpeedInScale()));
-//	m_engines[4].setTargetSpeed(m_pids[4].process(0, m_encoders[4].getAngularSpeedInScale()));
-//	m_engines[5].setTargetSpeed(m_pids[5].process(0, m_encoders[5].getAngularSpeedInScale()));
+	m_engines[0].setTargetSpeed(m_pids[0].process(0, m_encoders[0].getAngularSpeedInScale()));
+	m_engines[1].setTargetSpeed(m_pids[1].process(0, m_encoders[1].getAngularSpeedInScale()));
+	m_engines[2].setTargetSpeed(m_pids[2].process(0, m_encoders[2].getAngularSpeedInScale()));
+	m_engines[3].setTargetSpeed(m_pids[3].process(0, m_encoders[3].getAngularSpeedInScale()));
+	m_engines[4].setTargetSpeed(m_pids[4].process(0, m_encoders[4].getAngularSpeedInScale()));
+	m_engines[5].setTargetSpeed(m_pids[5].process(0, m_encoders[5].getAngularSpeedInScale()));
 }
 
 void Control::updateEngines()
 {
-//	m_engines[0].update();
-//	m_engines[1].update();
-//	m_engines[2].update();
-//	m_engines[3].update();
-//	m_engines[4].update();
-//	m_engines[5].update();
-//	m_engines[6].update();
-
+	m_engines[0].update();
+	m_engines[1].update();
+	m_engines[2].update();
+	m_engines[3].update();
+	m_engines[4].update();
+	m_engines[5].update();
+	m_engines[6].update();
 }
 
 void Control::updateEncoders()
@@ -184,14 +173,12 @@ void Control::updateEncoders()
 	m_encoders[3].update();
 	m_encoders[4].update();
 	m_encoders[5].update();
-
 }
 
 void Control::switchMode()
 {
 	stop();
 	s_mode = ctrlData.mode;
-
 }
 
 void Control::stop()
@@ -222,7 +209,7 @@ void Control::run()
 		update();
 	}
 
-	//updateEngines();
+	updateEngines();
 
 	updateEncoders();
 

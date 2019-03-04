@@ -13,8 +13,8 @@
 namespace Periph {
 
 static const uint8_t  WheelRadius   		= 90;
-static const uint16_t EncoderImpulsMaxDealy 	= 500;
-static const uint32_t EncoderAngleOnePick  	= 3;
+static const uint16_t EncoderImpulsMaxDealy 	= 700;
+static const uint32_t EncoderAngleOnePick  	= 6;
 static const uint32_t FullCircleAngle 		= 360;
 
 static const float Circumference = 2 * 3.14 * WheelRadius;
@@ -76,10 +76,22 @@ struct {
 		}
 };
 
-volatile int32_t EncoderCounters[EncoderPins::Size];
-volatile uint32_t EncoderPeriodMilis[EncoderPins::Size];
-volatile uint32_t EncoderLastTickMilis[EncoderPins::Size];
-kalmanArgs_t KalmanArgs[EncoderPins::Size] = {0};
+typedef struct {
+	uint8_t last_edge;
+	int32_t counter;
+	uint32_t period_milis;
+	uint32_t last_tick_milis;
+	kalmanArgs_t kalman_args;
+} encoderArgs_t;
+
+namespace Edges {
+enum  : uint8_t {
+	rising_edge = 0,
+	falling_edge
+};
+}
+
+static encoderArgs_t EncoderArgs[EncoderPins::Size];
 
 Encoder::Encoder(EncoderPins::Enum a_id):
 		id(a_id),
@@ -126,17 +138,6 @@ void Encoder::initGpio()
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
-	GPIO_InitTypeDef init = {
-		/* Set pin as input */
-		.GPIO_Pin = config[id].pin,
-		.GPIO_Mode = GPIO_Mode_IN,
-		.GPIO_Speed = GPIO_High_Speed,
-		.GPIO_OType = GPIO_OType_PP,
-		.GPIO_PuPd = GPIO_PuPd_DOWN
-	};
-
-	GPIO_Init(config[id].port, &init);
-
 
 	uint32_t sourcePort;
 
@@ -164,6 +165,18 @@ void Encoder::initGpio()
 		sourcePort = EXTI_PortSourceGPIOK;
 
 	SYSCFG_EXTILineConfig(sourcePort, config[id].EXTIpinSource);
+
+	GPIO_InitTypeDef init = {
+		/* Set pin as input */
+		.GPIO_Pin = config[id].pin,
+		.GPIO_Mode = GPIO_Mode_IN,
+		.GPIO_Speed = GPIO_High_Speed,
+		.GPIO_OType = GPIO_OType_PP,
+		.GPIO_PuPd = GPIO_PuPd_DOWN
+	};
+
+	GPIO_Init(config[id].port, &init);
+
 }
 
 void Encoder::initExti()
@@ -194,13 +207,13 @@ void Encoder::initNvic()
 
 int32_t Encoder::getCounter()
 {
-	return EncoderCounters[id];
+	return EncoderArgs[id].counter;
 }
 
 /* Time between two encoder's signal rising - tick */
 uint32_t Encoder::getPeriod()
 {
-	return EncoderPeriodMilis[id];
+	return EncoderArgs[id].period_milis;
 }
 
 /* Time spend on one encoder tick
@@ -224,15 +237,15 @@ void Encoder::update()
 	if(m_timer.run()) {
 		int64_t currentMilis = Get_Milis();
 
-		if((currentMilis - EncoderLastTickMilis[id]) >= EncoderImpulsMaxDealy) {
-			EncoderPeriodMilis[id] = (uint32_t)(currentMilis - EncoderLastTickMilis[id]);
+		if((currentMilis - EncoderArgs[id].last_tick_milis) >= EncoderImpulsMaxDealy) {
+			EncoderArgs[id].period_milis = (uint32_t)(currentMilis - EncoderArgs[id].last_tick_milis);
 		}
 	}
 }
 
 void Encoder::reset()
 {
-	Periph::EncoderCounters[id] = 0;
+	EncoderArgs[id].counter = 0;
 }
 
 int32_t Encoder::getDistance()
@@ -253,18 +266,18 @@ int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id)
         float x_temp_est;
         float x_est;
         float Q = 0.07;//0.05; //0.25;
-        float R = 3; //0.7;
+        float R = 5; //0.7;
 
-        x_temp_est = Periph::KalmanArgs[id].x_est_last;
-        P_temp = Periph::KalmanArgs[id].P_last + Q;
+        x_temp_est = Periph::EncoderArgs[id].kalman_args.x_est_last;
+        P_temp = Periph::EncoderArgs[id].kalman_args.P_last + Q;
 
         K = P_temp * (1.0/(P_temp + R));
 
         x_est = x_temp_est + K * ((int)z_measured - x_temp_est);
         P = (1- K) * P_temp;
 
-        Periph::KalmanArgs[id].P_last = P;
-        Periph::KalmanArgs[id].x_est_last = x_est;
+        Periph::EncoderArgs[id].kalman_args.P_last = P;
+        Periph::EncoderArgs[id].kalman_args.x_est_last = x_est;
 
         return (int)x_est;
 }
@@ -272,39 +285,47 @@ int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id)
 void EncoderHandler(Periph::EncoderPins::Enum id)
 {
 	int64_t currentMilis = Get_Milis();
+	uint8_t current_edge = GPIO_ReadInputDataBit(Periph::config[id].port, Periph::config[id].pin) ? Periph::Edges::rising_edge : Periph::Edges::falling_edge;
 
 	/* Pozor treba osetrovat, kvoli rychlim skokom na hrane */
-	if((currentMilis - Periph::EncoderLastTickMilis[id]) > 20 ) {
+	if(((currentMilis - Periph::EncoderArgs[id].last_tick_milis) > 60) && current_edge == Periph::Edges::falling_edge && Periph::EncoderArgs[id].last_edge != current_edge) {
 		if(GPIO_ReadOutputDataBit(Periph::Engines::DirPinsConfig[id].port, Periph::Engines::DirPinsConfig[id].id) == Periph::Dirs::Forward) {
-			Periph::EncoderCounters[id]++;
+			Periph::EncoderArgs[id].counter++;
 		}
 		else {
-			Periph::EncoderCounters[id]--;
+			Periph::EncoderArgs[id].counter--;
 		}
-		Periph::EncoderPeriodMilis[id] = KalmanFilter((currentMilis - Periph::EncoderLastTickMilis[id]), id);
-		Periph::EncoderLastTickMilis[id] = currentMilis;
+
+		Periph::EncoderArgs[id].period_milis = KalmanFilter((currentMilis - Periph::EncoderArgs[id].last_tick_milis), id);
+		Periph::EncoderArgs[id].last_tick_milis = currentMilis;
+		//TRACE("per: %d\n\r", Periph::EncoderPeriodMilis[id]);
+		//TRACE("State: %d\n\r", current_edge);
 	}
+
+	Periph::EncoderArgs[id].last_edge = current_edge;
+
 }
 
 extern "C" void EXTI0_IRQHandler(void)
 {
-    if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
+	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
 
-	EncoderHandler(Periph::EncoderPins::EncoderPin1);
+		EncoderHandler(Periph::EncoderPins::EncoderPin1);
 
-        EXTI_ClearITPendingBit(EXTI_Line0);
-    }
+		EXTI_ClearITPendingBit(EXTI_Line0);
+	}
 }
 
 extern "C" void EXTI1_IRQHandler(void)
 {
-    if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
+	if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
 
-	EncoderHandler(Periph::EncoderPins::EncoderPin2);
+		EncoderHandler(Periph::EncoderPins::EncoderPin2);
 
-        EXTI_ClearITPendingBit(EXTI_Line1);
-    }
+		EXTI_ClearITPendingBit(EXTI_Line1);
+	}
 }
+
 extern "C" void EXTI2_IRQHandler(void)
 {
     if (EXTI_GetITStatus(EXTI_Line2) != RESET) {

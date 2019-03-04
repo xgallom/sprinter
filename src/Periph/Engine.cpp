@@ -39,7 +39,7 @@ static bool directionToPin(Dirs::Enum direction)
 
 Engine::Engine(Engines::Enum id) :
 	id(id),
-	m_pwm(10000),
+	m_pwm(800),
 	m_direction(Engines::DirPinsConfig[id].port, Engines::DirPinsConfig[id].id)
 {
 	m_pwm.write(enginesToPwms(id), 0);

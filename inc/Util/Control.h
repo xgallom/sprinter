@@ -59,7 +59,7 @@ class Control {
 
 	const Util::PidArgs_t m_pidArgs = {
 		.Kp = 1,
-		.Ki = 6,
+		.Ki = 1.5,
 		.Kd = 0.05,
 		.dt = 0.1,
 		.min = 0,
