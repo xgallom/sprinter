@@ -7,6 +7,7 @@
 
 #include "Periph/Engine.h"
 #include "Util/State.h"
+#include "Util/Timer.h"
 
 namespace Periph {
 
@@ -40,9 +41,11 @@ static bool directionToPin(Dirs::Enum direction)
 Engine::Engine(Engines::Enum id) :
 	id(id),
 	m_pwm(800),
-	m_direction(Engines::DirPinsConfig[id].port, Engines::DirPinsConfig[id].id)
+	m_direction(Engines::DirPinsConfig[id].port, Engines::DirPinsConfig[id].id),
+	m_timer(Util::Time::FromMilliSeconds(10))
 {
 	m_pwm.write(enginesToPwms(id), 0);
+	m_timer.start();
 }
 
 void Engine::start()
@@ -128,10 +131,12 @@ void Engine::moveInDirection()
 
 void Engine::update()
 {
-	if(getCurrentDirection() != getTargetDirection())
-		turnAround();
-	else
-		moveInDirection();
+	if(m_timer.run()) {
+		if(getCurrentDirection() != getTargetDirection())
+			turnAround();
+		else
+			moveInDirection();
+	}
 }
 
 } /* namespace Periph */

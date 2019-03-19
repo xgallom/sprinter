@@ -265,8 +265,8 @@ int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id)
         float P_temp;
         float x_temp_est;
         float x_est;
-        float Q = 0.07;//0.05; //0.25;
-        float R = 5; //0.7;
+        float Q = 0.25;//0.07;
+        float R = 7; //5;
 
         x_temp_est = Periph::EncoderArgs[id].kalman_args.x_est_last;
         P_temp = Periph::EncoderArgs[id].kalman_args.P_last + Q;
@@ -276,8 +276,12 @@ int KalmanFilter(int z_measured, Periph::EncoderPins::Enum id)
         x_est = x_temp_est + K * ((int)z_measured - x_temp_est);
         P = (1- K) * P_temp;
 
+//        if(( x_est - Periph::EncoderArgs[id].kalman_args.x_est_last) > 7) {
+//        	x_est = Periph::EncoderArgs[id].kalman_args.x_est_last + 7;
+//        }
         Periph::EncoderArgs[id].kalman_args.P_last = P;
         Periph::EncoderArgs[id].kalman_args.x_est_last = x_est;
+
 
         return (int)x_est;
 }
@@ -298,7 +302,7 @@ void EncoderHandler(Periph::EncoderPins::Enum id)
 
 		Periph::EncoderArgs[id].period_milis = KalmanFilter((currentMilis - Periph::EncoderArgs[id].last_tick_milis), id);
 		Periph::EncoderArgs[id].last_tick_milis = currentMilis;
-		//TRACE("per: %d\n\r", Periph::EncoderPeriodMilis[id]);
+		//TRACE("per: %d\n\r", Periph::EncoderArgs[id].period_milis);
 		//TRACE("State: %d\n\r", current_edge);
 	}
 

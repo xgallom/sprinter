@@ -11,6 +11,7 @@
 #include <Periph/DigitalOutputPin.h>
 #include "stm32f4xx.h"
 #include "Pwm.h"
+#include "Util/Timer.h"
 
 namespace Periph {
 
@@ -66,8 +67,8 @@ constexpr struct {
 
 namespace Dirs {
 enum Enum : bool {
-	Forward = false,
-	Backward = true
+	Forward = true,
+	Backward = false
 };
 }
 
@@ -76,6 +77,7 @@ class Engine {
 
 	Pwm m_pwm;
 	DigitalOutputPin m_direction;
+	Util::Timer	m_timer;
 
 	void turnAround();
 	void moveInDirection();

@@ -28,10 +28,10 @@ static float degToRad(float deg)
 }
 
 Odometry::Odometry(Periph::Encoder (&Encoders)[6]):
-		m_leftEncoder(Encoders[5]),
-		m_rightEncoder(Encoders[4]),
+		m_leftEncoder(Encoders[1]),
+		m_rightEncoder(Encoders[5]),
 
-		m_timer(Util::Time::FromMilliSeconds(500))	//diskutabilne, kedy updatovat?
+		m_timer(Util::Time::FromMilliSeconds(1000))	//diskutabilne, kedy updatovat?
 {
 	m_timer.start();
 
@@ -58,7 +58,8 @@ void Odometry::update()
 		m_coords.add(computeNewCoords(LeftSideDistance, RightSideDistance));	// Update position from start
 		reset();
 
-		//TRACE("%d %d %d\n", (int)m_coords.m_x, (int)m_coords.m_y, (int)m_coords.m_F);
+		//TRACE("left: %d right: %d   ",LeftSideDistance, RightSideDistance );
+		TRACE("{XYPLOT|DATA|SeriesName|%d|%d}", (int)m_coords.m_x, (int)m_coords.m_y);
 	}
 }
 

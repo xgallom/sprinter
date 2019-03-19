@@ -39,7 +39,7 @@ uint8_t Pid::process(uint8_t set_value, uint8_t feedback_value)
 	float Pout = m_args->Kp * error;
 
 	// Integral term
-	if(integral < m_args->max) {
+	if(error < 0 || integral < m_args->max) {
 		integral += error * m_args->dt;	//upper limit Antiwindup
 	}
 
@@ -50,7 +50,7 @@ uint8_t Pid::process(uint8_t set_value, uint8_t feedback_value)
 	float Dout = m_args->Kd * derivative;
 
 	// Calculate total output
-	int64_t output = (Pout + Iout + Dout);
+	int64_t output = (Pout + Iout ); //+ Dout);
 
 	// Restrict to max/min
 	if( output >= m_args->max ) {

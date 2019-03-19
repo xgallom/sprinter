@@ -115,19 +115,29 @@ Control::~Control(){
 
 void Control::setRightSideSpeed(uint8_t speed)
 {
-	m_engines[0].setTargetSpeed(m_pids[0].process(speed, m_encoders[0].getAngularSpeedInScale()));
-	m_engines[1].setTargetSpeed(m_pids[1].process(speed, m_encoders[1].getAngularSpeedInScale()));
-	m_engines[2].setTargetSpeed(m_pids[2].process(speed, m_encoders[2].getAngularSpeedInScale()));
+	m_engines[0].setCurrentSpeed(m_pids[0].process(speed, m_encoders[0].getAngularSpeedInScale()));
+	m_engines[1].setCurrentSpeed(m_pids[1].process(speed, m_encoders[1].getAngularSpeedInScale()));
+	m_engines[2].setCurrentSpeed(m_pids[2].process(speed, m_encoders[2].getAngularSpeedInScale()));
+
+//	m_engines[0].setCurrentSpeed(speed);
+//	m_engines[1].setCurrentSpeed(speed);
+//	m_engines[2].setCurrentSpeed(speed);
 }
 
 void Control::setLeftSideSpeed(uint8_t speed)
 {
-	m_engines[3].setTargetSpeed(m_pids[3].process(speed, m_encoders[3].getAngularSpeedInScale()));
-	m_engines[4].setTargetSpeed(m_pids[4].process(speed, m_encoders[4].getAngularSpeedInScale()));
-	m_engines[5].setTargetSpeed(m_pids[5].process(speed, m_encoders[5].getAngularSpeedInScale()));
 
-	//TRACE("u: %d s: %d y: %d period:%d \n\r",speed, s, y, m_encoders[5].getPeriod());
-	//TRACE("p1: %d  p2:%d\n\r", m_encoders[0].getAngularSpeedInScale(), m_encoders[1].getAngularSpeedInScale());
+	m_engines[3].setCurrentSpeed(m_pids[3].process(speed, m_encoders[3].getAngularSpeedInScale()));
+	m_engines[4].setCurrentSpeed(m_pids[4].process(speed, m_encoders[4].getAngularSpeedInScale()));
+	m_engines[5].setCurrentSpeed(m_pids[5].process(speed, m_encoders[5].getAngularSpeedInScale()));
+
+//	m_engines[3].setCurrentSpeed(speed);
+//	m_engines[4].setCurrentSpeed(speed);
+//	m_engines[5].setCurrentSpeed(speed);
+
+	//m_engines[5].setCurrentSpeed(30);
+	//TRACE("u: %d s: %d y: %d period:%d \n\r",speed, s, y, m_encoders[1].getPeriod());
+	//TRACE("p1: %d  p2:%d  pid:%d\n\r", m_encoders[3].getAngularSpeedInScale(), speed, pid);
 }
 
 void Control::setRightSideDirection(Periph::Dirs::Enum dir)
@@ -146,23 +156,23 @@ void Control::setLeftSideDirection(Periph::Dirs::Enum dir)
 
 void Control::stopEngines()
 {
-	m_engines[0].setTargetSpeed(m_pids[0].process(0, m_encoders[0].getAngularSpeedInScale()));
-	m_engines[1].setTargetSpeed(m_pids[1].process(0, m_encoders[1].getAngularSpeedInScale()));
-	m_engines[2].setTargetSpeed(m_pids[2].process(0, m_encoders[2].getAngularSpeedInScale()));
-	m_engines[3].setTargetSpeed(m_pids[3].process(0, m_encoders[3].getAngularSpeedInScale()));
-	m_engines[4].setTargetSpeed(m_pids[4].process(0, m_encoders[4].getAngularSpeedInScale()));
-	m_engines[5].setTargetSpeed(m_pids[5].process(0, m_encoders[5].getAngularSpeedInScale()));
+//	m_engines[0].setTargetSpeed(m_pids[0].process(0, m_encoders[0].getAngularSpeedInScale()));
+//	m_engines[1].setTargetSpeed(m_pids[1].process(0, m_encoders[1].getAngularSpeedInScale()));
+//	m_engines[2].setTargetSpeed(m_pids[2].process(0, m_encoders[2].getAngularSpeedInScale()));
+//	m_engines[3].setTargetSpeed(m_pids[3].process(0, m_encoders[3].getAngularSpeedInScale()));
+//	m_engines[4].setTargetSpeed(m_pids[4].process(0, m_encoders[4].getAngularSpeedInScale()));
+//	m_engines[5].setTargetSpeed(m_pids[5].process(0, m_encoders[5].getAngularSpeedInScale()));
 }
 
 void Control::updateEngines()
 {
-	m_engines[0].update();
-	m_engines[1].update();
-	m_engines[2].update();
-	m_engines[3].update();
-	m_engines[4].update();
-	m_engines[5].update();
-	m_engines[6].update();
+//	m_engines[0].update();
+//	m_engines[1].update();
+//	m_engines[2].update();
+//	m_engines[3].update();
+//	m_engines[4].update();
+//	m_engines[5].update();
+//	m_engines[6].update();
 }
 
 void Control::updateEncoders()
@@ -207,6 +217,7 @@ void Control::run()
 
 	if(m_timer.run()) {
 		update();
+		//TRACE("%d %d %d %d\n", m_encoders[2].getAngularSpeedInScale(), m_encoders[3].getAngularSpeedInScale(), m_encoders[4].getAngularSpeedInScale(), m_encoders[5].getAngularSpeedInScale());
 	}
 
 	updateEngines();
@@ -330,11 +341,11 @@ void Control::updateVehicleData()
 	else right_speed = 0;
 
 	if(ctrlData.y > (JOYSTICK_MIDDLE + JOYSTICK_TRESHOLD)){
-		setLeftSideDirection(Periph::Dirs::Forward);
+		setLeftSideDirection(Periph::Dirs::Backward);
 		left_speed = ctrlData.y - JOYSTICK_MIDDLE;
 	}
 	else if(ctrlData.y < (JOYSTICK_MIDDLE - JOYSTICK_TRESHOLD)){
-		setLeftSideDirection(Periph::Dirs::Backward);
+		setLeftSideDirection(Periph::Dirs::Forward);
 		left_speed = JOYSTICK_MIDDLE - ctrlData.y;
 	}
 	else left_speed = 0;
