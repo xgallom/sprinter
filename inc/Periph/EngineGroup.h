@@ -11,38 +11,38 @@
 #include "Engine.h"
 #include "Util/State.h"
 
-namespace Periph {
+namespace Periph
+{
+	namespace EngineFlags
+	{
+		enum Flags {
+			Engine1 = 0,
+			Engine2,
+			Engine3,
+			Engine4,
+			Engine5,
+			Engine6,
+			Engine7
+		};
+	}
 
-namespace EngineFlags {
-enum Flags {
-	Engine1 = 0,
-	Engine2,
-	Engine3,
-	Engine4,
-	Engine5,
-	Engine6,
-	Engine7
-};
-}
+	class EngineGroup {
+		static constexpr uint8_t Size = 3;
 
-class EngineGroup {
-	static const uint8_t Size = 3;
+		Engine *m_engines[Size];
 
-	Engine *m_engines[Size];
+	public:
+		EngineGroup(Engine *engine1, Engine *engine2, Engine *engine3);
 
-public:
-	EngineGroup(Engine *engine1, Engine *engine2, Engine *engine3);
+		void start();
+		void stop();
 
-	void start();
-	void stop();
+		void setTargetSpeed(uint8_t speed);
 
-	void setTargetSpeed(uint8_t speed);
+		void setTargetDirection(Util::Dirs::Enum direction);
 
-	void setTargetDirection(Util::Dirs::Enum direction);
-
-	void update();
-};
-
+		void update();
+	};
 }
 
 #endif /* PERIPH_ENGINEGROUP_H_ */

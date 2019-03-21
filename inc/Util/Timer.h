@@ -11,30 +11,29 @@
 #include "Util/Time.h"
 #include "Periph/SysTickCounter.h"
 
-namespace Util {
+namespace Util
+{
+	class Timer {
+		Periph::SysTickCounter m_currentTime;
 
-class Timer {
-	Periph::SysTickCounter m_currentTime;
+		bool m_isRunning;
+		Time m_interval, m_lastTimeTriggered;
 
-	bool m_isRunning;
-	Time m_interval, m_lastTimeTriggered;
+	public:
+		explicit Timer(Time a_interval = Util::Time::ZeroTime());
 
-public:
-	explicit Timer(Time a_interval = Util::Time::ZeroTime());
+		void start();
+		void stop();
 
-	void start();
-	void stop();
+		Time interval() const;
+		void setInterval(Time a_interval);
 
-	Time interval() const;
-	void setInterval(Time a_interval);
+		bool shouldUpdate() const;
 
-	bool shouldUpdate() const;
+		void wasTriggeredNow();
 
-	void wasTriggeredNow();
-
-	bool run();
-};
-
-} /* namespace Util */
+		bool run();
+	};
+}
 
 #endif /* UTIL_TIMER_H_ */

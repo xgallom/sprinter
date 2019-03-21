@@ -11,14 +11,16 @@
 #include "Control/Communication.h"
 #include "Periph/EngineGroup.h"
 
-namespace Control {
-
-class VehicleMode {
-public:
-	void setControlData(const ControlData &controlData,
-			Periph::EngineGroup &leftEngineGroup, Periph::EngineGroup &rightEngineGroup);
-};
-
+namespace Control
+{
+	class VehicleMode {
+	public:
+		void setControlData(
+				const ControlData &controlData,
+				Periph::EngineGroup &leftEngineGroup,
+				Periph::EngineGroup &rightEngineGroup
+				);
+	};
 }
 
 #endif /* CONTROL_VEHICLEMODE_H_ */

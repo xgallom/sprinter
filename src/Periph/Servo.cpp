@@ -8,127 +8,128 @@
 #include "Periph/Servo.h"
 #include "Util/State.h"
 
-namespace Periph {
-
-namespace States {
-enum Flags : uint8_t {
-	IsRunning = 0x00,
-};
-}
-
-static Util::State<uint8_t> s_servoState;
-
-/* Servo  specification
- *
- * Left position   s_servoConstant
- * Home position:  s_servoConstant + 1000
- * Right position  s_servoConstant + 2000
- *
- * Working resolution: +-1000 samples
- */
-
-static const uint16_t  ServoConstant = 500; // first acceptable value in us
-static const uint16_t  ServoHomePosition = 750;
-static const uint16_t  ServoMaxPosition = 1500;
-static const uint16_t  ServoMinPosition = 0;
-
-static uint16_t s_servoAngles[Servos::Size] = { 0, 0, 0, 0 };
-
-static Pwms::Enum servosToPwms(Servos::Enum id)
+namespace Periph
 {
-	return static_cast<Pwms::Enum>(id + static_cast<Servos::Enum>(Pwms::Pwm9));
-}
+	namespace States
+	{
+		enum Flags : uint8_t {
+			IsRunning = 0x00,
+		};
+	}
 
-Servo::Servo(Servos::Enum id) :
-	id(id),
-	m_timer(Util::Time::FromMilliSeconds(10))
-{
-	start();
-	m_timer.start();
+	static Util::State<uint8_t> s_servoState;
 
-	setTargetAngle(ServoHomePosition);
-}
+	/* Servo  specification
+	 *
+	 * Left position   s_servoConstant
+	 * Home position:  s_servoConstant + 1000
+	 * Right position  s_servoConstant + 2000
+	 *
+	 * Working resolution: +-1000 samples
+	 */
 
-Servo::Servo(Servos::Enum id, uint16_t defaultAngle) :
-	id(id),
-	m_timer(Util::Time::FromMilliSeconds(10))
-{
-	start();
-	m_timer.start();
+	static constexpr uint16_t
+		ServoConstant = 500,
+		ServoHomePosition = 750,
+		ServoMaxPosition = 1500,
+		ServoMinPosition = 0;
 
-	setTargetAngle(ServoHomePosition + defaultAngle);
-}
+	static uint16_t s_servoAngles[Servos::Size] = { 0, 0, 0, 0 };
 
-Servo::~Servo()
-{
-	stop();
-}
+	static Pwms::Enum servosToPwms(Servos::Enum id)
+	{
+		return static_cast<Pwms::Enum>(id + static_cast<Servos::Enum>(Pwms::Pwm9));
+	}
 
-void Servo::start()
-{
-	s_servoState.setFlag(id);
-}
+	Servo::Servo(Servos::Enum id) :
+		id(id),
+		m_timer(Util::Time::FromMilliSeconds(10))
+	{
+		start();
+		m_timer.start();
 
-void Servo::stop()
-{
-	s_servoState.resetFlag(id);
-}
+		setTargetAngle(ServoHomePosition);
+	}
 
-bool Servo::isRunning() const
-{
-	return s_servoState.flag(id);
-}
+	Servo::Servo(Servos::Enum id, uint16_t defaultAngle) :
+		id(id),
+		m_timer(Util::Time::FromMilliSeconds(10))
+	{
+		start();
+		m_timer.start();
 
-void Servo::setTargetAngle(uint16_t angle)
-{
-	s_servoAngles[id] = ServoConstant + Util::clamp(angle, ServoMinPosition, ServoMaxPosition);
-}
+		setTargetAngle(ServoHomePosition + defaultAngle);
+	}
 
-uint16_t Servo::getTargetAngle() const
-{
-	return s_servoAngles[id];
-}
+	Servo::~Servo()
+	{
+		stop();
+	}
 
-uint16_t Servo::getCurrentAngle() const
-{
-	return m_pwm.read(servosToPwms(id));
-}
+	void Servo::start()
+	{
+		s_servoState.setFlag(id);
+	}
 
-void Servo::incrementAngle()
-{
-	setTargetAngle(getTargetAngle() + 1);
-}
+	void Servo::stop()
+	{
+		s_servoState.resetFlag(id);
+	}
 
-void Servo::decrementAngle()
-{
-	setTargetAngle(getTargetAngle() - 1);
-}
+	bool Servo::isRunning() const
+	{
+		return s_servoState.flag(id);
+	}
 
-void Servo::addAngle(int16_t angle)
-{
-	setTargetAngle(getTargetAngle() + angle);
-}
+	void Servo::setTargetAngle(uint16_t angle)
+	{
+		s_servoAngles[id] = ServoConstant + Util::clamp(angle, ServoMinPosition, ServoMaxPosition);
+	}
 
-void Servo::update()
-{
-	if(isRunning() && m_timer.run()) {
-		if(getCurrentAngle() < getTargetAngle())
-			incrementAngleInternal();
-		else if(getCurrentAngle() > getTargetAngle())
-			decrementAngleInternal();
+	uint16_t Servo::getTargetAngle() const
+	{
+		return s_servoAngles[id];
+	}
+
+	uint16_t Servo::getCurrentAngle() const
+	{
+		return m_pwm.read(servosToPwms(id));
+	}
+
+	void Servo::incrementAngle()
+	{
+		setTargetAngle(getTargetAngle() + 1);
+	}
+
+	void Servo::decrementAngle()
+	{
+		setTargetAngle(getTargetAngle() - 1);
+	}
+
+	void Servo::addAngle(int16_t angle)
+	{
+		setTargetAngle(getTargetAngle() + angle);
+	}
+
+	void Servo::update()
+	{
+		if(isRunning() && m_timer.run()) {
+			if(getCurrentAngle() < getTargetAngle())
+				incrementAngleInternal();
+			else if(getCurrentAngle() > getTargetAngle())
+				decrementAngleInternal();
+		}
+	}
+
+	void Servo::incrementAngleInternal()
+	{
+		if(getCurrentAngle() < ServoHomePosition + ServoMaxPosition)
+			m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
+	}
+
+	void Servo::decrementAngleInternal()
+	{
+		if(getCurrentAngle() > ServoHomePosition + ServoMinPosition)
+			m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
 	}
 }
-
-void Servo::incrementAngleInternal()
-{
-	if(getCurrentAngle() < ServoHomePosition + ServoMaxPosition)
-		m_pwm.write(servosToPwms(id), getCurrentAngle() + 1);
-}
-
-void Servo::decrementAngleInternal()
-{
-	if(getCurrentAngle() > ServoHomePosition + ServoMinPosition)
-		m_pwm.write(servosToPwms(id), getCurrentAngle() - 1);
-}
-
-} /* namespace Periph */

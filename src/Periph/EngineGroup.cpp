@@ -7,40 +7,39 @@
 
 #include <Periph/EngineGroup.h>
 
-namespace Periph {
-
-EngineGroup::EngineGroup(Engine *engine1, Engine *engine2, Engine *engine3)
-	: m_engines{engine1, engine2, engine3}
-{}
-
-void EngineGroup::start()
+namespace Periph
 {
-	for(uint8_t n = 0; n < Size; ++n)
-		m_engines[n]->start();
-}
+	EngineGroup::EngineGroup(Engine *engine1, Engine *engine2, Engine *engine3)
+		: m_engines{engine1, engine2, engine3}
+	{}
 
-void EngineGroup::stop()
-{
-	for(uint8_t n = 0; n < Size; ++n)
-		m_engines[n]->stop();
-}
+	void EngineGroup::start()
+	{
+		for(uint8_t n = 0; n < Size; ++n)
+			m_engines[n]->start();
+	}
 
-void EngineGroup::setTargetSpeed(uint8_t speed)
-{
-	for(uint8_t n = 0; n < Size; ++n)
-		m_engines[n]->setTargetSpeed(speed);
-}
+	void EngineGroup::stop()
+	{
+		for(uint8_t n = 0; n < Size; ++n)
+			m_engines[n]->stop();
+	}
 
-void EngineGroup::setTargetDirection(Util::Dirs::Enum direction)
-{
-	for(uint8_t n = 0; n < Size; ++n)
-		m_engines[n]->setTargetDirection(direction);
-}
+	void EngineGroup::setTargetSpeed(uint8_t speed)
+	{
+		for(uint8_t n = 0; n < Size; ++n)
+			m_engines[n]->setTargetSpeed(speed);
+	}
 
-void EngineGroup::update()
-{
-	for(uint8_t n = 0; n < Size; ++n)
-		m_engines[n]->update();
-}
+	void EngineGroup::setTargetDirection(Util::Dirs::Enum direction)
+	{
+		for(uint8_t n = 0; n < Size; ++n)
+			m_engines[n]->setTargetDirection(direction);
+	}
 
+	void EngineGroup::update()
+	{
+		for(uint8_t n = 0; n < Size; ++n)
+			m_engines[n]->update();
+	}
 }

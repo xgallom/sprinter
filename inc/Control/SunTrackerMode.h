@@ -13,23 +13,30 @@
 #include "Periph/Servo.h"
 #include "Periph/Engine.h"
 
-namespace Control {
+namespace Control
+{
+	class SunTrackerMode {
+		enum States : uint8_t {
+			Enabled = 0,
+			Direction
+		};
 
-class SunTrackerMode {
-	enum States : uint8_t {
-		Enabled = 0,
-		Direction
+		static const uint8_t Offset = 2;
+
+		Util::State<uint8_t> m_state;
+
+	public:
+		void setControlData(
+				const ControlData &controlData,
+				Periph::Servo &horizontalServo,
+				Periph::Servo &verticalServo,
+				Periph::Engine &differential
+				);
+		void update(
+				Periph::Servo &horizontalServo,
+				Periph::Servo &verticalServo
+				);
 	};
-
-	static const uint8_t Offset = 2;
-
-	Util::State<uint8_t> m_state;
-
-public:
-	void setControlData(const ControlData &controlData, Periph::Servo &horizontalServo, Periph::Servo &verticalServo, Periph::Engine &differential);
-	void update(Periph::Servo &horizontalServo, Periph::Servo &verticalServo);
-};
-
 }
 
 #endif /* CONTROL_SUNTRACKERMODE_H_ */

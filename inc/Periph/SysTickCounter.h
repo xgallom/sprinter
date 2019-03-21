@@ -10,23 +10,23 @@
 
 #include "Util/Time.h"
 
-namespace Periph {
+namespace Periph
+{
+	class SysTickCounter {
+		void init();
+		void deinit();
 
-class SysTickCounter {
-	void init();
-	void deinit();
+	public:
+		SysTickCounter();
 
-public:
-	SysTickCounter();
+		micros_t microsSinceLastReset() const;
+		Util::Time sinceLastReset() const;
+	};
+}
 
-	micros_t microsSinceLastReset() const;
-	Util::Time sinceLastReset() const;
-};
-
-} /* namespace Periph */
-
-extern "C" {
-void SysTick_Handler(void);
+extern "C"
+{
+	void SysTick_Handler(void);
 }
 
 #endif /* PERIPH_SYSTICKCOUNTER_H_ */

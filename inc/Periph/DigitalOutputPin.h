@@ -11,29 +11,27 @@
 #include "stm32f4xx.h"
 #include "Util/RefCounter.h"
 
-namespace Periph {
+namespace Periph
+{
+	class DigitalOutputPin {
+		static Util::RefCounter s_refCounter;
 
-class DigitalOutputPin {
-	static Util::RefCounter s_refCounter;
+		const uint16_t id;
+		GPIO_TypeDef * const port;
 
-	const uint16_t id;
-	GPIO_TypeDef * const port;
+		void initGpio();
+		void deinitGpio();
 
-	void initGpio();
-	void deinitGpio();
+	public:
+		DigitalOutputPin(GPIO_TypeDef *port, uint16_t id);
 
-public:
-	DigitalOutputPin(GPIO_TypeDef *port, uint16_t id);
-	~DigitalOutputPin();
+		void setPin();
+		void resetPin();
+		void setPinTo(bool on);
+		void togglePin();
 
-	void setPin();
-	void resetPin();
-	void setPinTo(bool on);
-	void togglePin();
-
-	bool readPin() const;
-};
-
-} /* namespace Periph */
+		bool readPin() const;
+	};
+}
 
 #endif /* PERIPH_DIGITALOUTPUTPIN_H_ */

@@ -11,33 +11,27 @@
 #include <cstdarg>
 #include <cstdio>
 
-namespace Util {
-
-Logger::Logger(Periph::Usart *usart) :
-	m_usart(usart)
-{}
-
-void Logger::write(const char module[], const char message[], ...)
+namespace Util
 {
-	char buffer[512] = {0};
-	va_list arg;
+	Logger::Logger(Periph::Usart *usart) :
+		m_usart(usart)
+	{}
 
-    va_start(arg, message);
-    vsnprintf(buffer, sizeof(buffer) - 1, message, arg);
-    va_end(arg);
+	void Logger::write(const char module[], const char message[], ...)
+	{
+		char buffer[512] = {0};
+		va_list arg;
 
-	m_usart->write(module);
-	m_usart->write(buffer);
+		va_start(arg, message);
+		vsnprintf(buffer, sizeof(buffer) - 1, message, arg);
+		va_end(arg);
+
+		m_usart->write(module);
+		m_usart->write(buffer);
+	}
+
+	Logger *Logger::instance()
+	{
+		return App ? &App->logger : nullptr;
+	}
 }
-
-Logger *Logger::instance()
-{
-	return App ? &App->logger : nullptr;
-}
-
-
-} /* namespace Util */
-
-
-
-
