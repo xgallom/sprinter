@@ -52,8 +52,14 @@ namespace Periph
 		uint32_t bytesAvailable() const;
 
 		template<typename T>
-		void readStruct(T &buffer)
-		{ readBytes(reinterpret_cast<uint8_t *>(&buffer), sizeof(T)); }
+		void readStruct(T &buffer) {
+			readBytes(reinterpret_cast<uint8_t *>(&buffer), sizeof(T));
+		}
+
+		template<typename T>
+		void writeStruct(const T &buffer) {
+			write(reinterpret_cast<const uint8_t *>(&buffer), sizeof(T));
+		}
 	};
 }
 

@@ -31,10 +31,10 @@ void Application::run()
 
 	/* @non-terminating@ */
 	for(;;) {
-		Container::Result<Control::ControlData> communicationResult = communication.update();
+		Container::Result<Control::Packet> communicationResult = communication.update();
 
-		if(communicationResult.isValid)
-			control.setControlData(communicationResult.value);
+		if(communicationResult.isValid && communicationResult.value.header.type == Control::PacketType::ManualControl)
+			control.setControlData(communicationResult.value.contents.dataPacket);
 
 		control.update();
 	}

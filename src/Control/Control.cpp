@@ -62,14 +62,14 @@ namespace Control
 		m_steppers[Steppers::Vertical].disable();
 	}
 
-	void Control::setControlData(const ControlData &controlData)
+	void Control::setControlData(const ManualControlPacket &controlData)
 	{
-		if(!controlData.data.state) {
+		if(!controlData.state) {
 			m_controlMode = ControlModes::Stopped;
 			stop();
 		}
-		else if(m_controlMode != controlData.data.mode) {
-			m_controlMode = static_cast<ControlModes::Enum>(controlData.data.mode);
+		else if(m_controlMode != controlData.mode) {
+			m_controlMode = static_cast<ControlModes::Enum>(controlData.mode);
 			stop();
 		}
 
@@ -96,10 +96,10 @@ namespace Control
 			break;
 		}
 
-		DBG_LOG("right: %d", controlData.data.x);
-		DBG_LOG("left: %d", controlData.data.y);
-		DBG_LOG("state: %d", controlData.data.state);
-		DBG_LOG("pot: %d", controlData.data.pot);
+		DBG_LOG("right: %d", controlData.x);
+		DBG_LOG("left:  %d", controlData.y);
+		DBG_LOG("state: %d", controlData.state);
+		DBG_LOG("pot:   %d", controlData.pot);
 	}
 
 	void Control::update()

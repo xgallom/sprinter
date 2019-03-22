@@ -13,56 +13,84 @@ namespace Control
 		m_rfModule(Periph::Usarts::Usart2, 9600)
 	{}
 
-	Container::Result<ControlData> Communication::update()
+	Container::Result<Packet> Communication::update()
 	{
-		// TODO
-		/*
-		if(m_rfModule.bytesAvailable() >= sizeof(Control::PacketHeader)) {
-			Control::PacketHeader header;
-
-			m_rfModule.readBytes(reinterpret_cast<uint8_t *>(&header), sizeof(Control::PacketHeader))
-
-			if(header.mark == Control::Packet::Mark) {
-			}
-		}
-		*/
-
-		if(m_state == WaitingForNextPacket) {
+		switch(m_state) {
+		case WaitingForNextPacket:
 			waitForNextPacket();
-			return Container::Result<ControlData>();
+			break;
+
+		case ReadingPacketHeader:
+			readPacketHeader();
+			break;
+
+		case ReadingPacketContents:
+			return readPacketContents();
 		}
-		else
-			return readPacket();
+
+		return Container::Result<Packet>();
+	}
+
+	void Communication::sendStatus() const
+	{
+	 // TODO
 	}
 
 	void Communication::waitForNextPacket()
 	{
-		while(m_rfModule.available()) {
-			if(m_rfModule.read() == ';') {
-				m_state = ReadingPacket;
+		while(m_rfModule.bytesAvailable() > sizeof(Packet::Mark)) {
+			if(m_rfModule.readWord() == Packet::Mark) {
+				m_state = ReadingPacketHeader;
 				break;
 			}
 		}
 	}
 
-	Container::Result<ControlData> Communication::readPacket()
+	void Communication::readPacketHeader()
 	{
-		if(m_rfModule.bytesAvailable() >= sizeof(ControlData)) {
-			ControlData controlData;
+		if(m_rfModule.bytesAvailable() >= sizeof(PacketHeader) + sizeof(Crc)) {
+			m_rfModule.readStruct(m_currentPacket.header);
 
-			m_rfModule.readStruct(controlData);
-
-			if(controlData.end == ';' && controlData.dataCrc == Control::Packet::CalculateCRC8(reinterpret_cast<uint8_t *>(&controlData.data), sizeof(ControlData::Data)))
-				return Container::Result<ControlData>(controlData);
-
-			m_state = WaitingForNextPacket;
+			if(checkCrc())
+				m_state = ReadingPacketContents;
 		}
-
-		return Container::Result<ControlData>();
 	}
 
-	void Communication::sendStatus()
+	Container::Result<Packet> Communication::readPacketContents()
 	{
-	 // TODO
+		if(m_rfModule.bytesAvailable() >= Packet::SizeForType(m_currentPacket.header.type) + sizeof(Crc)) {
+			m_rfModule.readBytes(
+					reinterpret_cast<uint8_t *>(&m_currentPacket.contents),
+					Packet::SizeForType(m_currentPacket.header.type)
+			);
+
+			if(checkCrc()) {
+				m_state = WaitingForNextPacket;
+
+				return Container::Result<Packet>(m_currentPacket);
+			}
+		}
+
+		return Container::Result<Packet>();
+	}
+
+	bool Communication::checkCrc()
+	{
+		Crc crc = m_rfModule.read();
+
+		if(crc != Packet::CalculateCRC8(m_currentPacket.header)) {
+			const PacketHeader nackPacket = {
+					.id = m_currentPacket.header.id,
+					.type = PacketType::Nack
+			};
+
+			m_rfModule.writeStruct(nackPacket);
+
+			m_state = WaitingForNextPacket;
+
+			return false;
+		}
+
+		return true;
 	}
 }

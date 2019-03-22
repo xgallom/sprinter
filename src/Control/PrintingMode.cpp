@@ -10,7 +10,7 @@
 namespace Control
 {
 	void PrintingMode::setControlData(
-			const ControlData &controlData,
+			const ManualControlPacket &controlData,
 			Periph::Stepper &horizontalStepper,
 			Periph::Stepper &verticalStepper
 			)
@@ -18,22 +18,22 @@ namespace Control
 		horizontalStepper.enable();
 		verticalStepper.enable();
 
-		if(controlData.data.x > JoystickMiddle + JostickQuadrantOffset) {
+		if(controlData.x > JoystickMiddle + JostickQuadrantOffset) {
 			horizontalStepper.resume();
 			horizontalStepper.setDirection(Util::Dirs::Backward);
 		}
-		else if(controlData.data.x < JoystickMiddle - JostickQuadrantOffset) {
+		else if(controlData.x < JoystickMiddle - JostickQuadrantOffset) {
 			horizontalStepper.resume();
 			horizontalStepper.setDirection(Util::Dirs::Forward);
 		}
 		else
 			horizontalStepper.pause();
 
-		if(controlData.data.y > JoystickMiddle + JostickQuadrantOffset) {
+		if(controlData.y > JoystickMiddle + JostickQuadrantOffset) {
 			verticalStepper.resume();
 			verticalStepper.setDirection(Util::Dirs::Forward);
 		}
-		else if(controlData.data.y < JoystickMiddle - JostickQuadrantOffset) {
+		else if(controlData.y < JoystickMiddle - JostickQuadrantOffset) {
 			verticalStepper.resume();
 			verticalStepper.setDirection(Util::Dirs::Backward);
 		}

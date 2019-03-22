@@ -20,42 +20,29 @@ namespace Control
 		JoystickMiddle = 500,
 		JoystickTreshold = 7;
 
-	struct ControlData {
-		struct Data {
-			uint8_t
-				x,
-				y,
-				pot,
-				buttonLeft,
-				buttonRight,
-				state,
-				mode;
-		}  __attribute__((packed)) data;
-
-		uint8_t
-			dataCrc,
-			end;
-	} __attribute__((packed));
-
 	class Communication {
 		Periph::Usart m_rfModule;
 
 		enum State {
 			WaitingForNextPacket,
-			ReadingPacket
+			ReadingPacketHeader,
+			ReadingPacketContents
 		};
 
 		State m_state = WaitingForNextPacket;
+		Packet m_currentPacket;
 
 	public:
 		Communication();
 
-		Container::Result<ControlData> update();
-		void sendStatus();
+		Container::Result<Packet> update();
+		void sendStatus() const;
 
 	private:
 		void waitForNextPacket();
-		Container::Result<ControlData> readPacket();
+		void readPacketHeader();
+		Container::Result<Packet> readPacketContents();
+		bool checkCrc();
 	};
 }
 #endif /* UTIL_PACKET_H_ */

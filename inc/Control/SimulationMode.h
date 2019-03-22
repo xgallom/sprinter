@@ -18,7 +18,7 @@ namespace Control
 
 	public:
 		void setControlData(
-				const ControlData &controlData,
+				const ManualControlPacket &controlData,
 				Periph::Stepper &horizontalStepper,
 				Periph::Stepper &verticalStepper
 				);

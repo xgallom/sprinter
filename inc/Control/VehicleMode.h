@@ -16,7 +16,7 @@ namespace Control
 	class VehicleMode {
 	public:
 		void setControlData(
-				const ControlData &controlData,
+				const ManualControlPacket &controlData,
 				Periph::EngineGroup &leftEngineGroup,
 				Periph::EngineGroup &rightEngineGroup
 				);

@@ -12,29 +12,29 @@
 namespace Control
 {
 	void VehicleMode::setControlData(
-			const ControlData &controlData,
+			const ManualControlPacket &controlData,
 			Periph::EngineGroup &leftEngineGroup,
 			Periph::EngineGroup &rightEngineGroup
 			)
 	{
 		uint8_t leftSpeed = 0, rightSpeed = 0;
 
-		if(controlData.data.y > JoystickMiddle + JoystickTreshold) {
+		if(controlData.y > JoystickMiddle + JoystickTreshold) {
 			leftEngineGroup.setTargetDirection(Util::Dirs::Forward);
-			leftSpeed= controlData.data.y - JoystickMiddle;
+			leftSpeed= controlData.y - JoystickMiddle;
 		}
-		else if(controlData.data.y < JoystickMiddle - JoystickTreshold) {
+		else if(controlData.y < JoystickMiddle - JoystickTreshold) {
 			leftEngineGroup.setTargetDirection(Util::Dirs::Backward);
-			leftSpeed = JoystickMiddle - controlData.data.y;
+			leftSpeed = JoystickMiddle - controlData.y;
 		}
 
-		if(controlData.data.x > JoystickMiddle + JoystickTreshold) {
+		if(controlData.x > JoystickMiddle + JoystickTreshold) {
 			rightEngineGroup.setTargetDirection(Util::Dirs::Backward);
-			rightSpeed = controlData.data.x - JoystickMiddle;
+			rightSpeed = controlData.x - JoystickMiddle;
 		}
-		else if(controlData.data.x < JoystickMiddle - JoystickTreshold) {
+		else if(controlData.x < JoystickMiddle - JoystickTreshold) {
 			rightEngineGroup.setTargetDirection(Util::Dirs::Forward);
-			rightSpeed = JoystickMiddle - controlData.data.x;
+			rightSpeed = JoystickMiddle - controlData.x;
 		}
 
 		leftEngineGroup.setTargetSpeed(Util::clamp<uint8_t>(leftSpeed, 0, 100));

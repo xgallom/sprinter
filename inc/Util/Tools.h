@@ -13,19 +13,19 @@
 namespace Util
 {
 	template<typename T>
-	T clamp(T val, T min, T max)
+	constexpr T clamp(T val, T min, T max)
 	{
 		return val < min ? min : (val > max ? max : val);
 	}
 
 	template<typename T>
-	bool inRange(T x, T low, T high)
+	constexpr bool inRange(T x, T low, T high)
 	{
 		return x <= high && x >= low;
 	}
 
 	template<typename T>
-	T map(T x, T inMin, T inMax, T outMin, T outMax)
+	constexpr T map(T x, T inMin, T inMax, T outMin, T outMax)
 	{
 		return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 	}

@@ -10,31 +10,31 @@
 namespace Control
 {
 	void SunTrackerMode::setControlData(
-			const ControlData &controlData,
+			const ManualControlPacket &controlData,
 			Periph::Servo &horizontalServo,
 			Periph::Servo &verticalServo,
 			Periph::Engine &differential
 			)
 	{
-		differential.setTargetSpeed(controlData.data.pot);
+		differential.setTargetSpeed(controlData.pot);
 
-		if(controlData.data.buttonLeft)
+		if(controlData.buttonLeft)
 			differential.setTargetDirection(Util::Dirs::Backward);
-		else if(controlData.data.buttonRight)
+		else if(controlData.buttonRight)
 			differential.setTargetDirection(Util::Dirs::Forward);
 		else
 			differential.setTargetSpeed(0);
 
 		uint8_t state = 0x00;
 
-		if(controlData.data.x > 90)
+		if(controlData.x > 90)
 			state = 0b00000011;
-		else if(controlData.data.x < 10)
+		else if(controlData.x < 10)
 			state = 0b00000001;
 
-		if(controlData.data.y > 90)
+		if(controlData.y > 90)
 			state |= 0b00001100;
-		else if(controlData.data.y < 10)
+		else if(controlData.y < 10)
 			state |= 0b00000100;
 
 		m_state.stateVariable = state;

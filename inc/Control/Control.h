@@ -78,7 +78,7 @@ namespace Control
 
 		void stop();
 
-		void setControlData(const ControlData &controlData);
+		void setControlData(const ManualControlPacket &controlData);
 
 		void update();
 	};

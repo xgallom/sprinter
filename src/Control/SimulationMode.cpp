@@ -21,7 +21,7 @@ namespace Control
 	}
 
 	void SimulationMode::setControlData(
-			const ControlData &controlData,
+			const ManualControlPacket &controlData,
 			Periph::Stepper &horizontalStepper,
 			Periph::Stepper &verticalStepper
 			)

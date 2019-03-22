@@ -27,7 +27,7 @@ namespace Control
 
 	public:
 		void setControlData(
-				const ControlData &controlData,
+				const ManualControlPacket &controlData,
 				Periph::Servo &horizontalServo,
 				Periph::Servo &verticalServo,
 				Periph::Engine &differential
