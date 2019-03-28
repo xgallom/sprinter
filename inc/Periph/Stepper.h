@@ -60,6 +60,7 @@ public:
 
 	bool isBussy(){ return (getTargetSteps() > getCurrentSteps()); };
 
+	void setSpeed(uint16_t);
 	void setTargetSteps(uint32_t steps);
 	uint32_t getCurrentSteps() const;
 	uint32_t getTargetSteps() const;

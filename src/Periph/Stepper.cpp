@@ -7,6 +7,8 @@
 
 #include "Periph/Stepper.h"
 #include "Util/State.h"
+#include "Util/Tool.h"
+#include "Util/Time.h"
 
 namespace Periph {
 
@@ -127,6 +129,12 @@ void Stepper::stop()
 void Stepper::start()
 {
 	enable();
+}
+
+void Stepper::setSpeed(uint16_t speed){
+	Util::Tool tool;
+	uint16_t time = tool.map(speed, 0, 100, 100, 1);
+	m_timer.setInterval(Util::Time::FromMilliSeconds(time));
 }
 
 void Stepper::setTargetSteps(uint32_t steps)

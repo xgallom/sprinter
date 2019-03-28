@@ -41,7 +41,9 @@ enum tasks : uint8_t{
 
 static uint8_t task = right;
 
-static uint8_t nextTask(){
+static uint8_t nextTask() {
+	const uint8_t rows = 5;
+
 	task++;
 
 	if(task >= tasks_size)
@@ -72,10 +74,14 @@ void Control::taskManager(uint8_t l_task)
 
 	}
 }
+
 void Control::updateSimulation()
 {
 	m_stepper1.start();
 	m_stepper2.start();
+
+//	m_stepper1.setSpeed(ctrlData.pot);
+//	m_stepper2.setSpeed(ctrlData.pot);
 
 	if(task == up || task == down){
 		if(!m_stepper1.isBussy()){
@@ -189,6 +195,15 @@ void Control::switchMode()
 {
 	stop();
 	s_mode = ctrlData.mode;
+
+//	if(s_mode == simulation_mode) {
+//		m_stepper1.setSpeed(20);
+//		m_stepper2.setSpeed(20);
+//	}
+//	else if(s_mode == printing_mode) {
+//		m_stepper1.setSpeed(100);
+//		m_stepper2.setSpeed(100);
+//	}
 }
 
 void Control::stop()
