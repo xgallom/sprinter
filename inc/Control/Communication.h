@@ -36,7 +36,7 @@ namespace Control
 		Communication();
 
 		Container::Result<Packet> update();
-		void sendStatus() const;
+		void sendStatus();
 
 	private:
 		void waitForNextPacket();

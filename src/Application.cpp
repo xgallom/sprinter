@@ -28,6 +28,10 @@ void Application::run()
 	INF_LOG("Application started running.");
 
 	m_appRunningLed.turnOn();
+	communication.sendStatus();
+
+	Util::Timer timer(Util::Time::FromMilliSeconds(100));
+	timer.start();
 
 	/* @non-terminating@ */
 	for(;;) {
@@ -37,6 +41,11 @@ void Application::run()
 			control.setControlData(communicationResult.value.contents.dataPacket);
 
 		control.update();
+
+		if(timer.run()) {
+			communication.sendStatus();
+			INF_LOG("Tick");
+		}
 	}
 
 	INF_LOG("Application ended.");

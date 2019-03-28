@@ -30,8 +30,8 @@ namespace Periph
 
 	static constexpr uint16_t
 		ServoConstant = 500,
-		ServoHomePosition = 750,
-		ServoMaxPosition = 1500,
+		ServoHomePosition = 1000,
+		ServoMaxPosition = 2000,
 		ServoMinPosition = 0;
 
 	static uint16_t s_servoAngles[Servos::Size] = { 0, 0, 0, 0 };
@@ -88,7 +88,7 @@ namespace Periph
 
 	uint16_t Servo::getTargetAngle() const
 	{
-		return s_servoAngles[id];
+		return s_servoAngles[id] - ServoConstant;
 	}
 
 	uint16_t Servo::getCurrentAngle() const

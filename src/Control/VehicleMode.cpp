@@ -21,7 +21,7 @@ namespace Control
 
 		if(controlData.y > JoystickMiddle + JoystickTreshold) {
 			leftEngineGroup.setTargetDirection(Util::Dirs::Forward);
-			leftSpeed= controlData.y - JoystickMiddle;
+			leftSpeed = controlData.y - JoystickMiddle;
 		}
 		else if(controlData.y < JoystickMiddle - JoystickTreshold) {
 			leftEngineGroup.setTargetDirection(Util::Dirs::Backward);

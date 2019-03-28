@@ -31,9 +31,9 @@ namespace Control
 		return Container::Result<Packet>();
 	}
 
-	void Communication::sendStatus() const
+	void Communication::sendStatus()
 	{
-	 // TODO
+		m_rfModule.write("STATUS\n");
 	}
 
 	void Communication::waitForNextPacket()
