@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+__attribute__((__noreturn__))
 void run(void);
 
 #ifdef __cplusplus

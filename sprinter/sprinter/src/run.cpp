@@ -2,9 +2,9 @@
 // Created by xgallom on 10/2/19.
 //
 
-#include "sprinter/run.h"
+#include <sprinter/run.h>
 #include <core/log.h>
-#include "main.h"
+#include <main.h>
 
 void run(void)
 {
@@ -14,6 +14,8 @@ void run(void)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+
 	for(;;) {}
+
 #pragma clang diagnostic pop
 }
