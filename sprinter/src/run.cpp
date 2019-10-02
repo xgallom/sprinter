@@ -9,5 +9,10 @@ void run(void)
 {
 	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+
 	for(;;) {}
+
+#pragma clang diagnostic pop
 }
