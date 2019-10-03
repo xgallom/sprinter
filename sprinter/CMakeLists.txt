@@ -1,6 +1,5 @@
 set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} \
--Os \
 -fno-exceptions \
 -fno-non-call-exceptions \
 -fno-rtti \
