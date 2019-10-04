@@ -69,7 +69,7 @@ additional specific configuration for our c++17 sources.
 | PC7  | ENG3_SPD  | PWM2      | TIM8_CH2   | Engine 3 speed        |
 | PC8  | ENG2_SPD  | PWM2      | TIM8_CH3   | Engine 2 speed        |
 | PC9  | ENG1_SPD  | PWM2      | TIM8_CH4   | Engine 1 speed        |
-| PC13 | USER_BTN  | IE RT     | GPIO       | User button interrupt |
+| PC13 | USER_BTN  | EXTI10_RT | GPIO       | User button interrupt |
 | PC14 | OSC32_IN  | OSC32_IN  | RCC        | Oscillator input      |
 | PC15 | OSC32_OUT | OSC32_OUT | RCC        | Oscillator output     |
 | PD0  | STEP1_EN  | OUT_PP    | GPIO       | Stepper 1 enable      |
@@ -81,6 +81,10 @@ additional specific configuration for our c++17 sources.
 | PD12 | ENG5_SPD  | PWM2      | TIM4_CH1   | Engine 5 speed        |
 | PD13 | ENG6_SPD  | PWM2      | TIM4_CH2   | Engine 6 speed        |
 | PD14 | ENG7_SPD  | PWM2      | TIM4_CH3   | Engine 7 speed        |
+| PE2  | ENC3_EI   | EXTI2_RFT | GPIO       | Encoder 3 interrupt   |
+| PE3  | ENC4_EI   | EXTI3_RFT | GPIO       | Encoder 4 interrupt   |
+| PE4  | ENC5_EI   | EXTI4_RFT | GPIO       | Encoder 5 interrupt   |
+| PE5  | ENC6_EI   | EXTI5_RFT | GPIO       | Encoder 6 interrupt   |
 | PE7  | ENG1_DIR  | OUT_PP    | GPIO       | Engine 1 direction    |
 | PE8  | ENG2_DIR  | OUT_PP    | GPIO       | Engine 2 direction    |
 | PE9  | ENG3_DIR  | OUT_PP    | GPIO       | Engine 3 direction    |
@@ -88,6 +92,8 @@ additional specific configuration for our c++17 sources.
 | PE11 | ENG5_DIR  | OUT_PP    | GPIO       | Engine 5 direction    |
 | PE12 | ENG6_DIR  | OUT_PP    | GPIO       | Engine 6 direction    |
 | PE14 | ENG7_DIR  | OUT_PP    | GPIO       | Engine 7 direction    |
+| PG0  | ENC1_EI   | EXTI0_RFT | GPIO       | Encoder 1 interrupt   |
+| PG1  | ENC2_EI   | EXTI1_RFT | GPIO       | Encoder 2 interrupt   |
 | PG2  | STEP1_CTL | OUT_PP    | GPIO       | Stepper 1 control     |
 | PG3  | STEP2_CTL | OUT_PP    | GPIO       | Stepper 2 control     |
 | PG6  | USB_PWR   | OUT_PP    | GPIO       | USB power switch on   |

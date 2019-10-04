@@ -6,6 +6,11 @@
 #include <core/log.h>
 #include <main.h>
 
+extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	log("External interrupt from: ", GPIO_Pin, "\n");
+}
+
 void run(void)
 {
 	log("\n\nSprinter started\n");

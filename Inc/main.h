@@ -60,8 +60,21 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ENC3_EI_Pin GPIO_PIN_2
+#define ENC3_EI_GPIO_Port GPIOE
+#define ENC3_EI_EXTI_IRQn EXTI2_IRQn
+#define ENC4_EI_Pin GPIO_PIN_3
+#define ENC4_EI_GPIO_Port GPIOE
+#define ENC4_EI_EXTI_IRQn EXTI3_IRQn
+#define ENC5_EI_Pin GPIO_PIN_4
+#define ENC5_EI_GPIO_Port GPIOE
+#define ENC5_EI_EXTI_IRQn EXTI4_IRQn
+#define ENC6_EI_Pin GPIO_PIN_5
+#define ENC6_EI_GPIO_Port GPIOE
+#define ENC6_EI_EXTI_IRQn EXTI9_5_IRQn
 #define USER_BTN_Pin GPIO_PIN_13
 #define USER_BTN_GPIO_Port GPIOC
+#define USER_BTN_EXTI_IRQn EXTI15_10_IRQn
 #define OSC32_IN_Pin GPIO_PIN_14
 #define OSC32_IN_GPIO_Port GPIOC
 #define OSC32_OUT_Pin GPIO_PIN_15
@@ -86,6 +99,12 @@ void Error_Handler(void);
 #define SUN_ADC5_GPIO_Port GPIOC
 #define LED_GREEN_Pin GPIO_PIN_0
 #define LED_GREEN_GPIO_Port GPIOB
+#define ENC1_EI_Pin GPIO_PIN_0
+#define ENC1_EI_GPIO_Port GPIOG
+#define ENC1_EI_EXTI_IRQn EXTI0_IRQn
+#define ENC2_EI_Pin GPIO_PIN_1
+#define ENC2_EI_GPIO_Port GPIOG
+#define ENC2_EI_EXTI_IRQn EXTI1_IRQn
 #define ENG1_DIR_Pin GPIO_PIN_7
 #define ENG1_DIR_GPIO_Port GPIOE
 #define ENG2_DIR_Pin GPIO_PIN_8
