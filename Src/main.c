@@ -618,16 +618,16 @@ static void MX_GPIO_Init(void)
                           |ENG5_DIR_Pin|ENG6_DIR_Pin|ENG7_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, STEP1_SPD_Pin|STEP2_SPD_Pin|USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOG, STEP1_CTL_Pin|STEP2_CTL_Pin|USB_PWR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, STEP1_EN_Pin|STEP2_EN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : USER_Btn_Pin */
-  GPIO_InitStruct.Pin = USER_Btn_Pin;
+  /*Configure GPIO pin : USER_BTN_Pin */
+  GPIO_InitStruct.Pin = USER_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(USER_BTN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_GREEN_Pin STEP1_DIR_Pin STEP2_DIR_Pin LED_RED_Pin 
                            LED_BLUE_Pin */
@@ -647,18 +647,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : STEP1_SPD_Pin STEP2_SPD_Pin USB_PowerSwitchOn_Pin */
-  GPIO_InitStruct.Pin = STEP1_SPD_Pin|STEP2_SPD_Pin|USB_PowerSwitchOn_Pin;
+  /*Configure GPIO pins : STEP1_CTL_Pin STEP2_CTL_Pin USB_PWR_Pin */
+  GPIO_InitStruct.Pin = STEP1_CTL_Pin|STEP2_CTL_Pin|USB_PWR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : USB_OverCurrent_Pin */
-  GPIO_InitStruct.Pin = USB_OverCurrent_Pin;
+  /*Configure GPIO pin : USB_OC_Pin */
+  GPIO_InitStruct.Pin = USB_OC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(USB_OC_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : STEP1_EN_Pin STEP2_EN_Pin */
   GPIO_InitStruct.Pin = STEP1_EN_Pin|STEP2_EN_Pin;

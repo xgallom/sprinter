@@ -60,10 +60,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define USER_Btn_Pin GPIO_PIN_13
-#define USER_Btn_GPIO_Port GPIOC
+#define USER_BTN_Pin GPIO_PIN_13
+#define USER_BTN_GPIO_Port GPIOC
+#define OSC32_IN_Pin GPIO_PIN_14
+#define OSC32_IN_GPIO_Port GPIOC
+#define OSC32_OUT_Pin GPIO_PIN_15
+#define OSC32_OUT_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
 #define MCO_GPIO_Port GPIOH
+#define OSC_OUT_Pin GPIO_PIN_1
+#define OSC_OUT_GPIO_Port GPIOH
 #define SUN_ADC1_Pin GPIO_PIN_0
 #define SUN_ADC1_GPIO_Port GPIOC
 #define SUN_ADC2_Pin GPIO_PIN_1
@@ -100,24 +106,24 @@ void Error_Handler(void);
 #define STEP2_DIR_GPIO_Port GPIOB
 #define LED_RED_Pin GPIO_PIN_14
 #define LED_RED_GPIO_Port GPIOB
-#define STLK_RX_Pin GPIO_PIN_8
-#define STLK_RX_GPIO_Port GPIOD
-#define STLK_TX_Pin GPIO_PIN_9
+#define STLK_TX_Pin GPIO_PIN_8
 #define STLK_TX_GPIO_Port GPIOD
+#define STLK_RX_Pin GPIO_PIN_9
+#define STLK_RX_GPIO_Port GPIOD
 #define ENG5_SPD_Pin GPIO_PIN_12
 #define ENG5_SPD_GPIO_Port GPIOD
 #define ENG6_SPD_Pin GPIO_PIN_13
 #define ENG6_SPD_GPIO_Port GPIOD
 #define ENG7_SPD_Pin GPIO_PIN_14
 #define ENG7_SPD_GPIO_Port GPIOD
-#define STEP1_SPD_Pin GPIO_PIN_2
-#define STEP1_SPD_GPIO_Port GPIOG
-#define STEP2_SPD_Pin GPIO_PIN_3
-#define STEP2_SPD_GPIO_Port GPIOG
-#define USB_PowerSwitchOn_Pin GPIO_PIN_6
-#define USB_PowerSwitchOn_GPIO_Port GPIOG
-#define USB_OverCurrent_Pin GPIO_PIN_7
-#define USB_OverCurrent_GPIO_Port GPIOG
+#define STEP1_CTL_Pin GPIO_PIN_2
+#define STEP1_CTL_GPIO_Port GPIOG
+#define STEP2_CTL_Pin GPIO_PIN_3
+#define STEP2_CTL_GPIO_Port GPIOG
+#define USB_PWR_Pin GPIO_PIN_6
+#define USB_PWR_GPIO_Port GPIOG
+#define USB_OC_Pin GPIO_PIN_7
+#define USB_OC_GPIO_Port GPIOG
 #define ENG4_SPD_Pin GPIO_PIN_6
 #define ENG4_SPD_GPIO_Port GPIOC
 #define ENG3_SPD_Pin GPIO_PIN_7
