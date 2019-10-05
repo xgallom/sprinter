@@ -8,9 +8,8 @@
 #include <cstdint>
 
 namespace core {
-	struct Time {
-		uint32_t value = {};
-
+	class Time {
+	public:
 		inline Time &operator+=(const Time &o)
 		{
 			value += o.value;
@@ -24,7 +23,13 @@ namespace core {
 		inline bool operator>=(const Time &o) const { return value >= o.value; }
 
 		static Time Now();
-		static inline Time Millis(uint32_t x) { return {x}; }
+		static inline Time Millis(uint32_t x) { return Time(x); }
+
+		inline Time() = default;
+	private:
+		explicit inline Time(uint32_t value) : value(value) {}
+
+		uint32_t value = {};
 	};
 
 	inline Time &operator+(Time l, const Time &r) { return l += r; }

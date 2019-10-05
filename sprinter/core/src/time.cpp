@@ -8,6 +8,6 @@
 namespace core {
 	Time Time::Now()
 	{
-		return {HAL_GetTick()};
+		return Time(HAL_GetTick());
 	}
 }

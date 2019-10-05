@@ -15,7 +15,7 @@ namespace core::scheduler {
 		uint32_t s_tasksMask[TaskType::Size] = {};
 		GenericHandler s_handlers[TaskType::Size][MaximumTasksCount] = {};
 		uint32_t s_handlerArgumentSizes[TaskType::Size][MaximumTasksCount] = {};
-		GenericHandlerArguments s_handlerArguments[TaskType::Size][MaximumTasksCount] = {};
+		GenericHandlerArgument s_handlerArguments[TaskType::Size][MaximumTasksCount] = {};
 
 		Time s_periodicalTasksIntervals[MaximumTasksCount] = {};
 		Time s_periodicalTasksNext[MaximumTasksCount] = {};
@@ -26,7 +26,7 @@ namespace core::scheduler {
 			s_handlers[Task::Type][n] = task.handler;
 			s_handlerArgumentSizes[Task::Type][n] = task.handlerArguments.size;
 			memcpy(s_handlerArguments[Task::Type][n].buffer,
-				   task.handlerArguments.arguments.buffer,
+				   task.handlerArguments.argument.buffer,
 				   task.handlerArguments.size);
 		}
 
@@ -38,11 +38,19 @@ namespace core::scheduler {
 			s_handlers[Task::Type][n] = task.handler;
 			s_handlerArgumentSizes[Task::Type][n] = task.handlerArguments.size;
 			memcpy(s_handlerArguments[Task::Type][n].buffer,
-				   task.handlerArguments.arguments.buffer,
+				   task.handlerArguments.argument.buffer,
 				   task.handlerArguments.size);
 
 			s_periodicalTasksIntervals[n] = task.interval;
-			s_periodicalTasksNext[n] = task.interval + Time::Now();
+			s_periodicalTasksNext[n] = Time();
+		}
+
+		void call(GenericHandler handler, uint32_t argumentSize, GenericHandlerArgument &argument)
+		{
+			if(argumentSize)
+				handler(&argument.buffer);
+			else
+				reinterpret_cast<VoidHandler>(handler)();
 		}
 
 		void runForevers()
@@ -51,11 +59,12 @@ namespace core::scheduler {
 
 			const auto tasksMask = s_tasksMask[Type];
 			const auto *handlers = s_handlers[Type];
+			const auto *handlerArgumentsSize = s_handlerArgumentSizes[Type];
 			auto *handlerArguments = s_handlerArguments[Type];
 
 			for(uint32_t id = 0; id < MaximumTasksCount; ++id) {
 				if(tasksMask & maskFor(id))
-					handlers[id](&handlerArguments[id].buffer);
+					call(handlers[id], handlerArgumentsSize[id], handlerArguments[id]);
 			}
 		}
 
@@ -65,6 +74,7 @@ namespace core::scheduler {
 
 			const auto tasksMask = s_tasksMask[Type];
 			const auto *handlers = s_handlers[Type];
+			const auto *handlerArgumentsSize = s_handlerArgumentSizes[Type];
 			auto *handlerArguments = s_handlerArguments[Type];
 			const auto *periodicalTasksIntervals = s_periodicalTasksIntervals;
 			auto *periodicalTasksNext = s_periodicalTasksNext;
@@ -75,7 +85,7 @@ namespace core::scheduler {
 				auto &taskNext = periodicalTasksNext[id];
 
 				if((tasksMask & maskFor(id)) && (now >= taskNext)) {
-					handlers[id](&handlerArguments[id].buffer);
+					call(handlers[id], handlerArgumentsSize[id], handlerArguments[id]);
 					taskNext = now + periodicalTasksIntervals[id];
 				}
 			}
@@ -87,11 +97,12 @@ namespace core::scheduler {
 
 			const auto tasksMask = s_tasksMask[Type];
 			const auto *handlers = s_handlers[Type];
+			const auto *handlerArgumentsSize = s_handlerArgumentSizes[Type];
 			auto *handlerArguments = s_handlerArguments[Type];
 
 			for(uint32_t id = 0; id < MaximumTasksCount; ++id) {
 				if(tasksMask & maskFor(id)) {
-					handlers[id](&handlerArguments[id].buffer);
+					call(handlers[id], handlerArgumentsSize[id], handlerArguments[id]);
 					remove({TaskType::Once, id});
 
 					return;
@@ -149,31 +160,5 @@ namespace core::scheduler {
 	{
 		runForevers();
 		runPeriodicals();
-	}
-}
-
-namespace logImpl {
-	void log(core::TaskType::Enum x)
-	{
-		using namespace core::TaskType;
-
-		const char *message = {};
-
-		switch(x) {
-			case Forever:
-				message = "Forever";
-				break;
-			case Periodical:
-				message = "Periodical";
-				break;
-			case Once:
-				message = "Once";
-				break;
-			case Invalid:
-				message = "Invalid";
-				break;
-		}
-
-		log(message);
 	}
 }
