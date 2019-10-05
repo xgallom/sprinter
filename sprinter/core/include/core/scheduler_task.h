@@ -19,7 +19,7 @@ namespace core {
 			Invalid
 		};
 
-		static constexpr uint8_t Size = Invalid;
+		constexpr uint8_t Size = Invalid;
 	}
 
 	struct TaskHandler {

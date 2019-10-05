@@ -8,7 +8,7 @@
 #include <cstdint>
 
 namespace core {
-	static constexpr uint32_t
+	constexpr uint32_t
 			MaximumTasksCount = 32,
 			GenericHandlerArgumentsSize = 32;
 
