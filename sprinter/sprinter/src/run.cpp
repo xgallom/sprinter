@@ -6,6 +6,8 @@
 #include <core/log.h>
 #include <main.h>
 
+extern "C" { extern TIM_HandleTypeDef htim8; }
+
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	log("External interrupt from: ", GPIO_Pin, "\n");

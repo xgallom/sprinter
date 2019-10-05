@@ -8,7 +8,7 @@
 
 extern "C" { extern UART_HandleTypeDef huart1; }
 
-namespace core {
+namespace logImpl {
 	void log(const char *message) { log(message, strlen(message)); }
 
 	void log(const char *message, size_t length)

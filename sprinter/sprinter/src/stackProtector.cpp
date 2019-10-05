@@ -3,18 +3,15 @@
 //
 
 #include <cstdint>
-#include <core/log.h>
+#include <core/fatal.h>
 
 extern "C" {
 
 extern const uintptr_t __stack_chk_guard = 0xe2dee396;
 
-[[noreturn]]
-void __stack_chk_fail()
+[[noreturn]] void __stack_chk_fail()
 {
-	log("Stack check failed - stack overflow\n");
-
-	for(;;) {}
+	fatal("Stack check failed - stack overflow\n");
 }
 
 }
