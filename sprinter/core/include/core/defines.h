@@ -1,0 +1,13 @@
+//
+// Created by xgallom on 10/6/19.
+//
+
+#ifndef SPRINTER_SPRINTER_CORE_INCLUDE_CORE_DEFINES_H
+#define SPRINTER_SPRINTER_CORE_INCLUDE_CORE_DEFINES_H
+
+#ifndef BUILD_TYPE_RELEASE
+// Enable for release mode
+//#define BUILD_TYPE_RELEASE
+#endif
+
+#endif //SPRINTER_SPRINTER_CORE_INCLUDE_CORE_DEFINES_H

@@ -33,8 +33,9 @@ namespace core {
 		GenericHandler handler = nullptr;
 		GenericArguments handlerArguments;
 
+	protected:
 		template<typename Arg>
-		inline GenericTask(Handler<Arg> handler, const Arg &arg) :
+		explicit inline GenericTask(Handler<Arg> handler, const Arg &arg) :
 				handler{reinterpret_cast<GenericHandler>(handler)},
 				handlerArguments{sizeof(Arg)}
 		{
@@ -51,7 +52,7 @@ namespace core {
 		static constexpr TaskType::Enum Type = TaskType::Forever;
 
 		template<typename Arg>
-		inline Forever(Handler<Arg> handler, const Arg &arg) : GenericTask(handler, arg) {}
+		explicit inline Forever(Handler<Arg> handler, const Arg &arg = Arg{}) : GenericTask(handler, arg) {}
 
 		explicit inline Forever(VoidHandler handler) : GenericTask(handler) {}
 	};
@@ -62,7 +63,7 @@ namespace core {
 		Time interval = {};
 
 		template<typename Arg>
-		inline Periodical(const Time &interval, Handler<Arg> handler, const Arg &arg) :
+		inline Periodical(const Time &interval, Handler<Arg> handler, const Arg &arg = Arg{}) :
 				GenericTask(handler, arg),
 				interval(interval) {}
 
@@ -75,7 +76,7 @@ namespace core {
 		static constexpr TaskType::Enum Type = TaskType::Once;
 
 		template<typename Arg>
-		inline Once(Handler<Arg> handler, const Arg &arg) : GenericTask(handler, arg) {}
+		explicit inline Once(Handler<Arg> handler, const Arg &arg = Arg{}) : GenericTask(handler, arg) {}
 
 		explicit inline Once(VoidHandler handler) : GenericTask(handler) {}
 	};

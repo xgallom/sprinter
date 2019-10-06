@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <utility>
 
 namespace logImpl {
 	void log(const char *message);
@@ -20,10 +21,10 @@ namespace logImpl {
 		return v > 0x09 ? v - 0x0a + 'a' : v + '0';
 	}
 
-	template<size_t Size>
-	void logHex(uint64_t value)
+	template<typename T>
+	void logHex(T value)
 	{
-		static constexpr size_t Count = Size * 2;
+		static constexpr size_t Count = sizeof(T) * 2;
 		char buf[Count];
 		for(size_t n = 1; n <= Count; ++n) {
 			buf[Count - n] = hex(value);
@@ -33,7 +34,7 @@ namespace logImpl {
 	}
 
 	template<typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
-	void log(T value) { logHex<sizeof(value)>(value); }
+	void log(T value) { logHex(value); }
 }
 
 template<typename ... Args>

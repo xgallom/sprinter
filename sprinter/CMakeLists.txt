@@ -10,7 +10,9 @@ set(CMAKE_CXX_FLAGS
 -findirect-inlining \
 ")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -os")
+if (${BUILD_TYPE_RELEASE})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_TYPE_RELEASE")
+endif ()
 
 add_subdirectory(core)
 add_subdirectory(sprinter)

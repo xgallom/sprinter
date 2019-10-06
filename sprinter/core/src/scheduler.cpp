@@ -8,8 +8,6 @@
 
 namespace core::scheduler {
 	namespace {
-		constexpr uint32_t TasksFull = 0xffffffffu;
-
 		uint32_t maskFor(uint32_t id) { return 1u << id; }
 
 		uint32_t s_tasksMask[TaskType::Size] = {};

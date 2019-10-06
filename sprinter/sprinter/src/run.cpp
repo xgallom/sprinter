@@ -3,29 +3,33 @@
 //
 
 #include <sprinter/run.h>
+#include <core/scheduler.h>
 #include <core/log.h>
 #include <main.h>
-#include <core/scheduler.h>
 
 extern "C" { extern TIM_HandleTypeDef htim8; }
+
+static core::TaskHandler s_task = {};
 
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	log("External interrupt from: ", GPIO_Pin, "\n");
+	core::scheduler::remove(s_task);
 }
 
-void writeLol(uint32_t *xPtr)
+void writeAdd(uint32_t *x)
 {
-	uint32_t &x = *xPtr;
-
-	log("Write ", x++, "\n");
+	log("Write ", (*x)++, "\n");
 }
 
-void runOnceLol(uint32_t *x)
+void writeAddAndSchedule(uint32_t *x)
 {
 	log("Run once\n");
-	writeLol(x);
-	core::scheduler::add(core::Once(writeLol, *x));
+	writeAdd(x);
+
+	s_task = core::scheduler::add(
+			core::Periodical(core::Time::SecondsF(0.5), writeAdd, *x)
+	);
 }
 
 void run(void)
@@ -34,7 +38,7 @@ void run(void)
 
 	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
 
-	const auto task = core::scheduler::add(core::Once(runOnceLol, uint32_t{0}));
+	const auto task = core::scheduler::add(core::Once(writeAddAndSchedule));
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"

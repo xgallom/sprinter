@@ -23,11 +23,13 @@ namespace core {
 		inline bool operator>=(const Time &o) const { return value >= o.value; }
 
 		static Time Now();
-		static inline Time Millis(uint32_t x) { return Time(x); }
+		static constexpr Time Millis(uint32_t x) { return Time(x); }
+		static constexpr Time Seconds(uint32_t x) { return Millis(x * 1000u); }
+		static constexpr Time SecondsF(float x) { return Millis(x * 1000u); }
 
 		inline Time() = default;
 	private:
-		explicit inline Time(uint32_t value) : value(value) {}
+		explicit constexpr Time(uint32_t value) : value(value) {}
 
 		uint32_t value = {};
 	};
