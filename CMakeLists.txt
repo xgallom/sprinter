@@ -17,14 +17,14 @@ set(SIZE arm-none-eabi-size)
 SET(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32F446ZETx_FLASH.ld)
 
 #Uncomment for hardware floating point
-#SET(FPU_FLAGS "-mfloat-abi=hard -mfpu=fpv4-sp-d16")
-#add_definitions(-DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__FPU_PRESENT=1)
+SET(FPU_FLAGS "-mfloat-abi=hard -mfpu=fpv4-sp-d16")
+add_definitions(-DARM_MATH_CM4 -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING)
 
 #Uncomment for software floating point
 #SET(FPU_FLAGS "-mfloat-abi=soft")
 
 SET(COMMON_FLAGS
-    "-mcpu=cortex-m4 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
+    "-o0 -mcpu=cortex-m4 ${FPU_FLAGS} -mthumb -mthumb-interwork -ffunction-sections -fdata-sections \
     -g -fno-common -fmessage-length=0 -fstack-protector-strong -specs=nosys.specs -specs=nano.specs")
 
 SET(CMAKE_CXX_FLAGS_INIT "${COMMON_FLAGS} -std=c++17")
