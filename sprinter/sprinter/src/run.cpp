@@ -28,7 +28,7 @@ void writeAddAndSchedule(uint32_t *x)
 	writeAdd(x);
 
 	s_task = core::scheduler::add(
-			core::Periodical(core::Time::SecondsF(0.5), writeAdd, *x)
+			core::Periodical(core::Time::Seconds(1), writeAdd, *x)
 	);
 }
 
