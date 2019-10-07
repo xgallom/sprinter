@@ -17,6 +17,8 @@ namespace core::scheduler {
 	void remove(TaskHandler &task);
 	void removeUnsafe(const TaskHandler &task);
 
+	void reactivate(const TaskHandler &task);
+
 	template<typename Task>
 	void replace(TaskHandler task, const Task &newTask);
 	extern template void replace(TaskHandler oldTask, const Forever &newTask);

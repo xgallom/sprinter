@@ -76,6 +76,11 @@ namespace core::scheduler {
 		s_tasksMask[task.type] &= ~maskFor(task.id);
 	}
 
+	void reactivate(const TaskHandler &task)
+	{
+		s_tasksMask[task.type] |= maskFor(task.id);
+	}
+
 	template<typename Task>
 	void replace(TaskHandler task, const Task &newTask)
 	{
