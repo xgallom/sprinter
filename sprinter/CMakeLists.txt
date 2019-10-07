@@ -8,11 +8,10 @@ set(CMAKE_CXX_FLAGS
 -fno-threadsafe-statics \
 -finline-small-functions \
 -findirect-inlining \
+-Os \
 ")
 
-if (${BUILD_TYPE_RELEASE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_TYPE_RELEASE")
-endif ()
+set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -DBUILD_TYPE_DEBUG")
 
 add_subdirectory(core)
 add_subdirectory(sprinter)

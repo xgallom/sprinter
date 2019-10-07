@@ -13,23 +13,40 @@ static core::TaskHandler s_task = {};
 
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	log("External interrupt from: ", GPIO_Pin, "\n");
-	core::scheduler::remove(s_task);
+	if(GPIO_Pin == USER_BTN_Pin) {
+		static core::Time lastPressTime = {};
+
+		const auto now = core::Time::Now();
+
+		if(now >= lastPressTime + core::Time::Millis(200)) {
+			log("External interrupt from USER_BTN\n");
+			core::scheduler::remove(s_task);
+			lastPressTime = now;
+		}
+	}
 }
 
-void writeAdd(uint32_t *x)
+static void doubleAdd(core::TaskHandler task, uint32_t *x);
+
+static void writeAdd(core::TaskHandler task, uint32_t *x)
 {
-	log("Write ", (*x)++, "\n");
+	log("Write ", ++(*x), "\n");
+
+	if(*x >= 0x08) {
+		log("Continuing with doubleAdd\n");
+		core::scheduler::continueWith(task, doubleAdd);
+	}
 }
 
-void writeAddAndSchedule(uint32_t *x)
+static void doubleAdd(core::TaskHandler task, uint32_t *x)
 {
-	log("Run once\n");
-	writeAdd(x);
+	uint32_t &xRef = *x;
+	log("Write ", (xRef *= 2), "\n");
 
-	s_task = core::scheduler::add(
-			core::Periodical(core::Time::Seconds(1), writeAdd, *x)
-	);
+	if(xRef == 0x100) {
+		log("Continuing into once writeAdd\n");
+		s_task = core::scheduler::continueInto(task, writeAdd, core::IntoOnce{});
+	}
 }
 
 void run(void)
@@ -38,7 +55,7 @@ void run(void)
 
 	HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET);
 
-	const auto task = core::scheduler::add(core::Once(writeAddAndSchedule));
+	s_task = core::scheduler::add(core::Periodical(core::Time::Seconds(1), writeAdd));
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"

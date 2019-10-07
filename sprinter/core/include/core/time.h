@@ -15,17 +15,17 @@ namespace core {
 			value += o.value;
 			return *this;
 		}
-		inline bool operator==(const Time &o) const { return value == o.value; }
-		inline bool operator!=(const Time &o) const { return value != o.value; }
-		inline bool operator<(const Time &o) const { return value < o.value; }
-		inline bool operator<=(const Time &o) const { return value <= o.value; }
-		inline bool operator>(const Time &o) const { return value > o.value; }
-		inline bool operator>=(const Time &o) const { return value >= o.value; }
+		[[nodiscard]] inline volatile bool operator==(const Time &o) const { return value == o.value; }
+		[[nodiscard]] inline volatile bool operator!=(const Time &o) const { return value != o.value; }
+		[[nodiscard]] inline volatile bool operator<(const Time &o) const { return value < o.value; }
+		[[nodiscard]] inline volatile bool operator<=(const Time &o) const { return value <= o.value; }
+		[[nodiscard]] inline volatile bool operator>(const Time &o) const { return value > o.value; }
+		[[nodiscard]] inline volatile bool operator>=(const Time &o) const { return value >= o.value; }
 
-		static Time Now();
-		static constexpr Time Millis(uint32_t x) { return Time(x); }
-		static constexpr Time Seconds(uint32_t x) { return Millis(x * 1000u); }
-		static constexpr Time SecondsF(float x) { return Millis(x * 1000u); }
+		[[nodiscard]] static Time Now();
+		[[nodiscard]] static constexpr Time Millis(uint32_t x) { return Time(x); }
+		[[nodiscard]] static constexpr Time Seconds(uint32_t x) { return Millis(x * 1000u); }
+		[[nodiscard]] static constexpr Time SecondsF(float x) { return Millis(x * 1000u); }
 
 		inline Time() = default;
 	private:
@@ -34,7 +34,7 @@ namespace core {
 		uint32_t value = {};
 	};
 
-	inline Time &operator+(Time l, const Time &r) { return l += r; }
+	[[nodiscard]] inline Time operator+(Time l, const Time &r) { return l += r; }
 }
 
 #endif //SPRINTER_SPRINTER_CORE_INCLUDE_CORE_TIME_H

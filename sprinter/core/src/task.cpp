@@ -2,7 +2,7 @@
 // Created by xgallom on 10/5/19.
 //
 
-#include <core/scheduler_task.h>
+#include <core/task.h>
 #include <core/log.h>
 
 namespace logImpl {

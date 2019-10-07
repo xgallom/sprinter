@@ -1,4 +1,4 @@
-file(GLOB_RECURSE files "src/*.*")
+file(GLOB_RECURSE files "src/*.cpp")
 
 add_library(sprinter STATIC ${files})
 
