@@ -5,7 +5,7 @@
 #ifndef SPRINTER_SPRINTER_CORE_SRC_SCHEDULER_STATE_H
 #define SPRINTER_SPRINTER_CORE_SRC_SCHEDULER_STATE_H
 
-#include <core/generic_handler.h>
+#include <core/handler.h>
 #include <core/time.h>
 
 namespace core::scheduler {

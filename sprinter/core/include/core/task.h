@@ -5,7 +5,7 @@
 #ifndef SPRINTER_SPRINTER_CORE_INCLUDE_CORE_TASK_H
 #define SPRINTER_SPRINTER_CORE_INCLUDE_CORE_TASK_H
 
-#include "generic_handler.h"
+#include "handler.h"
 #include <core/time.h>
 #include <cstring>
 

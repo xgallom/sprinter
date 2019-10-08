@@ -9,7 +9,7 @@
 #include <cstring>
 
 namespace core::scheduler {
-	void continueWith(TaskHandler task, GenericHandler newHandler)
+	void continueWith(const TaskHandler &task, GenericHandler newHandler)
 	{
 		s_tasksMask[task.type] |= maskFor(task.id);
 		s_handlers[task.type][task.id] = newHandler;
@@ -17,7 +17,7 @@ namespace core::scheduler {
 
 	namespace {
 		template<typename Into>
-		void copy(TaskHandler task, uint32_t id, Into into)
+		void copy(const TaskHandler &task, uint32_t id, Into into)
 		{
 			s_handlers[Into::Type][id] = s_handlers[task.type][task.id];
 
@@ -30,7 +30,7 @@ namespace core::scheduler {
 		}
 
 		template<>
-		void copy(TaskHandler task, uint32_t id, IntoPeriodical into)
+		void copy(const TaskHandler &task, uint32_t id, IntoPeriodical into)
 		{
 			using Into = IntoPeriodical;
 

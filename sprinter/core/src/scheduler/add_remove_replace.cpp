@@ -82,7 +82,7 @@ namespace core::scheduler {
 	}
 
 	template<typename Task>
-	void replace(TaskHandler task, const Task &newTask)
+	void replace(const TaskHandler &task, const Task &newTask)
 	{
 		if(Task::Type != task.type)
 			fatal("Replacing tasks with different type - ", task.type, " with ", Task::Type, "\n");
@@ -90,7 +90,7 @@ namespace core::scheduler {
 		s_tasksMask[Task::Type] |= maskFor(task.id);
 		insert(task.id, newTask);
 	}
-	template void replace(TaskHandler oldTask, const Forever &newTask);
-	template void replace(TaskHandler oldTask, const Periodical &newTask);
-	template void replace(TaskHandler oldTask, const Once &newTask);
+	template void replace(const TaskHandler &oldTask, const Forever &newTask);
+	template void replace(const TaskHandler &oldTask, const Periodical &newTask);
+	template void replace(const TaskHandler &oldTask, const Once &newTask);
 }

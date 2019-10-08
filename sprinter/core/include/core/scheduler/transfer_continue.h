@@ -8,13 +8,13 @@
 #include "../task_type_transformer.h"
 
 namespace core::scheduler {
-	void continueWith(TaskHandler task, GenericHandler newHandler);
+	void continueWith(const TaskHandler &task, GenericHandler newHandler);
 	template<typename Arg>
-	inline void continueWith(TaskHandler task, Handler<Arg> newHandler)
+	inline void continueWith(const TaskHandler &task, Handler<Arg> newHandler)
 	{
 		continueWith(task, reinterpret_cast<GenericHandler>(newHandler));
 	}
-	inline void continueWith(TaskHandler task, VoidHandler newHandler)
+	inline void continueWith(const TaskHandler &task, VoidHandler newHandler)
 	{
 		continueWith(task, reinterpret_cast<GenericHandler>(newHandler));
 	}

@@ -20,10 +20,10 @@ namespace core::scheduler {
 	void reactivate(const TaskHandler &task);
 
 	template<typename Task>
-	void replace(TaskHandler task, const Task &newTask);
-	extern template void replace(TaskHandler oldTask, const Forever &newTask);
-	extern template void replace(TaskHandler oldTask, const Periodical &newTask);
-	extern template void replace(TaskHandler oldTask, const Once &newTask);
+	void replace(const TaskHandler &task, const Task &newTask);
+	extern template void replace(const TaskHandler &oldTask, const Forever &newTask);
+	extern template void replace(const TaskHandler &oldTask, const Periodical &newTask);
+	extern template void replace(const TaskHandler &oldTask, const Once &newTask);
 }
 
 #endif //SPRINTER_SPRINTER_CORE_INCLUDE_CORE_SCHEDULER_ADD_REMOVE_REPLACE_H
