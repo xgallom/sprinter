@@ -13,6 +13,7 @@ command = "mdbook-mermaid"
 renderer = ["html"]
 
 [output.html]
+default-theme = "coal"
 additional-css = ["assets/mermaid.css"]
 additional-js = ["assets/mermaid.min.js", "assets/mermaid-init.js"]
 

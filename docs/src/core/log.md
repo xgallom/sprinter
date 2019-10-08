@@ -2,14 +2,25 @@
 
 ## Headers
 
-- `core/log.h` contains logging utilities
+- `core/log.h` Contains the 
+  - `template<typename ... Args> void log(Args ... args)` function,
+  which allows logging any implemented type into the default log USART.
 
-- `core/fatal.h` contains the unrecoverable error function, which
-  freezes the system along with reporting information 
+- `core/fatal.h` Contains the unrecoverable
+  - `template<typename ... Args> void fatal(Args ... args)` function, 
+  which freezes the system along with reporting.
+
+## Extending the Logger
+
+If you want to be able to log a special non-trivial type `T`,
+you need to provide a `void logImpl::log(T)` function for it.
+
+> If you want the logging system to know your type, you must include your `logImpl` function declaration __before__
+  you include the log header.
 
 ## Example Usage
 
-### Log usage
+### Log Example
 ```cpp
 #include <core/log.h>
 
@@ -19,7 +30,7 @@ void printFoo(uint32_t x, const char *y)
 }
 ```
 
-### Fatal usage
+### Fatal Example
 ```cpp
 #include <core/fatal.h>
 
@@ -32,11 +43,27 @@ void printBar(uint32_t *x)
 }
 ```
 
-## Extending the logger
+### Extending the Logger Example
+```cpp
+// Foo.h
+struct Foo {
+    uint32_t x;
+    uint16_t ys[8];
+};
 
-If you want to be able to log a special non-trivial type `T`,
-you need to provide a `void logImpl::log(T)` function for it.
+namespace logImpl { void log(const Foo &foo); }
 
-> If you want the logging system to know your type, you must include your `logImpl` function declaration __before__
-  you include the log header.
+// Foo.cpp
+#include "Foo.h"
+#include <core/log.h>
 
+namespace logImpl {
+    void log(const Foo &foo)
+    {
+        log("Foo { x: ", foo.x, ", ys: [ ");
+        for(const auto &y: foo.ys)
+            log(y, " ");
+        log("] }");
+    }
+}
+```
