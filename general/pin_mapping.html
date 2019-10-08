@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Pin Mapping - sPrinter Control Software Documentation</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+        <link rel="stylesheet" href="../assets/mermaid.css">
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="affix"><a href="../index.html">Main sPrinter Control Software</a></li><li><a href="../general/index.html"><strong aria-hidden="true">1.</strong> General Information</a></li><li><ol class="section"><li><a href="../general/mcu_and_board.html"><strong aria-hidden="true">1.1.</strong> MCU And Board</a></li><li><a href="../general/pin_mapping.html" class="active"><strong aria-hidden="true">1.2.</strong> Pin Mapping</a></li></ol></li><li><a href="../core/index.html"><strong aria-hidden="true">2.</strong> Core Library</a></li><li><ol class="section"><li><a href="../core/log.html"><strong aria-hidden="true">2.1.</strong> Log</a></li><li><a href="../core/scheduler.html"><strong aria-hidden="true">2.2.</strong> Scheduler</a></li><li><a href="../core/time.html"><strong aria-hidden="true">2.3.</strong> Time</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">sPrinter Control Software Documentation</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#pin-mapping" id="pin-mapping">Pin Mapping</a></h1>
+<p>This is the current pin mapping of the main sPrinter MCU.</p>
+<table><thead><tr><th>Pin</th><th>Name</th><th>Mode</th><th>Peripheral</th><th>Function</th></tr></thead><tbody>
+<tr><td>PA0</td><td>SRV1_POS</td><td>PWM2</td><td>TIM2_CH1</td><td>Servo 1 position</td></tr>
+<tr><td>PA1</td><td>SRV2_POS</td><td>PWM2</td><td>TIM2_CH1</td><td>Servo 2 position</td></tr>
+<tr><td>PA8</td><td>USB_SOF</td><td>SOF</td><td>USB_OTG_FS</td><td>USB start of signal</td></tr>
+<tr><td>PA9</td><td>LOG_TX</td><td>TX</td><td>USART1</td><td>Log serial transmit</td></tr>
+<tr><td>PA10</td><td>LOG_RX</td><td>RX</td><td>USART1</td><td>Log serial receive</td></tr>
+<tr><td>PA11</td><td>USB_DM</td><td>DM</td><td>USB_OTG_FS</td><td>USB data minus</td></tr>
+<tr><td>PA12</td><td>USB_DP</td><td>DP</td><td>USB_OTG_FS</td><td>USB data plus</td></tr>
+<tr><td>PA13</td><td>TMS</td><td>SWDIO</td><td>SYS_JTMS</td><td>JTag test mode select</td></tr>
+<tr><td>PA14</td><td>TCK</td><td>SWCLK</td><td>SYS_JTCK</td><td>JTag clock</td></tr>
+<tr><td>PB0</td><td>LED_GREEN</td><td>OUT_PP</td><td>GPIO</td><td>Green LED</td></tr>
+<tr><td>PB7</td><td>LED_BLUE</td><td>OUT_PP</td><td>GPIO</td><td>Blue LED</td></tr>
+<tr><td>PB10</td><td>STEP1_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 1 direction</td></tr>
+<tr><td>PB11</td><td>STEP2_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 2 direction</td></tr>
+<tr><td>PB14</td><td>LED_RED</td><td>OUT_PP</td><td>GPIO</td><td>Red LED</td></tr>
+<tr><td>PC0</td><td>SUN_ADC1</td><td>IN10</td><td>ADC1</td><td>Suntracker analog in</td></tr>
+<tr><td>PC1</td><td>SUN_ADC2</td><td>IN11</td><td>ADC1</td><td>Suntracker analog in</td></tr>
+<tr><td>PC2</td><td>SUN_ADC3</td><td>IN12</td><td>ADC1</td><td>Suntracker analog in</td></tr>
+<tr><td>PC3</td><td>SUN_ADC4</td><td>IN13</td><td>ADC1</td><td>Suntracker analog in</td></tr>
+<tr><td>PC4</td><td>SUN_ADC5</td><td>IN14</td><td>ADC1</td><td>Suntracker analog in</td></tr>
+<tr><td>PC6</td><td>ENG4_SPD</td><td>PWM2</td><td>TIM8_CH1</td><td>Engine 4 speed</td></tr>
+<tr><td>PC7</td><td>ENG3_SPD</td><td>PWM2</td><td>TIM8_CH2</td><td>Engine 3 speed</td></tr>
+<tr><td>PC8</td><td>ENG2_SPD</td><td>PWM2</td><td>TIM8_CH3</td><td>Engine 2 speed</td></tr>
+<tr><td>PC9</td><td>ENG1_SPD</td><td>PWM2</td><td>TIM8_CH4</td><td>Engine 1 speed</td></tr>
+<tr><td>PC13</td><td>USER_BTN</td><td>EXTI10_RT</td><td>GPIO</td><td>User button interrupt</td></tr>
+<tr><td>PC14</td><td>OSC32_IN</td><td>OSC32_IN</td><td>RCC</td><td>Oscillator input</td></tr>
+<tr><td>PC15</td><td>OSC32_OUT</td><td>OSC32_OUT</td><td>RCC</td><td>Oscillator output</td></tr>
+<tr><td>PD0</td><td>STEP1_EN</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 1 enable</td></tr>
+<tr><td>PD1</td><td>STEP2_EN</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 2 enable</td></tr>
+<tr><td>PD5</td><td>RF_TX</td><td>TX</td><td>USART2</td><td>RF module transmit</td></tr>
+<tr><td>PD6</td><td>RF_RX</td><td>RX</td><td>USART2</td><td>RF module receive</td></tr>
+<tr><td>PD8</td><td>STLK_TX</td><td>TX</td><td>USART3</td><td>STLink transmit</td></tr>
+<tr><td>PD9</td><td>STLK_RX</td><td>RX</td><td>USART3</td><td>STLink receive</td></tr>
+<tr><td>PD12</td><td>ENG5_SPD</td><td>PWM2</td><td>TIM4_CH1</td><td>Engine 5 speed</td></tr>
+<tr><td>PD13</td><td>ENG6_SPD</td><td>PWM2</td><td>TIM4_CH2</td><td>Engine 6 speed</td></tr>
+<tr><td>PD14</td><td>ENG7_SPD</td><td>PWM2</td><td>TIM4_CH3</td><td>Engine 7 speed</td></tr>
+<tr><td>PE2</td><td>ENC3_EI</td><td>EXTI2_RFT</td><td>GPIO</td><td>Encoder 3 interrupt</td></tr>
+<tr><td>PE3</td><td>ENC4_EI</td><td>EXTI3_RFT</td><td>GPIO</td><td>Encoder 4 interrupt</td></tr>
+<tr><td>PE4</td><td>ENC5_EI</td><td>EXTI4_RFT</td><td>GPIO</td><td>Encoder 5 interrupt</td></tr>
+<tr><td>PE5</td><td>ENC6_EI</td><td>EXTI5_RFT</td><td>GPIO</td><td>Encoder 6 interrupt</td></tr>
+<tr><td>PE7</td><td>ENG1_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 1 direction</td></tr>
+<tr><td>PE8</td><td>ENG2_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 2 direction</td></tr>
+<tr><td>PE9</td><td>ENG3_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 3 direction</td></tr>
+<tr><td>PE10</td><td>ENG4_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 4 direction</td></tr>
+<tr><td>PE11</td><td>ENG5_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 5 direction</td></tr>
+<tr><td>PE12</td><td>ENG6_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 6 direction</td></tr>
+<tr><td>PE14</td><td>ENG7_DIR</td><td>OUT_PP</td><td>GPIO</td><td>Engine 7 direction</td></tr>
+<tr><td>PG0</td><td>ENC1_EI</td><td>EXTI0_RFT</td><td>GPIO</td><td>Encoder 1 interrupt</td></tr>
+<tr><td>PG1</td><td>ENC2_EI</td><td>EXTI1_RFT</td><td>GPIO</td><td>Encoder 2 interrupt</td></tr>
+<tr><td>PG2</td><td>STEP1_CTL</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 1 control</td></tr>
+<tr><td>PG3</td><td>STEP2_CTL</td><td>OUT_PP</td><td>GPIO</td><td>Stepper 2 control</td></tr>
+<tr><td>PG6</td><td>USB_PWR</td><td>OUT_PP</td><td>GPIO</td><td>USB power switch on</td></tr>
+<tr><td>PG7</td><td>USB_OC</td><td>IN</td><td>GPIO</td><td>USB over current</td></tr>
+<tr><td>PH0</td><td>MCO</td><td>OSC_IN</td><td>RCC</td><td>Oscillator input</td></tr>
+<tr><td>PH1</td><td>OSC_OUT</td><td>OSC_OUT</td><td>RCC</td><td>Oscillator output</td></tr>
+</tbody></table>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../general/mcu_and_board.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../core/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../general/mcu_and_board.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../core/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+        <script type="text/javascript" src="../assets/mermaid.min.js"></script>
+        
+        <script type="text/javascript" src="../assets/mermaid-init.js"></script>
+        
+
+        
+
+    </body>
+</html>
