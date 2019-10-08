@@ -1,0 +1,18 @@
+[book]
+title = "sPrinter Control Software Documentation"
+authors = ["Milan Gallo"]
+language = "en"
+multilingual = false
+src = "src"
+
+[build]
+build-dir = "public"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+renderer = ["html"]
+
+[output.html]
+additional-css = ["assets/mermaid.css"]
+additional-js = ["assets/mermaid.min.js", "assets/mermaid-init.js"]
+
