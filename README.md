@@ -21,6 +21,7 @@ the root `CMakeLists` on configuration update. There is also the `.ld` linker sc
 and the `.svd` file of the chip for peripheral mapping for the debugger.
 
 - __docs__ contains markdown sources for documentation, which are used to generate HTML via mdbook.
+You can browse them in github as markdown, or view the build docs [here](https://xgallom.github.io/sprinter/).
 
 - __startup__ contains a standard generated loader in assembly, with interrupt
 vectors and so on.
@@ -43,6 +44,10 @@ additional specific configuration for our c++17 sources.
 
   - There is nothing else at the moment, as I said we are in the process of transfer and rewriting
   all the code from the stdperiph to HAL.
+  
+## Documentation
+
+The documentation is available [here](https://xgallom.github.io/sprinter/).
 
 ## Building requirements
 
