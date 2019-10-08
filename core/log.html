@@ -158,8 +158,15 @@
 freezes the system along with reporting information </p>
 </li>
 </ul>
+<h2><a class="header" href="#extending-the-logger" id="extending-the-logger">Extending the logger</a></h2>
+<p>If you want to be able to log a special non-trivial type <code>T</code>,
+you need to provide a <code>void logImpl::log(T)</code> function for it.</p>
+<blockquote>
+<p>If you want the logging system to know your type, you must include your <code>logImpl</code> function declaration <strong>before</strong>
+you include the log header.</p>
+</blockquote>
 <h2><a class="header" href="#example-usage" id="example-usage">Example Usage</a></h2>
-<h3><a class="header" href="#log-usage" id="log-usage">Log usage</a></h3>
+<h3><a class="header" href="#log-example" id="log-example">Log Example</a></h3>
 <pre><code class="language-cpp">#include &lt;core/log.h&gt;
 
 void printFoo(uint32_t x, const char *y)
@@ -167,7 +174,7 @@ void printFoo(uint32_t x, const char *y)
     log(&quot;The x is: &quot;, x, &quot;, and the y is: \&quot;&quot;, y, &quot;\&quot;\n&quot;);
 }
 </code></pre>
-<h3><a class="header" href="#fatal-usage" id="fatal-usage">Fatal usage</a></h3>
+<h3><a class="header" href="#fatal-example" id="fatal-example">Fatal Example</a></h3>
 <pre><code class="language-cpp">#include &lt;core/fatal.h&gt;
 
 void printBar(uint32_t *x)
@@ -178,13 +185,29 @@ void printBar(uint32_t *x)
     log(&quot;The *x is: &quot;, *x, &quot;\n&quot;); 
 }
 </code></pre>
-<h2><a class="header" href="#extending-the-logger" id="extending-the-logger">Extending the logger</a></h2>
-<p>If you want to be able to log a special non-trivial type <code>T</code>,
-you need to provide a <code>void logImpl::log(T)</code> function for it.</p>
-<blockquote>
-<p>If you want the logging system to know your type, you must include your <code>logImpl</code> function declaration <strong>before</strong>
-you include the log header.</p>
-</blockquote>
+<h3><a class="header" href="#extending-the-logger-example" id="extending-the-logger-example">Extending the Logger Example</a></h3>
+<pre><code class="language-cpp">// Foo.h
+struct Foo {
+    uint32_t x;
+    uint16_t ys[8];
+};
+
+namespace logImpl { void log(const Foo &amp;foo); }
+
+// Foo.cpp
+#include &quot;Foo.h&quot;
+#include &lt;core/log.h&gt;
+
+namespace logImpl {
+    void log(const Foo &amp;foo)
+    {
+        log(&quot;Foo { x: &quot;, foo.x, &quot;, ys: [ &quot;);
+        for(const auto &amp;y: foo.ys)
+            log(y, &quot; &quot;);
+        log(&quot;] }&quot;);
+    }
+}
+</code></pre>
 
                     </main>
 
