@@ -93,4 +93,9 @@ namespace core::scheduler {
 	template void replace(const TaskHandler &oldTask, const Forever &newTask);
 	template void replace(const TaskHandler &oldTask, const Periodical &newTask);
 	template void replace(const TaskHandler &oldTask, const Once &newTask);
+
+	void *arg(const TaskHandler &task)
+	{
+		return s_handlerArguments[task.type][task.id].buffer;
+	}
 }

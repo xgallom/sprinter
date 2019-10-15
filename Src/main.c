@@ -365,7 +365,11 @@ static void MX_TIM4_Init(void)
   }
   /* USER CODE BEGIN TIM4_Init 2 */
 
-  /* USER CODE END TIM4_Init 2 */
+	htim2.Instance->CCR1 = htim2.Instance->CCR2 = htim2.Instance->CCR3 = htim2.Instance->CCR4 = 0;
+	htim4.Instance->CCR1 = htim4.Instance->CCR2 = htim4.Instance->CCR3 = htim4.Instance->CCR4 = 0;
+	htim8.Instance->CCR1 = htim8.Instance->CCR2 = htim8.Instance->CCR3 = htim8.Instance->CCR4 = 0;
+
+	/* USER CODE END TIM4_Init 2 */
   HAL_TIM_MspPostInit(&htim4);
 
 }
