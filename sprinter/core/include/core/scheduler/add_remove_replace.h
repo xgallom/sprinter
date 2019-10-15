@@ -24,6 +24,8 @@ namespace core::scheduler {
 	extern template void replace(const TaskHandler &oldTask, const Forever &newTask);
 	extern template void replace(const TaskHandler &oldTask, const Periodical &newTask);
 	extern template void replace(const TaskHandler &oldTask, const Once &newTask);
+
+	void *arg(const TaskHandler &task);
 }
 
 #endif //SPRINTER_SPRINTER_CORE_INCLUDE_CORE_SCHEDULER_ADD_REMOVE_REPLACE_H
