@@ -3,11 +3,11 @@
 ## Headers
 
 - `core/log.h` Contains the 
-  - `template<typename ... Args> void log(Args ... args)` function,
+  - `void log(Args ... args)` function,
   which allows logging any implemented type into the default log USART.
 
 - `core/fatal.h` Contains the unrecoverable
-  - `template<typename ... Args> void fatal(Args ... args)` function, 
+  - `void fatal(Args ... args)` function, 
   which freezes the system along with reporting.
 
 ## Extending the Logger

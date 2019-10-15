@@ -7,6 +7,6 @@
   - [Pin Mapping](general/pin_mapping.md)
 
 - [Core Library](core/README.md)
-  - [Log](core/log.md)
-  - [Scheduler](core/scheduler.md)
+  - [Logging Functionality](core/log.md)
+  - [Task Scheduler](core/scheduler.md)
   - [Time](core/time.md)
