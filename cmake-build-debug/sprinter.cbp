@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="sprinter"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sprinter.elf">
+				<Option output="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/sprinter.elf" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/inc"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/inc"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/CMSIS/device"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/CMSIS/core"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0/arm-none-eabi"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0/backward"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/include"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/include-fixed"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 sprinter.elf"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="sprinter.elf/fast">
+				<Option output="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/sprinter.elf" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/inc"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/inc"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/CMSIS/device"/>
+					<Add directory="/home/zahorack/projects/c_projects_stm/sprinter/CMSIS/core"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0/arm-none-eabi"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include/c++/9.2.0/backward"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/include"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/include-fixed"/>
+					<Add directory="/usr/lib/gcc/arm-none-eabi/9.2.0/../../../../arm-none-eabi/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 sprinter.elf/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/LinkerScript.ld">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/misc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_adc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_can.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_cec.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_crc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_cryp.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_cryp_aes.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_cryp_des.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dac.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dbgmcu.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dcmi.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dfsdm.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dma.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dma2d.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_dsi.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_exti.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_flash.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_flash_ramfunc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_fmc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_fmip2c.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_fsmc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_gpio.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_hash.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_hash_md5.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_hash_sha1.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_i2c.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_iwdg.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_lptim.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_ltdc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_pwr.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_qspi.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_rcc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_rng.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_rtc.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_sai.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_sdio.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_spdifrx.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_spi.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_syscfg.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_tim.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_usart.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/StdPeriph_Driver/src/stm32f4xx_wwdg.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Application.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Container/Queue.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Container/Stack.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Device/Suntracker.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Localisation/Coordinates.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Adc.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/DigitalOutputPin.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Encoder.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Engine.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/EngineGroup.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/I2C.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Led.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Pwm.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Servo.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Stepper.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/SysTickCounter.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Periph/Usart.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Communication.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Control.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Logger.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Odometry.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Packet.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Pid.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Timer.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Tool.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/Util/Trace.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/main.cpp">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/syscalls.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/src/system_stm32f4xx.c">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/startup/startup_stm32.s">
+			<Option target="sprinter.elf"/>
+		</Unit>
+		<Unit filename="/home/zahorack/projects/c_projects_stm/sprinter/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

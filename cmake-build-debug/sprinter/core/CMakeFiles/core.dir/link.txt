@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libcore.a  CMakeFiles/core.dir/src/log.cpp.obj CMakeFiles/core.dir/src/scheduler/add_remove_replace.cpp.obj CMakeFiles/core.dir/src/scheduler/schedule.cpp.obj CMakeFiles/core.dir/src/scheduler/scheduler_state.cpp.obj CMakeFiles/core.dir/src/scheduler/transfer_continue.cpp.obj CMakeFiles/core.dir/src/task.cpp.obj CMakeFiles/core.dir/src/time.cpp.obj
+/usr/bin/arm-none-eabi-ranlib libcore.a

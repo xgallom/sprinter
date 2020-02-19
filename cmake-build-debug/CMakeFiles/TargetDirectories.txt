@@ -1,0 +1,3 @@
+/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/CMakeFiles/sprinter.elf.dir
+/home/zahorack/projects/c_projects_stm/sprinter/cmake-build-debug/CMakeFiles/edit_cache.dir

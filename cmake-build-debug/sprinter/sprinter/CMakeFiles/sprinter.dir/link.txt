@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libsprinter.a  CMakeFiles/sprinter.dir/src/run.cpp.obj CMakeFiles/sprinter.dir/src/stackProtector.cpp.obj
+/usr/bin/arm-none-eabi-ranlib libsprinter.a
